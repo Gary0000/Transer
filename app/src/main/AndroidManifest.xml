@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.scott.transer.event.TraserService" />
+        <service android:name="com.scott.transer.TranserService" />
 
         <activity android:name=".SimpleDownloadActivity" />
         <activity android:name=".SimpleUploadActivity" />

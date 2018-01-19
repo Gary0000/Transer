@@ -6,16 +6,13 @@ import android.content.Intent;
 import com.scott.annotionprocessor.ITaskEventDispatcher;
 import com.scott.annotionprocessor.TaskEventAnnotionProcessor;
 import com.scott.annotionprocessor.TaskSubcriberParams;
-import com.scott.annotionprocessor.TaskSubscriber;
-import com.scott.annotionprocessor.ThreadMode;
-import com.scott.transer.processor.ITaskCmd;
+import com.scott.transer.ITaskCmd;
+import com.scott.transer.TranserService;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +27,7 @@ import java.util.Queue;
  * <p>Describe:</p>
  */
 
-class EventDispatcher implements ICmdEventDispatcher,ITaskEventDispatcher {
+public class EventDispatcher implements ICmdEventDispatcher,ITaskEventDispatcher {
 
     private Queue<ITaskCmd> mCmdQueue = new ArrayDeque<>();
     private Context mContext;
@@ -61,13 +58,13 @@ class EventDispatcher implements ICmdEventDispatcher,ITaskEventDispatcher {
     public void dispatchCmd(ITaskCmd cmd) {
         synchronized (mCmdQueue) {
             mCmdQueue.add(cmd);
-            Intent intent = new Intent(mContext, TraserService.class);
-            intent.setAction(TraserService.ACTION_EXECUTE_CMD);
+            Intent intent = new Intent(mContext, TranserService.class);
+            intent.setAction(TranserService.ACTION_EXECUTE_CMD);
             mContext.startService(intent);
         }
     }
 
-    synchronized ITaskCmd getTaskCmd() {
+    public synchronized ITaskCmd getTaskCmd() {
         return mCmdQueue.poll();
     }
 

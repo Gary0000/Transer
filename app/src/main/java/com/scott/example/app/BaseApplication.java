@@ -3,8 +3,7 @@ package com.scott.example.app;
 import android.app.Application;
 import android.content.Intent;
 
-import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.event.TraserService;
+import com.scott.transer.TranserService;
 
 /**
  * Created by shijiale on 2017/12/16.
@@ -15,6 +14,6 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        startService(new Intent(this,TraserService.class));
+        startService(new Intent(this,TranserService.class));
     }
 }

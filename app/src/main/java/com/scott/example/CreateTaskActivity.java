@@ -5,15 +5,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
+import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.utils.Contacts;
+import com.scott.transer.ITaskCmd;
+import com.scott.transer.TaskBuilder;
+import com.scott.transer.TaskCmdBuilder;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.processor.ITaskCmd;
-import com.scott.transer.processor.TaskCmdBuilder;
-import com.scott.transer.task.TaskBuilder;
 
 import java.io.File;
 
@@ -60,6 +63,28 @@ public class CreateTaskActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TaskEventBus.getDefault().regesit(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        TaskEventBus.getDefault().unregesit(this);
+    }
+
+    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_DOWNLOAD,threadMode = ThreadMode.MODE_MAIN)
+    public void onAddTask() {
+        Toast.makeText(this,"下载任务添加成功!",Toast.LENGTH_SHORT).show();
+    }
+
+    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_UPLOAD,threadMode = ThreadMode.MODE_MAIN)
+    public void onAddUploadTask() {
+        Toast.makeText(this,"上传任务添加成功!",Toast.LENGTH_SHORT).show();
+    }
+
     @OnCheckedChanged(R.id.rb_upload)
     public void uploadCheck(boolean checked) {
         if(checked) {
@@ -98,6 +123,7 @@ public class CreateTaskActivity extends AppCompatActivity {
                 source = editUrl.getText().toString();
                 break;
         }
+
 
         ITask task = new TaskBuilder()
                 .setTaskType(task_type)

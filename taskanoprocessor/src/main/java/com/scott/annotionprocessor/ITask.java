@@ -2,6 +2,8 @@ package com.scott.annotionprocessor;
 
 import com.scott.annotionprocessor.TaskType;
 
+import java.util.Map;
+
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-13 12:52</p>

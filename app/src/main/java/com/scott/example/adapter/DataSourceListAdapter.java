@@ -5,7 +5,6 @@ import android.view.View;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.menus.AbsViewAdapter;
-import com.scott.transer.processor.ITaskCmd;
 
 import java.util.List;
 

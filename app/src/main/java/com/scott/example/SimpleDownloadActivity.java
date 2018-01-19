@@ -11,18 +11,15 @@ import android.widget.TextView;
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
-import com.scott.transer.task.BaseTaskHandler;
-import com.scott.transer.task.HandlerParamNames;
-import com.scott.transer.task.TaskBuilder;
-import com.scott.transer.task.DefaultHttpDownloadHandler;
-import com.scott.transer.task.ITaskHandler;
-import com.scott.transer.task.SimpleTaskHandlerListenner;
+import com.scott.transer.HandlerParamNames;
+import com.scott.transer.SimpleTaskHandlerListenner;
+import com.scott.transer.TaskBuilder;
+import com.scott.transer.handler.BaseTaskHandler;
+import com.scott.transer.handler.DefaultHttpDownloadHandler;
+import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -32,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.internal.Utils;
 
 public class SimpleDownloadActivity extends AppCompatActivity {
 

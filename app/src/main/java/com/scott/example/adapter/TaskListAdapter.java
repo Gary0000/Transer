@@ -12,11 +12,13 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.example.R;
 import com.scott.example.utils.TaskUtils;
+import com.scott.transer.ITaskCmdBuilder;
+import com.scott.transer.TaskCmdBuilder;
+import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.processor.ITaskCmdBuilder;
-import com.scott.transer.processor.TaskCmdBuilder;
-import com.scott.transer.task.TaskState;
+import com.scott.transer.utils.Debugger;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -74,15 +76,46 @@ public class TaskListAdapter extends BaseAdapter {
         holder.tvCompleteLength.setText(TaskUtils.getFileSize(task.getCompleteLength()));
         holder.tvLength.setText(TaskUtils.getFileSize(task.getLength()));
         holder.tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
-
         double progress = (double)task.getCompleteLength() / (double)task.getLength();
         progress = progress * 100f;
         holder.progressLength.setProgress((int) progress);
+        holder.btnStart.setVisibility(View.VISIBLE);
+        holder.btnStop.setVisibility(View.VISIBLE);
 
-        if(task.getState() == TaskState.STATE_FINISH) {
-            holder.progressLength.setProgress(100);
-            holder.tvCompleteLength.setText(TaskUtils.getFileSize(task.getCompleteLength()));
+        switch (task.getState()) {
+            case TaskState.STATE_ERROR:
+                holder.btnStart.setEnabled(true);
+                holder.tvLength.setText("ERROR");
+                holder.tvSpeed.setText("");
+                holder.tvCompleteLength.setText("");
+                holder.btnStop.setEnabled(false);
+                break;
+            case TaskState.STATE_READY:
+                holder.tvLength.setText("wait...");
+                holder.tvSpeed.setText("");
+                holder.tvCompleteLength.setText("");
+                holder.btnStop.setEnabled(false);
+                holder.btnStart.setEnabled(false);
+                break;
+            case TaskState.STATE_STOP:
+                holder.btnStart.setEnabled(true);
+                holder.btnStop.setEnabled(false);
+                break;
+            case TaskState.STATE_FINISH:
+                holder.btnStart.setVisibility(View.INVISIBLE);
+                holder.btnStop.setVisibility(View.INVISIBLE);
+                holder.tvLength.setText(new Date(task.getCompleteTime()).toString());
+                holder.tvSpeed.setText("");
+                holder.tvLength.setText("");
+                holder.progressLength.setProgress(100);
+                break;
+            case TaskState.STATE_RUNNING:
+                holder.btnStart.setEnabled(false);
+                break;
+
         }
+
+        Debugger.error("TaskListAdapter","==== + state = " + task.getState());
         return view;
     }
 
@@ -100,7 +133,7 @@ public class TaskListAdapter extends BaseAdapter {
                     .setTask(mTasks.get(index));
             switch (v.getId()) {
                 case R.id.btn_start:
-                    builder.setState(TaskState.STATE_START);
+                    builder.setState(TaskState.STATE_READY);
                     builder.setProcessType(ProcessType.TYPE_CHANGE_TASK);
                     break;
                 case R.id.btn_stop:

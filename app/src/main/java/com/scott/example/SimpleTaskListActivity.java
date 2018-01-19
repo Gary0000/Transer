@@ -5,10 +5,10 @@ import android.os.Bundle;
 
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.ITaskCmd;
+import com.scott.transer.TaskCmdBuilder;
+import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.processor.ITaskCmd;
-import com.scott.transer.processor.TaskCmdBuilder;
-import com.scott.transer.task.TaskState;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -52,7 +52,7 @@ public class SimpleTaskListActivity extends AppCompatActivity {
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTaskType(taskType)
                 .setProcessType(ProcessType.TYPE_CHANGE_TASK_ALL)
-                .setState(TaskState.STATE_START)
+                .setState(TaskState.STATE_READY)
                 .build();
         TaskEventBus.getDefault().execute(cmd);
     }

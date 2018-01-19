@@ -1,6 +1,7 @@
 package com.scott.transer.event;
 
-import com.scott.transer.processor.ITaskCmd;
+
+import com.scott.transer.ITaskCmd;
 
 /**
  * <p>Author:    shijiale</p>

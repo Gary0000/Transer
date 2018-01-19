@@ -15,9 +15,9 @@ import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.adapter.TaskListAdapter;
+import com.scott.transer.ITaskCmd;
+import com.scott.transer.TaskCmdBuilder;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.processor.ITaskCmd;
-import com.scott.transer.processor.TaskCmdBuilder;
 
 import java.util.ArrayList;
 import java.util.List;

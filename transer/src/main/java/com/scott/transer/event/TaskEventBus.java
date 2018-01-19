@@ -3,11 +3,9 @@ package com.scott.transer.event;
 import android.content.Context;
 
 import com.scott.annotionprocessor.ThreadMode;
-import com.scott.transer.processor.ITaskCmd;
+import com.scott.transer.ITaskCmd;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,12 +25,16 @@ public class TaskEventBus {
         return mTaskPosters.get(mode);
     }
 
-    static void init(Context context) {
+    public static void init(Context context) {
         synchronized (TaskEventBus.class) {
             if (sInstance == null) {
                 sInstance = new TaskEventBus(context);
             }
         }
+    }
+
+    public  EventDispatcher getDispatcher() {
+        return mDispatcher;
     }
 
     TaskEventBus(Context context) {

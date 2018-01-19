@@ -3,29 +3,24 @@ package com.scott.example;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
-import com.scott.transer.task.BaseTaskHandler;
-import com.scott.transer.task.HandlerParamNames;
-import com.scott.transer.task.TaskBuilder;
-import com.scott.transer.task.DefaultHttpUploadHandler;
-import com.scott.transer.task.ITaskHandler;
-import com.scott.transer.task.SimpleTaskHandlerListenner;
+import com.scott.transer.HandlerParamNames;
+import com.scott.transer.SimpleTaskHandlerListenner;
+import com.scott.transer.TaskBuilder;
+import com.scott.transer.handler.BaseTaskHandler;
+import com.scott.transer.handler.DefaultHttpUploadHandler;
+import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
