@@ -32,7 +32,10 @@
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
         mHandler.setThreadPool(threadPool);
-       
+        
+        //DefaultHttpDownloader 新增 enableCoverFile() 和 setlimitSpeed() 方法
+        //用于限制下载速度和是否覆盖原有文件
+       
         //开始任务
         mHandler.start();
         
@@ -161,8 +164,8 @@ public void onTasksChanged(List<ITask> tasks) {
         
         mTaskManagerProxy.setTaskManager(new TaskManager()); 
         //可以继承BaseTaskHandler 实现新的传输处理器
-        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_HTTP_DOWNLOAD, DefaultHttpDownloadHandler.class); //设置下载器
-        mTaskManagerProxy.setTaskHandler(TaskType.TYPE_HTTP_UPLOAD, DefaultHttpUploadHandler.class); //设置上传器
+        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_DOWNLOAD, new DefaultDownloadFactory());
+        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_UPLOAD, new DefaultUploadFactory());
 
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
@@ -172,18 +175,11 @@ public void onTasksChanged(List<ITask> tasks) {
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
         mTaskManagerProxy.setThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,threadPool); //下载线程池
 
-        mTaskManagerProxy.setHeaders(new HashMap<String, String>()); //设置请求头
-        Map<String,String> params = new HashMap<>();
-        //设置限制速度
-        params.put(HandlerParamNames.PARAM_LIMITED_SPEED,BaseTaskHandler.LIMIT_SPEED.1MB + "");
-        //设置分片大小
-        params.put(HandlerParamNames.PARAM_PICE_SIZE,BaseTaskHandler.LIMIT_SPEED.1MB + "");
-        mTaskManagerProxy.setParams(params); //设置url参数
-
 ````
 
 更新日志:
 - 2017/1/2 添加下载限速，设置分片大小
+- 2017/1/21 简化传输器配置，修复部分bug
 
 接下来将会增加的功能：
 - 其他方式的文件传输支持
