@@ -112,8 +112,9 @@ ITask task = new TaskBuilder()
 
         TaskEventBus.getDefault().execute(cmd); //执行命令
 ````
-4. 其他命令
+4.其他命令
 详见ProcessType 中支持的 type 类型
+
 
 5.接收任务变更通知
 - 在Activity,Fragement,Service,Dialog 等 onResume 或 onStart 中:
