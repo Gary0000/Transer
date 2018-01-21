@@ -96,8 +96,7 @@ ITask task = new TaskBuilder()
 ```` java
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTaskType(task_type) //任务类型
-                .setState(TaskState.STATE_START)
-                .setProcessType(ProcessType.TYPE_CHANGE_TASK) //操作类型(修改任务状态)
+                .setProcessType(ProcessType.TYPE_START_TASK) //操作类型(修改任务状态)
                 .setTask(task) //任务信息
                 .build();
 
@@ -107,14 +106,16 @@ ITask task = new TaskBuilder()
 ```` java
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTaskType(task_type) //任务类型
-                .setState(TaskState.STATE_STOP)
-                .setProcessType(ProcessType.TYPE_CHANGE_TASK) //操作类型(修改任务状态)
+                .setProcessType(ProcessType.TYPE_STOP_TASK) //操作类型(修改任务状态)
                 .setTask(task) //任务信息
                 .build();
 
         TaskEventBus.getDefault().execute(cmd); //执行命令
 ````
-4.接收任务变更通知
+4. 其他命令
+详见ProcessType 中支持的 type 类型
+
+5.接收任务变更通知
 - 在Activity,Fragement,Service,Dialog 等 onResume 或 onStart 中:
 
 ````java
