@@ -9,7 +9,7 @@
 ## 设计
 <img src="/imgs/design.png" alt="架构" width="80%" height="500"/>
 
-## 简单的下载或上传:
+## 简单的下载或上传(不使用续传功能或者自己保存任务信息):
 
 下载:
 ```` java 
@@ -19,7 +19,8 @@
                 .setName("test.zip") //设置任务名称
                 .setDataSource(URL)  //设置数据源
                 .setDestSource(FILE_PATH) //设置目标路径
-                .build();
+                .setCompleteLength() //设置了该属性，任务将会从该位置开始执行在简单模式下，如果需要支持续传，需要自己保存该值
+                .build();
         mHandler.setTask(task);
 
         //设置请求参数
