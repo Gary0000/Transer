@@ -40,8 +40,7 @@ public class SimpleTaskListActivity extends AppCompatActivity {
     public void stopAll() {
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTaskType(taskType)
-                .setProcessType(ProcessType.TYPE_CHANGE_TASK_ALL)
-                .setState(TaskState.STATE_STOP)
+                .setProcessType(ProcessType.TYPE_STOP_ALL)
                 .build();
         TaskEventBus.getDefault().execute(cmd);
     }
@@ -51,8 +50,7 @@ public class SimpleTaskListActivity extends AppCompatActivity {
     public void startAll() {
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTaskType(taskType)
-                .setProcessType(ProcessType.TYPE_CHANGE_TASK_ALL)
-                .setState(TaskState.STATE_READY)
+                .setProcessType(ProcessType.TYPE_START_ALL)
                 .build();
         TaskEventBus.getDefault().execute(cmd);
     }

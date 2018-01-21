@@ -2,9 +2,7 @@ package com.scott.transer.handler;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
-import com.scott.transer.HandlerParamNames;
 import com.scott.transer.Task;
-import com.scott.transer.TaskBuilder;
 import com.scott.transer.TaskErrorCode;
 import com.scott.transer.TaskState;
 import com.scott.transer.utils.Debugger;
@@ -40,21 +38,10 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private long mLastCaluteTime = 0;
     private long mLastCalculateLength = 0;
 
+    private long mLastPiceSuccessfulTime = 0;
+
     //每片大小
     protected int getPiceBuffSize() {
-        if(mParams.containsKey(HandlerParamNames.PARAM_PICE_SIZE)) {
-            String sSize = mParams.get(HandlerParamNames.PARAM_PICE_SIZE);
-            try {
-                int nSize = Integer.parseInt(sSize);
-                if(nSize <= 0) {
-                    return DEFAULT_PICE_SIZE;
-                } else {
-                    return nSize;
-                }
-            } catch (NumberFormatException e) {
-                return DEFAULT_PICE_SIZE;
-            }
-        }
         return DEFAULT_PICE_SIZE;
     }
 
@@ -87,18 +74,6 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     @Override
     public Map<String, String> getParams() {
-
-        //移除内部使用的param
-//        Map<String,String> params = new HashMap<>();
-//        params.putAll(mParams);
-//        Class cls = HandlerParamNames.class;
-//        Field[] fields = cls.getDeclaredFields();
-//
-//        for(Field f : fields) {
-//            String k = f.getName();
-//            params.remove(k);
-//        }
-//        return params;
         return mParams;
     }
 
@@ -115,18 +90,6 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     @Override
     public void setThreadPool(ThreadPoolExecutor threadPool) {
         mTaskHandleThreadPool = threadPool;
-    }
-
-    @Override
-    public void setState(int state) { //user call
-        switch (state) {
-            case TaskState.STATE_READY:
-                start();
-                break;
-            case TaskState.STATE_STOP:
-                stop();
-                break;
-        }
     }
 
 
@@ -153,6 +116,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     private void handle(ITask task) throws Exception {
 
+        //mTask.setState(TaskState.STATE_RUNNING);
         mLastCompleteLength = task.getCompleteLength();
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
@@ -182,13 +146,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         release(); //释放资源
     }
 
-    protected long getLimitSize() {
+    //限制下载速度
+    protected long getLimitSpeed() {
         long limitSize = SPEED_LISMT.SPEED_UNLIMITED;
-        try {
-            limitSize = Long.parseLong(mParams.get(HandlerParamNames.PARAM_SPEED_LIMITED));
-        }catch (Exception e) {
-            //e.printStackTrace();
-        }
         return limitSize;
     }
 
@@ -213,8 +173,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
             mLastCalculateLength += getPiceRealSize();
             //如果当前传输速度大于限制的速度，则等待一段时间
-            if(endCalculateTime - mLastCaluteTime < 1000 && mLastCalculateLength >= getLimitSize()
-                    && getLimitSize() != SPEED_LISMT.SPEED_UNLIMITED) {
+            if(endCalculateTime - mLastCaluteTime < MAX_DELAY_TIME && mLastCalculateLength >= getLimitSpeed()
+                    && getLimitSpeed() != SPEED_LISMT.SPEED_UNLIMITED) {
                 long waitTime = 1000 - (endCalculateTime - mLastCaluteTime);
                 Thread.sleep(waitTime);
                 mLastCalculateLength = 0;
@@ -227,13 +187,18 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                     ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
 
             if(isPiceSuccessful()) { //判断一片是否成功
-                mListenner.onPiceSuccessful(mTask);
+                mTask.setState(TaskState.STATE_RUNNING);
+                if(System.currentTimeMillis() - mLastPiceSuccessfulTime > MAX_DELAY_TIME) {
+                    mLastPiceSuccessfulTime = System.currentTimeMillis();
+                    mListenner.onPiceSuccessful(mTask);
+                }
             } else {
                 mTask.setState(TaskState.STATE_ERROR);
                 mListenner.onError(TaskErrorCode.ERROR_PICE,mTask);
                 isExit = true;
                 break;
             }
+            Debugger.error(TAG,"========= setState = " + mTask.getState());
         }
 
     }
@@ -262,8 +227,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mStateThread.setDaemon(true);
             mStateThread.start();
             mTask.setState(TaskState.STATE_READY);
-            mTask.setLength(fileSize());
+            //mTask.setLength(fileSize());
             mListenner.onReady(mTask);
+            Debugger.error(TAG," ===== START =======");
         }
     }
 
@@ -288,10 +254,6 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     protected void release() {
     }
 
-    @Override
-    public int getState() {
-        return mTask.getState();
-    }
 
     @Override
     public ITask getTask() {
@@ -313,8 +275,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         @Override
         public void run() {
             try {
-                mTask.setState(TaskState.STATE_RUNNING);
-                Debugger.error(TAG,"========= setState = " + mTask.getState());
+                Debugger.error(TAG," ===== START RUN =======");
                 handle(mTask);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -336,22 +297,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         public void run() {
             while (!isExit) {
                 try {
-
                     Thread.sleep(MAX_DELAY_TIME);
-
-//                    ITask task = new TaskBuilder()
-//                            .setTaskId(mTask.getTaskId())
-//                            .setDestSource(mTask.getDestSource())
-//                            .setDataSource(mTask.getDataSource())
-//                            .setCompleteLength(getCurrentCompleteLength())
-//                            .setTaskType(mTask.getType())
-//                            .setLength(mTask.getLength())
-//                            .setGroupName(mTask.getGroupName())
-//                            .setState(mTask.getState())
-//                            .setGroupId(mTask.getGroupId())
-//                            .setSpeed((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)))
-//                            .build();
-//                    mTask.setSpeed(task.getSpeed());
                     if(getCurrentCompleteLength() == mLastCompleteLength) continue;
                     mTask.setSpeed((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)));
                     mListenner.onSpeedChanged((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)), mTask);

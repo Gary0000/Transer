@@ -156,60 +156,6 @@ public class TaskDbProcessor implements ITaskProcessor {
     }
 
     @Override
-    public void changeTaskState(int state, String taskId) {
-        Task task = mTaskDao
-                .queryBuilder()
-                .where(TaskDao.Properties.TaskId.eq(taskId))
-                .unique();
-        task.setState(state);
-
-        mTaskDao.update(task);
-    }
-
-    @Override
-    public void changeTaskStateWithOutSave(int state, String taskId) {
-
-    }
-
-    @Override
-    public void changeTasksState(int state, String[] taskId) {
-//        List<Task> tasks = mTaskDao
-//                .queryBuilder()
-//                .where(TaskDao.Properties.TaskId.in(taskId))
-//                .list();
-//        for(Task task : tasks) {
-//            task.setState(state);
-//        }
-
-        //mTaskDao.updateInTx(tasks);
-    }
-
-    @Override
-    public void changeTasksState(int state, String groupId) {
-        List<Task> tasks = mTaskDao
-                .queryBuilder()
-                .where(TaskDao.Properties.GroupId.eq(groupId))
-                .list();
-        for(Task task : tasks) {
-            task.setState(state);
-        }
-
-        mTaskDao.updateInTx(tasks);
-    }
-
-    @Override
-    public void changeAllTasksState(int state,TaskType type) {
-        List<Task> tasks = mTaskDao.loadAll();
-        for(Task task : tasks) {
-            if(type == task.getType()) {
-                task.setState(state);
-            }
-        }
-
-        mTaskDao.updateInTx(tasks);
-    }
-
-    @Override
     public void updateTask(ITask task) {
         mTaskDao.update((Task) task);
     }
@@ -217,5 +163,65 @@ public class TaskDbProcessor implements ITaskProcessor {
     @Override
     public void updateTaskWithoutSave(ITask task) {
 
+    }
+
+    @Override
+    public void start(String taskId) {
+        Task task = mTaskDao.queryBuilder()
+                .where(TaskDao.Properties.TaskId.eq(taskId))
+                .unique();
+        task.setState(TaskState.STATE_READY);
+        mTaskDao.update(task);
+    }
+
+    @Override
+    public void startGroup(String groupId) {
+        List<Task> list = mTaskDao.queryBuilder()
+                .where(TaskDao.Properties.TaskId.eq(groupId))
+                .list();
+        for(Task task : list) {
+            task.setState(TaskState.STATE_READY);
+        }
+        mTaskDao.updateInTx(list);
+    }
+
+    @Override
+    public void startAll() {
+        List<Task> list = mTaskDao.queryBuilder()
+                .list();
+        for(Task task : list) {
+            task.setState(TaskState.STATE_READY);
+        }
+        mTaskDao.updateInTx(list);
+    }
+
+    @Override
+    public void stop(String taskId) {
+        Task task = mTaskDao.queryBuilder()
+                .where(TaskDao.Properties.TaskId.eq(taskId))
+                .unique();
+        task.setState(TaskState.STATE_STOP);
+        mTaskDao.update(task);
+    }
+
+    @Override
+    public void stopGroup(String groupId) {
+        List<Task> list = mTaskDao.queryBuilder()
+                .where(TaskDao.Properties.TaskId.eq(groupId))
+                .list();
+        for(Task task : list) {
+            task.setState(TaskState.STATE_STOP);
+        }
+        mTaskDao.updateInTx(list);
+    }
+
+    @Override
+    public void stopAll() {
+        List<Task> list = mTaskDao.queryBuilder()
+                .list();
+        for(Task task : list) {
+            task.setState(TaskState.STATE_STOP);
+        }
+        mTaskDao.updateInTx(list);
     }
 }

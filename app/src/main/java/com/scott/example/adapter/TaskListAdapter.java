@@ -110,6 +110,7 @@ public class TaskListAdapter extends BaseAdapter {
                 holder.progressLength.setProgress(100);
                 break;
             case TaskState.STATE_RUNNING:
+                holder.btnStop.setEnabled(true);
                 holder.btnStart.setEnabled(false);
                 break;
 
@@ -133,12 +134,10 @@ public class TaskListAdapter extends BaseAdapter {
                     .setTask(mTasks.get(index));
             switch (v.getId()) {
                 case R.id.btn_start:
-                    builder.setState(TaskState.STATE_READY);
-                    builder.setProcessType(ProcessType.TYPE_CHANGE_TASK);
+                    builder.setProcessType(ProcessType.TYPE_START_TASK);
                     break;
                 case R.id.btn_stop:
-                    builder.setState(TaskState.STATE_STOP);
-                    builder.setProcessType(ProcessType.TYPE_CHANGE_TASK);
+                    builder.setProcessType(ProcessType.TYPE_STOP_TASK);
                     break;
                 case R.id.btn_delete:
                     builder.setProcessType(ProcessType.TYPE_DELETE_TASK);

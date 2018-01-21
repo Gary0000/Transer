@@ -11,11 +11,11 @@ import android.widget.TextView;
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
-import com.scott.transer.HandlerParamNames;
 import com.scott.transer.SimpleTaskHandlerListenner;
 import com.scott.transer.TaskBuilder;
 import com.scott.transer.handler.BaseTaskHandler;
 import com.scott.transer.handler.DefaultHttpDownloadHandler;
+import com.scott.transer.handler.DefaultHttpUploadHandler;
 import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
 
@@ -89,8 +89,8 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         //设置请求参数
         Map<String,String> params = new HashMap<>();
         params.put("path","test.zip");
-        params.put(HandlerParamNames.PARAM_SPEED_LIMITED, BaseTaskHandler.SPEED_LISMT.SPEED_UNLIMITED + "");
         mHandler.setParams(params);
+        ((DefaultHttpDownloadHandler)mHandler).setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB);
         mHandler.setHandlerListenner(new DownloadListener());
 
         //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。

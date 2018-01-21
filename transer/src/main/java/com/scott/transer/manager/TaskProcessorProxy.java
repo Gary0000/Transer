@@ -127,34 +127,6 @@ public class TaskProcessorProxy implements ITaskProcessor {
         return tasks;
     }
 
-    @Override
-    public void changeTaskState(int state, String taskId) {
-        mProcessor.changeTaskState(state,taskId);
-        mDbProcessor.changeTaskState(state,taskId);
-    }
-
-    @Override
-    public void changeTaskStateWithOutSave(int state, String taskId) {
-        mProcessor.changeTaskState(state,taskId);
-    }
-
-    @Override
-    public void changeTasksState(int state, String[] taskId) {
-        mProcessor.changeTasksState(state,taskId);
-        mDbProcessor.changeTasksState(state,taskId);
-    }
-
-    @Override
-    public void changeTasksState(int state, String groupId) {
-        mProcessor.changeTasksState(state,groupId);
-        mDbProcessor.changeTasksState(state,groupId);
-    }
-
-    @Override
-    public void changeAllTasksState(int state,TaskType taskType) {
-        mProcessor.changeAllTasksState(state,taskType);
-        mDbProcessor.changeAllTasksState(state,taskType);
-    }
 
     @Override
     public void updateTask(ITask task) {
@@ -165,5 +137,41 @@ public class TaskProcessorProxy implements ITaskProcessor {
     @Override
     public void updateTaskWithoutSave(ITask task) {
         mProcessor.updateTaskWithoutSave(task);
+    }
+
+    @Override
+    public void start(String taskId) {
+        mProcessor.start(taskId);
+        mDbProcessor.start(taskId);
+    }
+
+    @Override
+    public void startGroup(String groupId) {
+        mProcessor.start(groupId);
+        mDbProcessor.startGroup(groupId);
+    }
+
+    @Override
+    public void startAll() {
+        mProcessor.startAll();
+        mDbProcessor.stopAll();
+    }
+
+    @Override
+    public void stop(String taskId) {
+        mProcessor.stop(taskId);
+        mDbProcessor.stop(taskId);
+    }
+
+    @Override
+    public void stopGroup(String groupId) {
+        mProcessor.stopGroup(groupId);
+        mDbProcessor.stopGroup(groupId);
+    }
+
+    @Override
+    public void stopAll() {
+        mProcessor.stopAll();
+        mDbProcessor.stopAll();
     }
 }

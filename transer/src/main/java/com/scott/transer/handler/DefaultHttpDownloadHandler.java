@@ -1,7 +1,6 @@
 package com.scott.transer.handler;
 
 import com.scott.annotionprocessor.ITask;
-import com.scott.transer.HandlerParamNames;
 import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
 import com.scott.transer.utils.Debugger;
@@ -31,6 +30,16 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     private int mPiceSize = 0;
     private long mFileSize = 0;
     final String TAG = DefaultHttpDownloadHandler.class.getSimpleName();
+    private long mLimitSpeed;
+    private boolean isCoverOldFile = true;
+
+    public void enableCoverFile() {
+        isCoverOldFile = true;
+    }
+
+    public void setSpeedLimited(long speed) {
+        mLimitSpeed = speed;
+    }
 
     @Override
     public boolean isPiceSuccessful() {
@@ -58,7 +67,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
     @Override
     protected byte[] readPice(Task task) throws IOException {
-        if(mInputStream == null) {
+        if (mInputStream == null) {
             return null;
         }
         byte[] buf = new byte[getPiceBuffSize()];
@@ -67,8 +76,8 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     }
 
     @Override
-    protected void writePice(byte[] datas,Task task) throws IOException {
-        mFile.write(datas,0,getPiceRealSize());
+    protected void writePice(byte[] datas, Task task) throws IOException {
+        mFile.write(datas, 0, getPiceRealSize());
     }
 
     @Override
@@ -76,7 +85,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
         //设置url 参数
         String url = getTask().getDataSource();
-        if(getParams() != null) {
+        if (getParams() != null) {
             for (String k : getParams().keySet()) {
                 if (!url.contains("?")) {
                     url += "?" + k + "=" + getParams().get(k);
@@ -89,24 +98,20 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         File file = new File(getTask().getDestSource());
         mFileSize = getNetSize(url); //从服务端获取文件大小
 
-        if(file.length() == mFileSize && mFileSize != 0) {
+        if (file.length() == mFileSize && mFileSize != 0) {
             //if local exists and is completed,params contains cover-file -> true
             //delete file, else return finished.
-            if(getParams().containsKey(HandlerParamNames.PARAM_COVER_FILE)) {
-                boolean coverFile = Boolean.parseBoolean(getParams().get(HandlerParamNames.PARAM_COVER_FILE));
-                if(coverFile) {
-                    file.delete();
-                } else {
-                    return;
-                }
-            } else {
+            if (isCoverOldFile) {
                 file.delete();
+            } else {
+                return;
             }
+
         }
-        mFile = new RandomAccessFile(file,"rw");
+        mFile = new RandomAccessFile(file, "rw");
 
         //将文件指针移动到末尾
-        if(task.getStartOffset() != 0) {
+        if (task.getStartOffset() != 0) {
             mFile.seek(task.getStartOffset());
         }
 
@@ -115,24 +120,23 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
                         task.getStartOffset());
         Request.Builder builder = new Request.Builder()
                 .url(url)
-                .header("Range","bytes=" +
+                .header("Range", "bytes=" +
                         task.getStartOffset() + "-" + mFileSize);
 
-        if(getHeaders() != null) {
-            for(String k : getHeaders().keySet()) {
-                builder.addHeader(k,getHeaders().get(k));
+        if (getHeaders() != null) {
+            for (String k : getHeaders().keySet()) {
+                builder.addHeader(k, getHeaders().get(k));
             }
         }
         OkHttpClient client = OkHttpProxy.getClient();
         Call call = client.newCall(builder.build());
         Response response = call.execute();
-        if(!response.isSuccessful()) {
+        if (!response.isSuccessful()) {
             return;
         }
         ResponseBody body = response.body();
         mInputStream = body.byteStream();
     }
-
 
 
     @Override
@@ -158,5 +162,13 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         long length = Long.parseLong(header);
 
         return length;
+    }
+
+    @Override
+    protected long getLimitSpeed() {
+        if(mLimitSpeed <= 0) {
+            return SPEED_LISMT.SPEED_UNLIMITED;
+        }
+        return mLimitSpeed;
     }
 }

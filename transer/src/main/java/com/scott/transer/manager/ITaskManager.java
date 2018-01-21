@@ -3,8 +3,8 @@ package com.scott.transer.manager;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.ITaskCmd;
-import com.scott.transer.ITaskHolder;
-import com.scott.transer.handler.ITaskHandlerCreator;
+import com.scott.transer.handler.ITaskHandlerFactory;
+import com.scott.transer.handler.ITaskHolder;
 
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -13,7 +13,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-13 14:31</p>
  * <p>Email:     shilec@126.com</p>
- * <p>Describe:</p>
+ * <p>Describe:
+ *    任务调度管理器，可以通过setManager 来设置后继的责任对象
+ * </p>
  */
 
 public interface ITaskManager {
@@ -33,11 +35,17 @@ public interface ITaskManager {
     ThreadPoolExecutor getTaskThreadPool(TaskType type);
 
     //通过传输类型获取一个传输器
-    ITaskHandlerCreator getTaskHandlerCreator(ITask task);
+    ITaskHandlerFactory getTaskHandlerCreator(ITask task);
 
     //设置传输器
-    void addHandlerCreator(TaskType type, ITaskHandlerCreator handlerCreator);
+    void addHandlerCreator(TaskType type, ITaskHandlerFactory handlerCreator);
 
     //获取任务列表信息
     List<ITaskHolder> getTasks();
+
+    //责任链
+    void setManager(ITaskManager manager);
+
+    ITaskManager getManager();
+
 }

@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 
 import com.scott.transer.dao.DaoHelper;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.manager.ITaskManagerProxy;
+import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskProcessCallback;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.manager.TaskProcessorProxy;
@@ -18,8 +18,8 @@ import com.scott.transer.manager.TaskManagerProxy;
 import com.scott.transer.manager.TaskProcessor;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
-import com.scott.transer.handler.DefaultDownloadCreator;
-import com.scott.transer.handler.DefaultUploadCreator;
+import com.scott.transer.handler.DefaultDownloadFactory;
+import com.scott.transer.handler.DefaultUploadFactory;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TranserService extends Service implements ITaskProcessCallback{
 
-    ITaskManagerProxy mTaskManagerProxy;
+    ITaskManager mTaskManagerProxy;
 
     public static final String ACTION_EXECUTE_CMD = "_CMD";
 
@@ -78,9 +78,9 @@ public class TranserService extends Service implements ITaskProcessCallback{
         mTaskManagerProxy = new TaskManagerProxy();
         mTaskManagerProxy.setProcessCallback(this);
         mTaskManagerProxy.setTaskProcessor(new TaskProcessorProxy(new TaskProcessor(),new TaskDbProcessor()));
-        mTaskManagerProxy.setTaskManager(new TaskManager());
-        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_DOWNLOAD, new DefaultDownloadCreator());
-        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_UPLOAD, new DefaultUploadCreator());
+        mTaskManagerProxy.setManager(new TaskManager());
+        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_DOWNLOAD, new DefaultDownloadFactory());
+        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_UPLOAD, new DefaultUploadFactory());
 
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));

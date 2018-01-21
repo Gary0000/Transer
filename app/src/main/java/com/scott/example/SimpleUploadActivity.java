@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
-import com.scott.transer.HandlerParamNames;
 import com.scott.transer.SimpleTaskHandlerListenner;
 import com.scott.transer.TaskBuilder;
 import com.scott.transer.handler.BaseTaskHandler;
@@ -72,7 +71,6 @@ public class SimpleUploadActivity extends AppCompatActivity {
         mHandler = new DefaultHttpUploadHandler();
         Map<String,String> params = new HashMap<>();
         params.put("path","test.zip");
-        params.put(HandlerParamNames.PARAM_SPEED_LIMITED, BaseTaskHandler.SPEED_LISMT.SPEED_100KB + "");
 
         final ITask task = new TaskBuilder()
                 .setName("test.zip")

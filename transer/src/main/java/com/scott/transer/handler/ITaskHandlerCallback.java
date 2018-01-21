@@ -11,9 +11,10 @@ import com.scott.annotionprocessor.ITask;
 
 public interface ITaskHandlerCallback {
 
+    //任务准备好(调用了 start)
     void onReady(ITask task);
 
-    //任务开始，资源准备好后回调
+    //任务开始
     void onStart(ITask task);
 
     //任务结束

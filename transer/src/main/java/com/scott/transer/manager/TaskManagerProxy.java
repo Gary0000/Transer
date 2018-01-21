@@ -3,12 +3,12 @@ package com.scott.transer.manager;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.ITaskCmd;
-import com.scott.transer.ITaskHolder;
 import com.scott.transer.TaskCmdBuilder;
 import com.scott.transer.TaskState;
 import com.scott.transer.handler.ITaskHandlerCallback;
-import com.scott.transer.handler.ITaskHandlerCreator;
+import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.handler.ITaskHolder;
 import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
@@ -21,10 +21,12 @@ import java.util.concurrent.ThreadPoolExecutor;
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-14 14:42</p>
  * <p>Email:     shilec@126.com</p>
- * <p>Describe:</p>
+ * <p>Describe:
+ *      manager 责任连的顶端，当前只有 TaskManagerProxy, TaskManager 两个节点
+ * </p>
  */
 
-public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback,ITaskHandlerCallback {
+public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITaskHandlerCallback {
 
     private ITaskManager mManager;
     private ITaskProcessor mProcessor; //processor proxy
@@ -37,11 +39,16 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     }
 
     @Override
-    public void setTaskManager(ITaskManager manager) {
+    public void setManager(ITaskManager manager) {
         mManager = manager;
         mManager.setProcessCallback(this);
         mManager.setTaskProcessor(mProcessor);
         mProcessor.setTaskManager(this);
+    }
+
+    @Override
+    public ITaskManager getManager() {
+        return this;
     }
 
     @Override
@@ -79,14 +86,14 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
     }
 
     @Override
-    public ITaskHandlerCreator getTaskHandlerCreator(ITask task) {
-        ITaskHandlerCreator creator = mManager.getTaskHandlerCreator(task);
+    public ITaskHandlerFactory getTaskHandlerCreator(ITask task) {
+        ITaskHandlerFactory creator = mManager.getTaskHandlerCreator(task);
         creator.setTaskHandlerCallback(this);
         return creator;
     }
 
     @Override
-    public void addHandlerCreator(TaskType type, ITaskHandlerCreator handlerCreator) {
+    public void addHandlerCreator(TaskType type, ITaskHandlerFactory handlerCreator) {
         mManager.addHandlerCreator(type,handlerCreator);
     }
 
@@ -166,7 +173,7 @@ public class TaskManagerProxy implements ITaskManagerProxy, ITaskProcessCallback
 
     @Override
     public void onPiceSuccessful(ITask task) {
-        //Debugger.error(TAG,"picesuccessful = " + params);
+        Debugger.error(TAG," PICE STATE = " + task.getState());
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)

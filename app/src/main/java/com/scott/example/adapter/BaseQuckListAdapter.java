@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -158,5 +159,4 @@ public abstract class BaseQuckListAdapter<T,VH extends BaseListHolder> extends B
         }
         return null;
     }
-
 }

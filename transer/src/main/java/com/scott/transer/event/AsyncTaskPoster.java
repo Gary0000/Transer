@@ -15,6 +15,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  * <P>Author: shijiale</P>
  * <P>Date: 2017/12/25</P>
  * <P>Email: shilec@126.com</p>
+ *  异步消息处理器
  */
 class AsyncTaskPoster implements ITaskPoster,Runnable{
     private Thread mAsyncThread;

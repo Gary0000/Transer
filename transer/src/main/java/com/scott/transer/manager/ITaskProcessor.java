@@ -42,17 +42,19 @@ public interface ITaskProcessor {
 
     List<ITask> getTasks(int state, TaskType type);
 
-    void changeTaskState(int state,String taskId);
-
-    void changeTaskStateWithOutSave(int state,String taskId);
-
-    void changeTasksState(int state,String[] taskId);
-
-    void changeTasksState(int state,String groupId);
-
-    void changeAllTasksState(int state,TaskType type);
-
     void updateTask(ITask task);
 
     void updateTaskWithoutSave(ITask task);
+
+    void start(String taskId);
+
+    void startGroup(String groupId);
+
+    void startAll();
+
+    void stop(String taskId);
+
+    void stopGroup(String groupId);
+
+    void stopAll();
 }

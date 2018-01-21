@@ -24,10 +24,12 @@ import java.util.Queue;
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-14 16:27</p>
  * <p>Email:     shilec@126.com</p>
- * <p>Describe:</p>
+ * <p>Describe:
+ *      用于分发handler返回的消息，发送给订阅者
+ * </p>
  */
 
-public class EventDispatcher implements ICmdEventDispatcher,ITaskEventDispatcher {
+public class EventDispatcher implements ITaskEventDispatcher {
 
     private Queue<ITaskCmd> mCmdQueue = new ArrayDeque<>();
     private Context mContext;
@@ -54,7 +56,6 @@ public class EventDispatcher implements ICmdEventDispatcher,ITaskEventDispatcher
         mContext = context;
     }
 
-    @Override
     public void dispatchCmd(ITaskCmd cmd) {
         synchronized (mCmdQueue) {
             mCmdQueue.add(cmd);

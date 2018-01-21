@@ -1,9 +1,7 @@
-package com.scott.transer;
+package com.scott.transer.handler;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
-
-import java.util.Map;
 
 /**
  * <p>Author:    shijiale</p>
@@ -13,10 +11,6 @@ import java.util.Map;
  */
 
 public interface ITaskHolder {
-
-    void setState(int state);
-
-    int getState();
 
     ITask getTask();
 
