@@ -84,16 +84,17 @@ public class TranserService extends Service implements ITaskProcessCallback{
 
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mTaskManagerProxy.setThreadPool(TaskType.TYPE_HTTP_UPLOAD, threadPool);
+        mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_UPLOAD, threadPool);
 
         threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mTaskManagerProxy.setThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,threadPool);
+        mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,threadPool);
     }
 
     @Override
     public void onFinished(TaskType taskType, ProcessType type,List<ITask> tasks) {
         TaskEventBus.getDefault().getDispatcher().dispatchTasks(taskType,type,tasks);
+        //注册了TYPE_DEFAULT 会收到任何变更
         TaskEventBus.getDefault().getDispatcher().dispatchTasks(taskType,ProcessType.TYPE_DEFAULT,tasks);
     }
 

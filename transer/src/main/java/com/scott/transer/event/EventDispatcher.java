@@ -65,6 +65,7 @@ public class EventDispatcher implements ITaskEventDispatcher {
         }
     }
 
+    //防止Intent Extra size 限制
     public synchronized ITaskCmd getTaskCmd() {
         return mCmdQueue.poll();
     }

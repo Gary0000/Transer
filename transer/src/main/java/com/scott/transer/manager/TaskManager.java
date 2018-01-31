@@ -117,7 +117,7 @@ public class TaskManager implements ITaskManager {
     }
 
     @Override
-    public void setThreadPool(TaskType taskType, ThreadPoolExecutor threadPool) {
+    public void addThreadPool(TaskType taskType, ThreadPoolExecutor threadPool) {
         mThreadPool.put(taskType,threadPool);
     }
 

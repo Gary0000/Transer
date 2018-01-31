@@ -30,7 +30,7 @@ public interface ITaskManager {
     void setProcessCallback(ITaskProcessCallback callback);
 
     //设置任务传输的线程池，tasktype 为 传输类型
-    void setThreadPool(TaskType taskType,ThreadPoolExecutor threadPool);
+    void addThreadPool(TaskType taskType, ThreadPoolExecutor threadPool);
 
     ThreadPoolExecutor getTaskThreadPool(TaskType type);
 

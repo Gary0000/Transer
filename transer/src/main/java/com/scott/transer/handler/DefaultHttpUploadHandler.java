@@ -38,17 +38,37 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     private PiceRequestBody mRequestBody; // 写入一片
     private final String TAG = DefaultHttpUploadHandler.class.getSimpleName();
 
+    /***
+     * 当前这一片传输完成服务器返回的数据
+     * @return
+     */
+    protected String getNowResponse() {
+        return mResponse;
+    }
+
+
+    /***
+     * 判断一片是否上传成功，需要通过服务器的返回值去判断
+     * 注意:
+     * 最后一片上传完也会去判断 一片是否上传成功
+     * 所以需要考虑最后一片返回和每一片返回不同。
+     * @return true 成功， false 失败
+     */
     @Override
     public boolean isPiceSuccessful() { //判断一片是否成功
-        if(mResponse == null) {
+        if(getNowResponse() == null || isSuccessful()) {
             return false;
         }
         return true;
     }
 
+    /***
+     * 最后一片上传完会被调用，需要判断最后一片上传成功后服务器返回值
+     * @return true 成功， false 失败
+     */
     @Override
     public boolean isSuccessful() {
-        if(mResponse == null) {
+        if(getNowResponse() == null) {
             return false;
         }
 
@@ -80,15 +100,22 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
 
         //服务端需要支持 Content-Range 的 header
         mRequestBody = new PiceRequestBody(datas);
-        Request request = new Request.Builder()
+        Request.Builder builder = new Request.Builder()
                 .addHeader("Session-ID", task.getSesstionId())
                 .addHeader("Content-Range", "bytes " + task.getStartOffset()
                         + "-" + (task.getEndOffset() - 1) + "/" + mFile.length())
                 .addHeader("Content-Disposition", "attachment; filename=" + task.getName())
                 .addHeader("Connection", "Keep-Alive")
                 .url(task.getDestSource())
-                .post(mRequestBody)
-                .build();
+                .post(mRequestBody);
+        //加入header
+        if(getHeaders() != null) {
+            for (String k : getHeaders().keySet()) {
+                builder.addHeader(k, getHeaders().get(k));
+            }
+        }
+
+        Request request = builder.build();
         OkHttpClient client = OkHttpProxy.getClient();
         Call call = client.newCall(request);
 

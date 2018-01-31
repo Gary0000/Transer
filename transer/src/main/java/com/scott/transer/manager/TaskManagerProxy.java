@@ -75,8 +75,8 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     }
 
     @Override
-    public void setThreadPool(TaskType taskType, ThreadPoolExecutor threadPool) {
-        mManager.setThreadPool(taskType,threadPool);
+    public void addThreadPool(TaskType taskType, ThreadPoolExecutor threadPool) {
+        mManager.addThreadPool(taskType,threadPool);
     }
 
 

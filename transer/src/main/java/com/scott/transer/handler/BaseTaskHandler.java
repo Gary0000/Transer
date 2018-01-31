@@ -94,7 +94,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
 
     //判断一片是否发送或接受成功
-    protected  abstract boolean isPiceSuccessful();
+    protected abstract boolean isPiceSuccessful();
 
     //判断任务是否成功
     protected abstract boolean isSuccessful();
@@ -111,6 +111,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     //当前这片从数据源中实际读取的大小
     protected abstract int getPiceRealSize();
 
+    //文件大小，下载为服务器的文件大小 。 上传为本地的文件大小
     protected  abstract long fileSize();
 
 
