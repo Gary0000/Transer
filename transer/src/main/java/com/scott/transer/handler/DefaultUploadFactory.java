@@ -18,6 +18,7 @@ public class DefaultUploadFactory implements ITaskHandlerFactory {
     @Override
     public ITaskHandler create(ITask task, ITaskManager manager) {
         ITaskHandler handler = new DefaultHttpUploadHandler();
+        handler.setThreadPool(manager.getTaskThreadPool(task.getType()));
         handler.setHandlerListenner(callback);
         handler.setTask(task);
         return handler;

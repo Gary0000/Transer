@@ -55,10 +55,10 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
      * @return true 成功， false 失败
      */
     @Override
-    public boolean isPiceSuccessful() { //判断一片是否成功
-        if(getNowResponse() == null || isSuccessful()) {
-            return false;
-        }
+    protected boolean isPiceSuccessful() { //判断一片是否成功
+//        if(getNowResponse() == null || isSuccessful()) {
+//            return false;
+//        }
         return true;
     }
 
@@ -67,25 +67,26 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
      * @return true 成功， false 失败
      */
     @Override
-    public boolean isSuccessful() {
-        if(getNowResponse() == null) {
-            return false;
-        }
-
-        try {
-            JSONObject job = new JSONObject(mResponse);
-            String range = job.optString("range");
-            String end = range.split("-")[0];
-            String all = range.split("-")[1];
-
-            if(Long.parseLong(end) - 1 >= Long.parseLong(all)) {
-                return true;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Debugger.error(TAG,e.getMessage());
-        }
-        return false;
+    protected boolean isSuccessful() {
+//        if(getNowResponse() == null) {
+//            return false;
+//        }
+//
+//        try {
+//            JSONObject job = new JSONObject(mResponse);
+//            String range = job.optString("range");
+//            String end = range.split("-")[0];
+//            String all = range.split("-")[1];
+//
+//            if(Long.parseLong(end) - 1 >= Long.parseLong(all)) {
+//                return true;
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            Debugger.error(TAG,e.getMessage());
+//        }
+//        return false;
+        return true;
     }
 
     @Override
@@ -210,6 +211,13 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
 
             mSource.reset();
             mSource.close();
+        }
+    }
+
+    public static class Builder extends BaseTaskHandler.Builder<Builder,DefaultHttpUploadHandler> {
+        @Override
+        protected DefaultHttpUploadHandler buildTarget() {
+            return new DefaultHttpUploadHandler();
         }
     }
 }

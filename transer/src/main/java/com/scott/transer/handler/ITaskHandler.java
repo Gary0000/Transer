@@ -1,6 +1,9 @@
 package com.scott.transer.handler;
 
 
+import com.scott.annotionprocessor.ITask;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -38,4 +41,5 @@ public interface ITaskHandler extends ITaskHolder {
 
     //设置状态回掉
     void setHandlerListenner(ITaskHandlerCallback l);
+
 }

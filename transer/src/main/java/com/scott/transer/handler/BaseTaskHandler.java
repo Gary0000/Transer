@@ -7,6 +7,7 @@ import com.scott.transer.TaskErrorCode;
 import com.scott.transer.TaskState;
 import com.scott.transer.utils.Debugger;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -310,5 +311,84 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 }
             }
         }
+    }
+
+    protected abstract static class Builder<B extends Builder,T extends ITaskHandler> {
+
+        private T mTarget;
+        private Map<String,String> mHeaders;
+        private Map<String,String> mParams;
+        private ThreadPoolExecutor mThreadPool;
+        private ITaskHandlerCallback mCallback;
+        private ITask mTask;
+
+        public Builder() {
+
+        }
+
+        public Builder(T target) {
+            mTarget = target;
+        }
+
+
+        public B setHeaders(Map<String,String> headers) {
+            mHeaders = headers;
+            return (B)this;
+        }
+
+        public B setParams(Map<String,String> params) {
+            mParams = params;
+            return (B)this;
+        }
+
+        public B addHeader(String k,String v) {
+            if(mHeaders == null) {
+                mHeaders = new HashMap<>();
+            }
+            mHeaders.put(k,v);
+            return (B)this;
+        }
+
+        public B addParam(String k,String v) {
+            if(mParams == null) {
+                mParams = new HashMap<>();
+            }
+            mParams.put(k,v);
+            return (B)this;
+        }
+
+        public B setTask(ITask task) {
+            mTask = task;
+            return (B)this;
+        }
+
+        public B setThreadPool(ThreadPoolExecutor executor) {
+            mThreadPool = executor;
+            return (B)this;
+        }
+
+        public B setCallback(ITaskHandlerCallback callback) {
+            mCallback = callback;
+            return (B)this;
+        }
+
+        public T build() {
+            if(mTarget == null) {
+                mTarget = buildTarget();
+            }
+
+            if(mTarget == null) {
+                throw new IllegalStateException("buildTarget() not impl!");
+            }
+
+            mTarget.setThreadPool(mThreadPool);
+            mTarget.setHandlerListenner(mCallback);
+            mTarget.setTask(mTask);
+            mTarget.setHeaders(mHeaders);
+            mTarget.setParams(mParams);
+            return mTarget;
+        }
+
+        protected abstract T buildTarget();
     }
  }

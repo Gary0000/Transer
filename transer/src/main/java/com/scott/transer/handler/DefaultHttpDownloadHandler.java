@@ -24,14 +24,13 @@ import okhttp3.ResponseBody;
 
 public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
-
-    private RandomAccessFile mFile;
-    private InputStream mInputStream;
-    private int mPiceSize = 0;
-    private long mFileSize = 0;
+    protected RandomAccessFile mFile;
+    protected InputStream mInputStream;
+    protected int mPiceSize = 0;
+    protected long mFileSize = 0;
     final String TAG = DefaultHttpDownloadHandler.class.getSimpleName();
-    private long mLimitSpeed;
-    private boolean isCoverOldFile = true;
+    protected long mLimitSpeed;
+    protected boolean isCoverOldFile = true;
 
     public void enableCoverFile() {
         isCoverOldFile = true;
@@ -42,12 +41,12 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     }
 
     @Override
-    public boolean isPiceSuccessful() {
+    protected boolean isPiceSuccessful() {
         return true;
     }
 
     @Override
-    public boolean isSuccessful() {
+    protected boolean isSuccessful() {
         return getTask().getLength() == getTask().getCompleteLength();
     }
 
@@ -170,5 +169,29 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             return SPEED_LISMT.SPEED_UNLIMITED;
         }
         return mLimitSpeed;
+    }
+
+    public static class Builder extends BaseTaskHandler.Builder<Builder,DefaultHttpDownloadHandler> {
+
+        private boolean isEnableCoverfile;
+        private long mSpeedLimited;
+
+        public Builder setSpeedLimited(long limited) {
+            mSpeedLimited = limited;
+            return this;
+        }
+
+        public Builder setEnableCoverFile(boolean enable){
+            isEnableCoverfile = enable;
+            return this;
+        }
+
+        @Override
+        protected DefaultHttpDownloadHandler buildTarget() {
+            DefaultHttpDownloadHandler handler = new DefaultHttpDownloadHandler();
+            handler.isCoverOldFile = isEnableCoverfile;
+            handler.mLimitSpeed = mSpeedLimited;
+            return handler;
+        }
     }
 }

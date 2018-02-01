@@ -77,26 +77,25 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         tvMd5.setText(FILE_MD5);
 
-        mHandler = new DefaultHttpDownloadHandler();
         //创建一个任务
         ITask task = new TaskBuilder()
                 .setName("test.zip") //设置任务名称
                 .setDataSource(URL)  //设置数据源
                 .setDestSource(FILE_PATH) //设置目标路径
                 .build();
-        mHandler.setTask(task);
 
-        //设置请求参数
-        Map<String,String> params = new HashMap<>();
-        params.put("path","test.zip");
-        mHandler.setParams(params);
-        ((DefaultHttpDownloadHandler)mHandler).setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB);
-        mHandler.setHandlerListenner(new DownloadListener());
-
-        //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
+//        //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mHandler.setThreadPool(threadPool);
+
+        mHandler = new DefaultHttpDownloadHandler.Builder()
+                .setTask(task)
+                .addParam("path","test.zip")
+                .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
+                .setCallback(new DownloadListener())
+                .setThreadPool(threadPool)
+                .setEnableCoverFile(true)
+                .build();
     }
 
     @OnClick(R.id.btn_stop)

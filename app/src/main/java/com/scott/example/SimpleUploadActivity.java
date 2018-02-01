@@ -56,6 +56,7 @@ public class SimpleUploadActivity extends AppCompatActivity {
     TextView tvSpeed;
 
     private ITaskHandler mHandler;
+    private ITask task;
 
     final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
     final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
@@ -68,80 +69,81 @@ public class SimpleUploadActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        mHandler = new DefaultHttpUploadHandler();
-        Map<String,String> params = new HashMap<>();
-        params.put("path","test.zip");
-
-        final ITask task = new TaskBuilder()
+        task = new TaskBuilder()
                 .setName("test.zip")
                 .setTaskId("1233444")
                 .setSessionId("123123123131")
                 .setDataSource(FILE_PATH)
                 .setDestSource(URL)
                 .build();
-        mHandler.setTask(task);
-        mHandler.setParams(params);
-        mHandler.setHandlerListenner(new SimpleTaskHandlerListenner() {
-            @Override
-            public void onPiceSuccessful(final ITask params) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvCompleteLength.setText(getFileSize(params.getCompleteLength()));
-                        tvAllLength.setText(getFileSize(params.getLength()));
-
-                        double progress = (double)params.getCompleteLength() / (double)params.getLength();
-                        progress = progress * 100f;
-                        progressLength.setProgress((int) progress);
-                    }
-                });
-            }
-
-            @Override
-            public void onFinished(final ITask task) {
-                super.onFinished(task);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvCompleteLength.setText(getFileSize(task.getCompleteLength()));
-                        tvAllLength.setText(getFileSize(task.getLength()));
-
-                        double progress = (double)task.getCompleteLength() / (double)task.getLength();
-                        progress = progress * 100f;
-                        progressLength.setProgress((int) progress);
-                    }
-                });
-                Debugger.error(TAG,"========onFinished============");
-            }
-
-            @Override
-            public void onSpeedChanged(long speed, final ITask params) {
-                super.onSpeedChanged(speed, params);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvCompleteLength.setText(getFileSize(params.getCompleteLength()));
-                        tvAllLength.setText(getFileSize(params.getLength()));
-
-                        double progress = (double)params.getCompleteLength() / (double)params.getLength();
-                        progress = progress * 100f;
-                        progressLength.setProgress((int) progress);
-                        tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
-                    }
-                });
-                Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
-            }
-
-            @Override
-            public void onError(int code, ITask params) {
-                super.onError(code, params);
-                Debugger.error("SimpleUploadActivity","error " + code);
-            }
-        });
 
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mHandler.setThreadPool(threadPool);
+
+        mHandler = new DefaultHttpUploadHandler.Builder()
+                .setTask(task)
+                .addParam("path","test.zip")
+                .setCallback(new UploadListenner())
+                .setThreadPool(threadPool)
+                .build();
+    }
+
+    private final class UploadListenner extends SimpleTaskHandlerListenner {
+        @Override
+        public void onPiceSuccessful(final ITask params) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvCompleteLength.setText(getFileSize(params.getCompleteLength()));
+                    tvAllLength.setText(getFileSize(params.getLength()));
+
+                    double progress = (double)params.getCompleteLength() / (double)params.getLength();
+                    progress = progress * 100f;
+                    progressLength.setProgress((int) progress);
+                }
+            });
+        }
+
+        @Override
+        public void onFinished(final ITask task) {
+            super.onFinished(task);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvCompleteLength.setText(getFileSize(task.getCompleteLength()));
+                    tvAllLength.setText(getFileSize(task.getLength()));
+
+                    double progress = (double)task.getCompleteLength() / (double)task.getLength();
+                    progress = progress * 100f;
+                    progressLength.setProgress((int) progress);
+                }
+            });
+            Debugger.error(TAG,"========onFinished============");
+        }
+
+        @Override
+        public void onSpeedChanged(long speed, final ITask params) {
+            super.onSpeedChanged(speed, params);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvCompleteLength.setText(getFileSize(params.getCompleteLength()));
+                    tvAllLength.setText(getFileSize(params.getLength()));
+
+                    double progress = (double)params.getCompleteLength() / (double)params.getLength();
+                    progress = progress * 100f;
+                    progressLength.setProgress((int) progress);
+                    tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
+                }
+            });
+            Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
+        }
+
+        @Override
+        public void onError(int code, ITask params) {
+            super.onError(code, params);
+            Debugger.error("SimpleUploadActivity","error " + code);
+        }
     }
 
     @OnClick(R.id.btn_stop)
