@@ -47,7 +47,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
     @Override
     protected boolean isSuccessful() {
-        return getTask().getLength() == getTask().getCompleteLength();
+        return getTask().getLength() == getTask().getCompleteLength() && getTask().getLength() != 0;
     }
 
     @Override
@@ -96,6 +96,9 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
         File file = new File(getTask().getDestSource());
         mFileSize = getNetSize(url); //从服务端获取文件大小
+        if(mFileSize == 0) {
+            return;
+        }
 
         if (file.length() == mFileSize && mFileSize != 0) {
             //if local exists and is completed,params contains cover-file -> true

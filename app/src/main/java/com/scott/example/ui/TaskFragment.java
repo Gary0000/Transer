@@ -1,4 +1,4 @@
-package com.scott.example;
+package com.scott.example.ui;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -14,6 +14,8 @@ import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.annotionprocessor.ThreadMode;
+import com.scott.example.BaseFragment;
+import com.scott.example.R;
 import com.scott.example.adapter.TaskListAdapter;
 import com.scott.transer.ITaskCmd;
 import com.scott.transer.TaskCmdBuilder;
@@ -28,7 +30,7 @@ import java.util.List;
  * <P>Email: shilec@126.com</p>
  */
 
-public class TaskFragment extends Fragment {
+public class TaskFragment extends BaseFragment {
 
     private List<ITask> mTasks = new ArrayList<>();
     private TaskListAdapter mTaskAdapter;

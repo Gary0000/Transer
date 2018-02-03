@@ -9,7 +9,9 @@ import com.scott.transer.utils.Debugger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Author:    shijiale</p>
@@ -321,6 +323,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         private ThreadPoolExecutor mThreadPool;
         private ITaskHandlerCallback mCallback;
         private ITask mTask;
+        private int mCoreThreadSize;
 
         public Builder() {
 
@@ -330,16 +333,30 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mTarget = target;
         }
 
-
+        /**
+         * http headers
+         * @param headers
+         * @return
+         */
         public B setHeaders(Map<String,String> headers) {
             mHeaders = headers;
             return (B)this;
         }
 
+        /***
+         * http params,
+         * 默认的上传 {@link DefaultHttpUploadHandler} method = post , mime-type 为 application/octet-stream,
+         * 所以只能将自定义的参数放到 header中
+         *
+         * 默认的下载  {@link DefaultHttpDownloadHandler}method = GET ，所以会将该参数放置到url 之后。
+         * @param params
+         * @return
+         */
         public B setParams(Map<String,String> params) {
             mParams = params;
             return (B)this;
         }
+
 
         public B addHeader(String k,String v) {
             if(mHeaders == null) {
@@ -357,18 +374,44 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             return (B)this;
         }
 
+        /***
+         * 设置任务，必须设置。 创建task {@link com.scott.transer.TaskBuilder}
+         * @param task
+         * @return
+         */
         public B setTask(ITask task) {
             mTask = task;
             return (B)this;
         }
 
+        /***
+         * 设置线程池，下载或上传将会在线程中执行 或者调用 defaultThreadPool(int coreSize)
+         * 设置默认的线程池，否则，上传/下载 将会在当前调用的线程内执行
+         * @param executor
+         * @return
+         */
         public B setThreadPool(ThreadPoolExecutor executor) {
             mThreadPool = executor;
             return (B)this;
         }
 
+        /**
+         * 回掉
+         * @param callback
+         * @return
+         */
         public B setCallback(ITaskHandlerCallback callback) {
             mCallback = callback;
+            return (B)this;
+        }
+
+        /**
+         * 设置默认的线程池，否则，上传/下载 将会在当前调用的线程内执行
+         * @param coreSize
+         * @return
+         */
+        public B defaultThreadPool(int coreSize) {
+            mCoreThreadSize = coreSize;
             return (B)this;
         }
 
@@ -381,11 +424,20 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 throw new IllegalStateException("buildTarget() not impl!");
             }
 
-            mTarget.setThreadPool(mThreadPool);
+            if(mTask == null) {
+                throw new IllegalArgumentException("task is null,you must call setTask to set task!");
+            }
+
             mTarget.setHandlerListenner(mCallback);
             mTarget.setTask(mTask);
             mTarget.setHeaders(mHeaders);
             mTarget.setParams(mParams);
+
+            if(mThreadPool == null && mCoreThreadSize > 0) {
+                mThreadPool = new ThreadPoolExecutor(mCoreThreadSize,mCoreThreadSize,
+                        6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
+            }
+            mTarget.setThreadPool(mThreadPool);
             return mTarget;
         }
 

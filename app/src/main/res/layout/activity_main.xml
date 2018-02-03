@@ -7,12 +7,12 @@
     android:layout_height="match_parent"
     android:padding="10dp"
     android:orientation="vertical"
-    tools:context="com.scott.example.MainActivity">
+    tools:context="com.scott.example.ui.MainActivity">
 
     <Button
         android:layout_marginTop="10dp"
         android:id="@+id/btn_simple_download"
-        android:text="Simple Download"
+        android:text="@string/simple_download"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -20,7 +20,7 @@
     <Button
         android:layout_marginTop="10dp"
         android:id="@+id/btn_simple_upload"
-        android:text="Simple Upload"
+        android:text="@string/simple_upload"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -28,7 +28,7 @@
     <Button
         android:layout_marginTop="10dp"
         android:id="@+id/btn_create_task"
-        android:text="Create Task"
+        android:text="@string/create_task"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -36,7 +36,7 @@
     <Button
         android:layout_marginTop="10dp"
         android:id="@+id/btn_upload_tasks"
-        android:text="UPLOAD TASKS"
+        android:text="@string/upload_tasks_list"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -44,7 +44,23 @@
     <Button
         android:layout_marginTop="10dp"
         android:id="@+id/btn_download_tasks"
-        android:text="DOWNLOAD TASKS"
+        android:text="@string/download_tasks_list"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/btn_file_list"
+        android:text="@string/server_file_list"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/btn_local_file_list"
+        android:text="@string/local_file_list"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

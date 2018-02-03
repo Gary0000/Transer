@@ -1,4 +1,4 @@
-package com.scott.example;
+package com.scott.example.ui;
 
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +12,8 @@ import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.annotionprocessor.ThreadMode;
+import com.scott.example.BaseActivity;
+import com.scott.example.R;
 import com.scott.example.utils.Contacts;
 import com.scott.transer.ITaskCmd;
 import com.scott.transer.TaskBuilder;
@@ -25,7 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
-public class CreateTaskActivity extends AppCompatActivity {
+public class CreateTaskActivity extends BaseActivity {
 
     @BindView(R.id.edit_source)
     EditText editPath;

@@ -1,5 +1,6 @@
 package com.scott.example.adapter;
 
+import android.support.annotation.LayoutRes;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +34,7 @@ public abstract class BaseQuckListAdapter<T,VH extends BaseListHolder> extends B
     }
 
 
-    public void addItemView(int type,int layout) {
+    public void addItemView(int type,@LayoutRes int layout) {
         if(layouts == null) {
             layouts = new SparseArray<>();
         }

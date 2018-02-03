@@ -178,7 +178,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     protected class PiceRequestBody extends RequestBody {
 
         private ByteArrayInputStream mSource; //当前需要传输的一片
-        private volatile int mCurrentCompleteLength; //当前已经完成的长度，写入多少增加多少
+        private int mCurrentCompleteLength; //当前已经完成的长度，写入多少增加多少
 
         PiceRequestBody(byte[] datas) {
             mSource = new ByteArrayInputStream(datas,0,getPiceRealSize());

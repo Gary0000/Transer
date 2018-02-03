@@ -1,19 +1,19 @@
-package com.scott.example;
+package com.scott.example.ui;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.example.BaseActivity;
+import com.scott.example.R;
 import com.scott.transer.ITaskCmd;
 import com.scott.transer.TaskCmdBuilder;
-import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SimpleTaskListActivity extends AppCompatActivity {
+public class SimpleTaskListActivity extends BaseActivity {
 
     private TaskType taskType;
 

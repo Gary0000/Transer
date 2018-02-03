@@ -1,27 +1,22 @@
-package com.scott.example;
+package com.scott.example.ui;
 
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.example.BaseActivity;
+import com.scott.example.R;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.SimpleTaskHandlerListenner;
 import com.scott.transer.TaskBuilder;
-import com.scott.transer.handler.BaseTaskHandler;
-import com.scott.transer.handler.DefaultHttpDownloadHandler;
 import com.scott.transer.handler.DefaultHttpUploadHandler;
 import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +25,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SimpleDownloadActivity extends AppCompatActivity {
+import static com.scott.example.utils.TaskUtils.getFileSize;
+
+public class SimpleUploadActivity extends BaseActivity {
 
     @BindView(R.id.tv_name)
     TextView tvName;
@@ -43,12 +40,6 @@ public class SimpleDownloadActivity extends AppCompatActivity {
 
     @BindView(R.id.progress_length)
     ProgressBar progressLength;
-
-    @BindView(R.id.btn_start)
-    Button btnStart;
-
-    @BindView(R.id.btn_stop)
-    Button btnStop;
 
     @BindView(R.id.tv_md5)
     TextView tvMd5;
@@ -63,11 +54,11 @@ public class SimpleDownloadActivity extends AppCompatActivity {
     TextView tvSpeed;
 
     private ITaskHandler mHandler;
+    private ITask task;
 
-    final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager";
+    final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
     final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
-    final String FILE_MD5 = "de37fe1c8f049bdd83090d40f806cd67";
-    final String TAG = SimpleDownloadActivity.class.getSimpleName();
+    final String TAG = SimpleUploadActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,27 +66,82 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_only_download);
 
         ButterKnife.bind(this);
-        tvMd5.setText(FILE_MD5);
 
-        //创建一个任务
-        ITask task = new TaskBuilder()
-                .setName("test.zip") //设置任务名称
-                .setDataSource(URL)  //设置数据源
-                .setDestSource(FILE_PATH) //设置目标路径
+        task = new TaskBuilder()
+                .setName("test.zip")
+                .setTaskId("1233444")
+                .setSessionId("123123123131")
+                .setDataSource(FILE_PATH)
+                .setDestSource(URL)
                 .build();
 
-//        //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
                 6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
 
-        mHandler = new DefaultHttpDownloadHandler.Builder()
+        mHandler = new DefaultHttpUploadHandler.Builder()
                 .setTask(task)
                 .addParam("path","test.zip")
-                .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
-                .setCallback(new DownloadListener())
+                .setCallback(new UploadListenner())
                 .setThreadPool(threadPool)
-                .setEnableCoverFile(true)
                 .build();
+    }
+
+    private final class UploadListenner extends SimpleTaskHandlerListenner {
+        @Override
+        public void onPiceSuccessful(final ITask params) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvCompleteLength.setText(getFileSize(params.getCompleteLength()));
+                    tvAllLength.setText(getFileSize(params.getLength()));
+
+                    double progress = (double)params.getCompleteLength() / (double)params.getLength();
+                    progress = progress * 100f;
+                    progressLength.setProgress((int) progress);
+                }
+            });
+        }
+
+        @Override
+        public void onFinished(final ITask task) {
+            super.onFinished(task);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvCompleteLength.setText(getFileSize(task.getCompleteLength()));
+                    tvAllLength.setText(getFileSize(task.getLength()));
+
+                    double progress = (double)task.getCompleteLength() / (double)task.getLength();
+                    progress = progress * 100f;
+                    progressLength.setProgress((int) progress);
+                }
+            });
+            Debugger.error(TAG,"========onFinished============");
+        }
+
+        @Override
+        public void onSpeedChanged(long speed, final ITask params) {
+            super.onSpeedChanged(speed, params);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvCompleteLength.setText(getFileSize(params.getCompleteLength()));
+                    tvAllLength.setText(getFileSize(params.getLength()));
+
+                    double progress = (double)params.getCompleteLength() / (double)params.getLength();
+                    progress = progress * 100f;
+                    progressLength.setProgress((int) progress);
+                    tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
+                }
+            });
+            Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
+        }
+
+        @Override
+        public void onError(int code, ITask params) {
+            super.onError(code, params);
+            Debugger.error("SimpleUploadActivity","error " + code);
+        }
     }
 
     @OnClick(R.id.btn_stop)
@@ -103,67 +149,9 @@ public class SimpleDownloadActivity extends AppCompatActivity {
         mHandler.stop();
     }
 
+
     @OnClick(R.id.btn_start)
     public void start() {
         mHandler.start();
-    }
-
-    private final class DownloadListener extends SimpleTaskHandlerListenner {
-
-        @Override
-        public void onPiceSuccessful(final ITask params) {
-
-            //Debugger.error(TAG,"finished === " + params);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tvCompleteLength.setText(TaskUtils.getFileSize(params.getCompleteLength()));
-                    tvAllLength.setText(TaskUtils.getFileSize(params.getLength()));
-
-                    double progress = (double)params.getCompleteLength() / (double)params.getLength();
-                    progress = progress * 100f;
-                    progressLength.setProgress((int) progress);
-                    tvName.setText(params.getName());
-                }
-            });
-        }
-
-        @Override
-        public void onError(int code, ITask params) {
-            super.onError(code, params);
-            Debugger.error(TAG,"error === " + params);
-        }
-
-        @Override
-        public void onFinished(final ITask task) {
-            Debugger.error(TAG,"finished === " + task);
-            super.onFinished(task);
-            final String newMd5 = TaskUtils.getFileMD5(new File(FILE_PATH));
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tvCompleteLength.setText(TaskUtils.getFileSize(task.getCompleteLength()));
-                    tvAllLength.setText(TaskUtils.getFileSize(task.getLength()));
-
-                    double progress = (double)task.getCompleteLength() / (double)task.getLength();
-                    progress = progress * 100f;
-                    progressLength.setProgress((int) progress);
-                    tvNewMd5.setText(newMd5);
-                    tvEquals.setText(TextUtils.equals(newMd5,FILE_MD5) + "");
-                }
-            });
-        }
-
-        @Override
-        public void onSpeedChanged(long speed, final ITask params) {
-            super.onSpeedChanged(speed, params);
-            Debugger.error("OnlyDownloadActivity","speed = " + TaskUtils.getFileSize(speed) + "/s");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tvSpeed.setText(TaskUtils.getFileSize(params.getSpeed()));
-                }
-            });
-        }
     }
 }

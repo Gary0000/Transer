@@ -1,17 +1,18 @@
-package com.scott.example;
+package com.scott.example.ui;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.scott.annotionprocessor.TaskType;
+import com.scott.example.BaseActivity;
+import com.scott.example.R;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
                 .permission(Permission.STORAGE)
                 .callback(this)
                 .start();
+        setTitle("Transer");
     }
 
     @OnClick(R.id.btn_simple_download)
@@ -49,6 +51,18 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.btn_file_list)
+    public void showServerFileList() {
+        Intent intent = new Intent(this,FileListActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.btn_local_file_list)
+    public void showLocalFileList() {
+        Intent intent = new Intent(this,FileListActivity.class);
+        intent.putExtra(FileListActivity.EXTRA_IS_LOCAL,true);
+        startActivity(intent);
+    }
     @OnClick(R.id.btn_create_task)
     public void createTask() {
         startActivity(new Intent(this,CreateTaskActivity.class));

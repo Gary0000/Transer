@@ -3,6 +3,7 @@ package com.scott.example.app;
 import android.app.Application;
 import android.content.Intent;
 
+import com.scott.transer.TranserConfig;
 import com.scott.transer.TranserService;
 
 /**
@@ -14,6 +15,9 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        startService(new Intent(this,TranserService.class));
+
+        TranserConfig config = new TranserConfig.Builder()
+                .build();
+        TranserService.init(this,config);
     }
 }

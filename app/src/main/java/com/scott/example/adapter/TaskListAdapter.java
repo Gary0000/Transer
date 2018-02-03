@@ -116,7 +116,7 @@ public class TaskListAdapter extends BaseAdapter {
 
         }
 
-        Debugger.error("TaskListAdapter","==== + state = " + task.getState());
+        Debugger.error("TaskListAdapter","==== + state = " + task.getState() + ",lenth = " + task.getCompleteLength());
         return view;
     }
 

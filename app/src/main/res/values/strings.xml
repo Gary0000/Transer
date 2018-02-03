@@ -3,4 +3,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="simple_download">简单下载</string>
+    <string name="simple_upload">简单上传</string>
+    <string name="create_task">创建任务</string>
+    <string name="upload_tasks_list">上传任务列表</string>
+    <string name="download_tasks_list">下载任务列表</string>
+    <string name="server_file_list">服务器文件列表</string>
+    <string name="local_file_list">本地文件列表</string>
 </resources>

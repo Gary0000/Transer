@@ -1,5 +1,6 @@
 package com.scott.transer;
 
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskProcessCallback;
 import com.scott.annotionprocessor.ProcessType;
+import com.scott.transer.manager.ITaskProcessor;
 import com.scott.transer.manager.TaskProcessorProxy;
 import com.scott.transer.manager.TaskDbProcessor;
 import com.scott.transer.manager.TaskManager;
@@ -41,7 +43,26 @@ public class TranserService extends Service implements ITaskProcessCallback{
 
     static Context mContext;
 
-    public static Context getContext() {
+    private static TranserConfig mConfig;
+
+    public static synchronized void init(Context context,TranserConfig config) {
+        if(mConfig != null) {
+            throw new IllegalStateException("Transer is already inited!");
+        }
+
+        if(!(context instanceof Application)) {
+            throw new IllegalStateException("Context must be a application context!");
+        }
+
+        if(config == null) {
+            throw new IllegalStateException("TranserConfig can not be a null value.");
+        }
+
+        mConfig = config;
+        context.startService(new Intent(context,TranserService.class));
+    }
+
+    static Context getContext() {
         return mContext;
     }
 
@@ -53,6 +74,9 @@ public class TranserService extends Service implements ITaskProcessCallback{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent == null) {
+            return Service.START_STICKY;
+        }
         String action = intent.getAction();
         if(action == null) {
             return Service.START_STICKY;
@@ -77,18 +101,70 @@ public class TranserService extends Service implements ITaskProcessCallback{
 
         mTaskManagerProxy = new TaskManagerProxy();
         mTaskManagerProxy.setProcessCallback(this);
-        mTaskManagerProxy.setTaskProcessor(new TaskProcessorProxy(new TaskProcessor(),new TaskDbProcessor()));
-        mTaskManagerProxy.setManager(new TaskManager());
-        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_DOWNLOAD, new DefaultDownloadFactory());
-        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_UPLOAD, new DefaultUploadFactory());
 
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
-                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_UPLOAD, threadPool);
+        //内存中的任务列表处理器
+        ITaskProcessor memoryProcessor;
+        if(mConfig.mBuilder.mMemoryProcessor != null) {
+            memoryProcessor = mConfig.mBuilder.mMemoryProcessor;
+        } else {
+            memoryProcessor = new TaskProcessor();
+        }
 
-        threadPool = new ThreadPoolExecutor(3,3,
-                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,threadPool);
+        //任务持久化处理器
+        ITaskProcessor databaseProcessor;
+        if(mConfig.mBuilder.mDatabaseProcessor != null) {
+            databaseProcessor = mConfig.mBuilder.mDatabaseProcessor;
+        } else {
+            databaseProcessor = new TaskDbProcessor();
+        }
+        //设置一个代理处理器
+        mTaskManagerProxy.setTaskProcessor(new TaskProcessorProxy(memoryProcessor,databaseProcessor));
+
+        //设置manager
+        if(mConfig.mBuilder.mTaskManager != null) {
+            mTaskManagerProxy.setManager(mConfig.mBuilder.mTaskManager);
+        } else {
+            mTaskManagerProxy.setManager(new TaskManager());
+        }
+
+        //设置handler的工厂类
+        if(mConfig.mBuilder.mHanlderCreators.isEmpty()) {
+            mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_DOWNLOAD, new DefaultDownloadFactory());
+            mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_UPLOAD, new DefaultUploadFactory());
+        } else {
+            for(TaskType taskType : mConfig.mBuilder.mHanlderCreators.keySet()) {
+                mTaskManagerProxy.addHandlerCreator(taskType,mConfig.mBuilder.mHanlderCreators.get(taskType));
+            }
+        }
+
+        //设置下载线程池
+        ThreadPoolExecutor downloadThreadPool;
+        if(mConfig.mBuilder.mDownloadThreadPool == null) {
+            //并发数
+            int corePoolSize = 3;
+            if(mConfig.mBuilder.mDownloadConcurrentSize > 0) {
+                corePoolSize = mConfig.mBuilder.mDownloadConcurrentSize;
+            }
+            downloadThreadPool = new ThreadPoolExecutor(corePoolSize, corePoolSize,
+                    6000, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(10000));
+        } else {
+            downloadThreadPool = mConfig.mBuilder.mDownloadThreadPool;
+        }
+        mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_DOWNLOAD, downloadThreadPool);
+
+        //设置上传线程池
+        ThreadPoolExecutor uploadThreadPool;
+        if(mConfig.mBuilder.mUploadThreadPool == null) {
+            int corePoolSize = 3;
+            if(mConfig.mBuilder.mUploadConcurrentThreadSize > 0) {
+                corePoolSize = mConfig.mBuilder.mUploadConcurrentThreadSize;
+            }
+            uploadThreadPool = new ThreadPoolExecutor(corePoolSize,corePoolSize,
+                    6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
+        } else {
+            uploadThreadPool = mConfig.mBuilder.mUploadThreadPool;
+        }
+        mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,uploadThreadPool);
     }
 
     @Override
