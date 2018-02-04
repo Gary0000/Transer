@@ -29,7 +29,8 @@
         <activity android:name=".ui.CreateTaskActivity" />
         <activity android:name=".ui.SimpleTaskListActivity" />
         <activity android:name=".BaseActivity" />
-        <activity android:name=".ui.FileListActivity"></activity>
+        <activity android:name=".ui.FileListActivity" />
+        <activity android:name=".ui.SimpleTaskEventBusActivity"></activity>
     </application>
 
 </manifest>

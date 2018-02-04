@@ -24,6 +24,11 @@ public class SimpleTaskListActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         taskType = (TaskType) getIntent().getSerializableExtra(TaskFragment.EXTRA_TASK_TYPE);
+        if(taskType == TaskType.TYPE_HTTP_UPLOAD) {
+            setTitle(R.string.upload_tasks_list);
+        } else {
+            setTitle(R.string.download_tasks_list);
+        }
 
         TaskFragment taskFragment = new TaskFragment();
         Bundle bundle = new Bundle();

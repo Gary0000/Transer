@@ -1,13 +1,16 @@
 package com.scott.example.ui;
 
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
@@ -16,13 +19,15 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.BaseFragment;
 import com.scott.example.R;
-import com.scott.example.adapter.TaskListAdapter;
+import com.scott.example.adapter.TaskListRecyclerAdapter;
 import com.scott.transer.ITaskCmd;
 import com.scott.transer.TaskCmdBuilder;
 import com.scott.transer.event.TaskEventBus;
+import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * <P>Author: shijiale</P>
@@ -30,14 +35,17 @@ import java.util.List;
  * <P>Email: shilec@126.com</p>
  */
 
-public class TaskFragment extends BaseFragment {
+public class TaskFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
 
     private List<ITask> mTasks = new ArrayList<>();
-    private TaskListAdapter mTaskAdapter;
-    private ListView mListView;
+    //private TaskListAdapter mTaskAdapter;
+    //private ListView mListView;
+    private TaskListRecyclerAdapter mAdapter;
+    private RecyclerView mListView;
     private final String TAG = TaskFragment.class.getSimpleName();
     private TaskType mTaskType;
     public static final String EXTRA_TASK_TYPE = "task_type";
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public void onStart() {
@@ -50,9 +58,17 @@ public class TaskFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_task_list, container, false);
+
+        mSwipeRefreshLayout = root.findViewById(R.id.swipeLayout);
+        mSwipeRefreshLayout.setColorSchemeColors(Color.rgb(47, 223, 189));
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
         mListView = root.findViewById(R.id.rcy_tasks);
-        mTaskAdapter = new TaskListAdapter(mTasks);
-        mListView.setAdapter(mTaskAdapter);
+        mListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        //mTaskAdapter = new TaskListAdapter(mTasks);
+        mAdapter = new TaskListRecyclerAdapter(R.layout.item_task_item,mTasks);
+        mListView.setAdapter(mAdapter);
         return root;
     }
 
@@ -90,14 +106,24 @@ public class TaskFragment extends BaseFragment {
 
     private void onTasksChange(final List<ITask> tasks) {
 
+        mSwipeRefreshLayout.setRefreshing(false);
         //为了保持任务管理的一致。不能将ITask 转为 Task
         //只是用ITask 去获取任务信息，显示到UI
         if (tasks == null) {
             return;
         }
-        Log.e(TAG,"thread ==== " + Thread.currentThread().getName());
+        Debugger.error(TAG,"thread ==== " + Thread.currentThread().getName());
         mTasks.clear();
         mTasks.addAll(tasks);
-        mTaskAdapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRefresh() {
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setTaskType(mTaskType)
+                .setProcessType(ProcessType.TYPE_QUERY_TASKS_ALL)
+                .build();
+        TaskEventBus.getDefault().execute(cmd);
     }
 }

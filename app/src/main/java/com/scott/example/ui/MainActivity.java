@@ -63,6 +63,13 @@ public class MainActivity extends BaseActivity {
         intent.putExtra(FileListActivity.EXTRA_IS_LOCAL,true);
         startActivity(intent);
     }
+
+    @OnClick(R.id.btn_event_bus)
+    public void showEventBusDemo() {
+        Intent intent = new Intent(this,SimpleTaskEventBusActivity.class);
+        startActivity(intent);
+    }
+
     @OnClick(R.id.btn_create_task)
     public void createTask() {
         startActivity(new Intent(this,CreateTaskActivity.class));

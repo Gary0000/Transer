@@ -87,6 +87,7 @@ public class SimpleDownloadActivity extends BaseActivity {
                 .defaultThreadPool(3)
                 .setEnableCoverFile(true)
                 .build();
+        setTitle(getString(R.string.simple_download));
     }
 
     @OnClick(R.id.btn_stop)

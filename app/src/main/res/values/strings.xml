@@ -10,4 +10,7 @@
     <string name="download_tasks_list">下载任务列表</string>
     <string name="server_file_list">服务器文件列表</string>
     <string name="local_file_list">本地文件列表</string>
+    <string name="task_failed">任务失败</string>
+    <string name="task_wait">正在等待...</string>
+    <string name="task_event_bus">任务事件管理器使用</string>
 </resources>

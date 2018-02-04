@@ -75,15 +75,13 @@ public class SimpleUploadActivity extends BaseActivity {
                 .setDestSource(URL)
                 .build();
 
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
-                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-
         mHandler = new DefaultHttpUploadHandler.Builder()
                 .setTask(task)
                 .addParam("path","test.zip")
                 .setCallback(new UploadListenner())
-                .setThreadPool(threadPool)
+                .defaultThreadPool(3)
                 .build();
+        setTitle(getString(R.string.simple_upload));
     }
 
     private final class UploadListenner extends SimpleTaskHandlerListenner {

@@ -54,6 +54,9 @@ public class TaskEventBus {
     }
 
     public static TaskEventBus getDefault() {
+        if(sInstance == null) {
+            throw new IllegalStateException("you must init TaskEventBus in your application!");
+        }
         return sInstance;
     }
 

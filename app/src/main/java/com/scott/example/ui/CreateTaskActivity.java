@@ -63,6 +63,7 @@ public class CreateTaskActivity extends BaseActivity {
                 editUrl.setText(UPLOAD_URL);
                 break;
         }
+        setTitle(getString(R.string.create_task));
     }
 
     @Override

@@ -1,13 +1,18 @@
 package com.scott.transer.handler;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.annotionprocessor.ITaskEventDispatcher;
+import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.Task;
 import com.scott.transer.TaskErrorCode;
 import com.scott.transer.TaskState;
+import com.scott.transer.event.EventDispatcher;
 import com.scott.transer.utils.Debugger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -315,7 +320,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
     }
 
-    protected abstract static class Builder<B extends Builder,T extends ITaskHandler> {
+    protected  abstract static class Builder<B extends Builder,T extends ITaskHandler> {
 
         private T mTarget;
         private Map<String,String> mHeaders;
@@ -324,6 +329,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         private ITaskHandlerCallback mCallback;
         private ITask mTask;
         private int mCoreThreadSize;
+        private ITaskEventDispatcher mDispatcher;
 
         public Builder() {
 
@@ -331,6 +337,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
         public Builder(T target) {
             mTarget = target;
+        }
+
+        public B setEventDispatcher(ITaskEventDispatcher dispatcher) {
+            mDispatcher = dispatcher;
+            return (B)this;
         }
 
         /**
@@ -428,6 +439,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 throw new IllegalArgumentException("task is null,you must call setTask to set task!");
             }
 
+            if(mCallback == null && mDispatcher != null) {
+                mCallback = new EventDispacherAdapter(mDispatcher);
+            }
             mTarget.setHandlerListenner(mCallback);
             mTarget.setTask(mTask);
             mTarget.setHeaders(mHeaders);
@@ -442,5 +456,54 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
 
         protected abstract T buildTarget();
+
+        private final static class EventDispacherAdapter implements ITaskHandlerCallback {
+            private ITaskEventDispatcher mDispacher;
+
+            EventDispacherAdapter(ITaskEventDispatcher dispatcher) {
+                mDispacher = dispatcher;
+            }
+
+            private void adaptDispatcher(ITask task) {
+                List<ITask> taskList = new ArrayList<>();
+                taskList.add(task);
+                mDispacher.dispatchTasks(task.getType(),ProcessType.TYPE_DEFAULT,taskList);
+            }
+
+            @Override
+            public void onReady(ITask task) {
+                adaptDispatcher(task);
+            }
+
+            @Override
+            public void onStart(ITask task) {
+                adaptDispatcher(task);
+            }
+
+            @Override
+            public void onStop(ITask task) {
+                adaptDispatcher(task);
+            }
+
+            @Override
+            public void onError(int code, ITask task) {
+                adaptDispatcher(task);
+            }
+
+            @Override
+            public void onSpeedChanged(long speed, ITask task) {
+                adaptDispatcher(task);
+            }
+
+            @Override
+            public void onPiceSuccessful(ITask task) {
+                adaptDispatcher(task);
+            }
+
+            @Override
+            public void onFinished(ITask task) {
+                adaptDispatcher(task);
+            }
+        }
     }
  }

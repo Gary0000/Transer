@@ -30,6 +30,7 @@ import butterknife.ButterKnife;
  * <P>Email: shilec@126.com</p>
  */
 
+@Deprecated
 public class TaskListAdapter extends BaseAdapter {
 
     private List<ITask> mTasks;

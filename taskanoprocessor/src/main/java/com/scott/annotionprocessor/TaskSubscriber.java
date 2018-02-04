@@ -16,9 +16,21 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface TaskSubscriber {
 
+    /**
+     * 操作类型
+     * @return
+     */
     ProcessType[] processType() default ProcessType.TYPE_DEFAULT;
 
+    /**
+     * 任务类型
+     * @return
+     */
     TaskType taskType() default TaskType.TYPE_HTTP_UPLOAD;
 
+    /**
+     * 事件接收的线程
+     * @return
+     */
     ThreadMode threadMode() default ThreadMode.MODE_POSTING;
 }
