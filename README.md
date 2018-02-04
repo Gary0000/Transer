@@ -20,7 +20,7 @@
                 .setDestSource(FILE_PATH) //设置目标路径
                 .build();
 
-        mHandler = new DefaultHttpDownloadHandler.Builder()
+        ITaskHandler mHandler = new DefaultHttpDownloadHandler.Builder()
                 .setTask(task)
                 .addParam("path","test.zip")
                 .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
@@ -45,7 +45,7 @@
                 .setDestSource(URL)
                 .build();
 
-        mHandler = new DefaultHttpUploadHandler.Builder()
+   ITaskHandler mHandler = new DefaultHttpUploadHandler.Builder()
                 .setTask(task)
                 .addParam("path","test.zip")
                 .setCallback(new UploadListenner())
@@ -68,7 +68,7 @@ task = new TaskBuilder()
                 .setDestSource(URL)
                 .build();
 
-        mHandler = new DefaultHttpUploadHandler.Builder()
+ ITaskHandler mHandler = new DefaultHttpUploadHandler.Builder()
                 .setTask(task)
                 .addParam("path","test.zip")
                 //.setCallback(new UploadListenner())
