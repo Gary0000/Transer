@@ -13,29 +13,21 @@
 
 下载:
 ```` java 
-   mHandler = new DefaultHttpDownloadHandler();
-        //创建一个任务
+   //创建一个任务
         ITask task = new TaskBuilder()
                 .setName("test.zip") //设置任务名称
                 .setDataSource(URL)  //设置数据源
                 .setDestSource(FILE_PATH) //设置目标路径
-                .setCompleteLength() //设置了该属性，任务将会从该位置开始执行在简单模式下，如果需要支持续传，需要自己保存该值
-                .build();
-        mHandler.setTask(task);
+                .build();
 
-        //设置请求参数
-        Map<String,String> params = new HashMap<>();
-        params.put("path","test.zip");
-        mHandler.setParams(params);
-        mHandler.setHandlerListenner(new SimpleTaskHandlerListenner());
-
-        //设置一个线程池去下载文件，如果不设置，则会在当前线程进行下载。
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
-                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mHandler.setThreadPool(threadPool);
-        
-        //DefaultHttpDownloader 新增 enableCoverFile() 和 setlimitSpeed() 方法
-        //用于限制下载速度和是否覆盖原有文件
+        mHandler = new DefaultHttpDownloadHandler.Builder()
+                .setTask(task)
+                .addParam("path","test.zip")
+                .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
+                .setCallback(new DownloadListener())
+                .defaultThreadPool(3)
+                .setEnableCoverFile(true)
+                .build();
        
         //开始任务
         mHandler.start();
@@ -45,35 +37,104 @@
 ````
 上传:
 ```` java 
-   mHandler = new DefaultHttpUploadHandler();
-        //创建一个任务
-        ITask task = new TaskBuilder()
-                .setName("test.zip") //设置任务名称
-                .setDataSource(FILE_PATH)  //设置数据源
-                .setDestSource(URL) //设置目标路径
+   task = new TaskBuilder()
+                .setName("test.zip")
+                .setTaskId("1233444")
+                .setSessionId("123123123131")
+                .setDataSource(FILE_PATH)
+                .setDestSource(URL)
                 .build();
-        mHandler.setTask(task);
 
-        //设置请求参数
-        Map<String,String> params = new HashMap<>();
-        params.put("path","test.zip");
-        mHandler.setParams(params);
-        mHandler.setHandlerListenner(new SimpleTaskHandlerListenner());
+        mHandler = new DefaultHttpUploadHandler.Builder()
+                .setTask(task)
+                .addParam("path","test.zip")
+                .setCallback(new UploadListenner())
+                .defaultThreadPool(3)
+                .build();
+````
 
-        //设置一个线程池去上传文件，如果不设置，则会在当前线程进行上传。
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
-                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mHandler.setThreadPool(threadPool);
-        
-        //启动任务
-        mHandler.start();
-        
-        //暂停/停止 任务
-        mHandler.stop();
+## 自定义ITaskHandler
+- 默认的handler将不会验证服务端的返回值，继承DefaultDownloadHandler 或 DefaultUploadHandler 适配服务端返回值的验证
+````java
+public class MyUploadHandler extends DefaultHttpUploadHandler {
+
+    @Override
+    public boolean isPiceSuccessful() {
+        try{
+            String response = getNowResponse();
+            JSONObject jObj = new JSONObject(response);
+            int code = jObj.optInt("code");
+            if(code == 1 || isSuccessful()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isSuccessful() {
+        try {
+            String response = getNowResponse();
+            JSONObject jsonObject = new JSONObject(response);
+            int code = jsonObject.optInt("code");
+            if(code == 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+}
+
+mHandler = new MyUploadHandler.Builder()
+                .setTask(task)
+                .addParam("path","test.zip")
+                .setCallback(new UploadListenner())
+                .defaultThreadPool(3)
+                .build();
+````
+### 自定义Handler 的Builder,用于增加自定义的参数或配置
+````java
+public static class Builder extends BaseTaskHandler.Builder<Builder,MyUploadHandler> {
+
+        private boolean isEnableCoverfile;
+        private long mSpeedLimited;
+
+        public Builder setSpeedLimited(long limited) {
+            mSpeedLimited = limited;
+            return this;
+        }
+
+        public Builder setEnableCoverFile(boolean enable){
+            isEnableCoverfile = enable;
+            return this;
+        }
+
+        @Override
+        protected MyUploadHandler buildTarget() {
+            MyUploadHandler handler = new MyUploadHandler();
+            handler.isCoverOldFile = isEnableCoverfile;
+            handler.mLimitSpeed = mSpeedLimited;
+            return handler;
+        }
+    }
 ````
 
 ## 使用任务管理:
-1.创建任务
+1.配置传输服务
+- 在Application 的 onCreate 中
+````java
+ TranserConfig config = new TranserConfig.Builder()
+                .setDownloadConcurrentThreadSize(3)
+                .setUploadConcurrentThreadSize(3)
+                .build();
+        TranserService.init(this,config);
+````
+
+2.添加单个任务
 
 ```` java
 ITask task = new TaskBuilder()
@@ -91,7 +152,7 @@ ITask task = new TaskBuilder()
 
         TaskEventBus.getDefault().execute(cmd); //执行命令
 ````
-2.开始任务
+3.开始任务
 
 ```` java
         ITaskCmd cmd = new TaskCmdBuilder()
@@ -102,7 +163,7 @@ ITask task = new TaskBuilder()
 
         TaskEventBus.getDefault().execute(cmd); //执行命令
 ````
-3.结束/暂停 任务
+4.结束/暂停 任务
 ```` java
         ITaskCmd cmd = new TaskCmdBuilder()
                 .setTaskType(task_type) //任务类型
@@ -112,8 +173,7 @@ ITask task = new TaskBuilder()
 
         TaskEventBus.getDefault().execute(cmd); //执行命令
 ````
-4.其他命令
-详见ProcessType 中支持的 type 类型
+- 其他命令,详见ProcessType 中支持的 type 类型
 
 
 5.接收任务变更通知
@@ -153,33 +213,6 @@ public void onTasksChanged(List<ITask> tasks) {
        //TODO update ui in main thread
 }
 ````
-## 配置传输服务(TranferService的onCreate 中)
-
-```` java
-        TaskEventBus.init(getApplicationContext()); //初始化消息管理器
-        DaoHelper.init(getApplicationContext());    //初始化数据库
-        mContext = getApplicationContext();
-
-        mTaskManagerProxy = new TaskManagerProxy();  
-        mTaskManagerProxy.setProcessCallback(this);
-        //Taskprocessor 为在内存中处理任务，TaskdDbProcessor 为数据库操作， 可以 实现ITaskProcessor 替换默认处理器
-        mTaskManagerProxy.setTaskProcessor(new TaskProcessorProxy(new TaskProcessor(),new TaskDbProcessor())); 
-        
-        mTaskManagerProxy.setTaskManager(new TaskManager()); 
-        //可以继承BaseTaskHandler 实现新的传输处理器
-        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_DOWNLOAD, new DefaultDownloadFactory());
-        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_UPLOAD, new DefaultUploadFactory());
-
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3,3,
-                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mTaskManagerProxy.setThreadPool(TaskType.TYPE_HTTP_UPLOAD, threadPool);//设置上传线程池
-
-        threadPool = new ThreadPoolExecutor(3,3,
-                6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
-        mTaskManagerProxy.setThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,threadPool); //下载线程池
-
-````
-
 更新日志:
 - 2017/1/2 添加下载限速，设置分片大小
 - 2017/1/21 简化传输器配置，修复部分bug
