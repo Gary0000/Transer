@@ -22,6 +22,7 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.DefaultDownloadFactory;
 import com.scott.transer.handler.DefaultUploadFactory;
+import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxy;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -163,6 +164,11 @@ public class TranserService extends Service implements ITaskProcessCallback{
                     6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
         } else {
             uploadThreadPool = mConfig.mBuilder.mUploadThreadPool;
+        }
+
+        if(mConfig.mBuilder.isSupportProcessorDynamicProxy) {
+            ITaskProcessor processor = ProcessorDynamicProxy.getInstance().create();
+            processor.setTaskManager(mTaskManagerProxy);
         }
         mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,uploadThreadPool);
     }

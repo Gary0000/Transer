@@ -152,9 +152,9 @@ public class TaskProcessorProxy implements ITaskProcessor {
     }
 
     @Override
-    public void startAll() {
-        mProcessor.startAll();
-        mDbProcessor.stopAll();
+    public void startAll(TaskType taskType) {
+        mProcessor.startAll(taskType);
+        mDbProcessor.stopAll(taskType);
     }
 
     @Override
@@ -170,8 +170,8 @@ public class TaskProcessorProxy implements ITaskProcessor {
     }
 
     @Override
-    public void stopAll() {
-        mProcessor.stopAll();
-        mDbProcessor.stopAll();
+    public void stopAll(TaskType taskType) {
+        mProcessor.stopAll(taskType);
+        mDbProcessor.stopAll(taskType);
     }
 }

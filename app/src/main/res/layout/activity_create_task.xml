@@ -50,13 +50,13 @@
         android:layout_height="wrap_content">
         <RadioButton
             android:id="@+id/rb_upload"
-            android:text="UPLOAD"
+            android:text="@string/upload"
             android:layout_marginRight="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <RadioButton
             android:id="@+id/rb_download"
-            android:text="DOWNLOAD"
+            android:text="@string/download"
             android:layout_marginRight="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -64,8 +64,15 @@
     <Button
         android:layout_marginTop="20dp"
         android:layout_below="@id/rg_type"
-        android:text="CREATE"
+        android:text="@string/task_eventbus_create"
         android:id="@+id/btn_create_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/btn_create_task"
+        android:text="@string/dynamic_proxy_create"
+        android:id="@+id/btn_create_task_proxy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </RelativeLayout>

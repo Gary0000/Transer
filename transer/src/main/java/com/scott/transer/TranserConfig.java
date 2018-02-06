@@ -44,6 +44,13 @@ public class TranserConfig {
 
         Map<TaskType,ITaskHandlerFactory> mHanlderCreators = new HashMap<>();
 
+        boolean isSupportProcessorDynamicProxy;
+
+        public Builder setSupportProcessorDynamicProxy(boolean isSupport) {
+            isSupportProcessorDynamicProxy = isSupport;
+            return this;
+        }
+
         /***
          * 设置一个任务处理器，任务的 增删改查
          * @param processor
