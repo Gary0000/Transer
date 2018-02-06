@@ -1,7 +1,6 @@
 package com.scott.example.ui;
 
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -19,8 +18,7 @@ import com.scott.transer.ITaskCmd;
 import com.scott.transer.TaskBuilder;
 import com.scott.transer.TaskCmdBuilder;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.manager.ITaskProcessor;
-import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxy;
+import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
 
 import java.io.File;
 
@@ -122,7 +120,7 @@ public class CreateTaskActivity extends BaseActivity {
     @OnClick(R.id.btn_create_task_proxy)
     public void createTaskByDynamicProxy() {
         ITask task = createTask();
-        ProcessorDynamicProxy
+        ProcessorDynamicProxyFactory
                 .getInstance()
                 .create()
                 .addTask(task);

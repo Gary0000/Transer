@@ -22,6 +22,7 @@ import java.util.List;
 
 public class ProcessorInvotionHandler implements InvocationHandler {
 
+    //从内部获得 TaskManager ,直接调用 TaskManager 的 process 方法，分发命令
     private ITaskManager mManager;
 
     @Override
