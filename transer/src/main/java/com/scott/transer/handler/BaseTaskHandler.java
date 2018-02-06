@@ -297,6 +297,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 Debugger.error(TAG," ===== START RUN =======");
                 handle(mTask);
             } catch (Exception e) {
+                Debugger.error(TAG,e.getMessage());
                 e.printStackTrace();
                 if(mTask.getState() != TaskState.STATE_STOP) {
                     mTask.setState(TaskState.STATE_ERROR);

@@ -165,9 +165,9 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
                 .head()
                 .build();
         OkHttpClient client = OkHttpProxy.getClient();
-        Call call = client.newCall(request);
+        mCurrentCall = client.newCall(request);
 
-        Response response = call.execute();
+        Response response = mCurrentCall.execute();
         String header = response.header("Content-Length");
         long length = Long.parseLong(header);
 
