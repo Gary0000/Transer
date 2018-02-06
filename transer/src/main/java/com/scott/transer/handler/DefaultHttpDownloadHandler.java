@@ -31,6 +31,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     final String TAG = DefaultHttpDownloadHandler.class.getSimpleName();
     protected long mLimitSpeed;
     protected boolean isCoverOldFile = true;
+    private Call mCurrentCall;
 
     public void enableCoverFile() {
         isCoverOldFile = true;
@@ -131,8 +132,8 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             }
         }
         OkHttpClient client = OkHttpProxy.getClient();
-        Call call = client.newCall(builder.build());
-        Response response = call.execute();
+        mCurrentCall = client.newCall(builder.build());
+        Response response = mCurrentCall.execute();
         if (!response.isSuccessful()) {
             return;
         }
@@ -140,6 +141,13 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         mInputStream = body.byteStream();
     }
 
+    @Override
+    public void stop() {
+        if(mCurrentCall != null) {
+            mCurrentCall.cancel();
+        }
+        super.stop();
+    }
 
     @Override
     protected int getPiceRealSize() {

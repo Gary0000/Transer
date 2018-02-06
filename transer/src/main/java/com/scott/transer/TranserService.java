@@ -165,6 +165,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
         } else {
             uploadThreadPool = mConfig.mBuilder.mUploadThreadPool;
         }
+        mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_UPLOAD,uploadThreadPool);
 
         if(mConfig.mBuilder.isSupportProcessorDynamicProxy) {
             ITaskProcessor processor = ProcessorDynamicProxy.getInstance().create();

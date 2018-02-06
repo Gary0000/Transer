@@ -37,6 +37,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     private int mPiceRealSize = 0; //每一片的实际大小
     private PiceRequestBody mRequestBody; // 写入一片
     private final String TAG = DefaultHttpUploadHandler.class.getSimpleName();
+    private Call mCurrentCall;
 
     /***
      * 当前这一片传输完成服务器返回的数据
@@ -118,11 +119,11 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
 
         Request request = builder.build();
         OkHttpClient client = OkHttpProxy.getClient();
-        Call call = client.newCall(request);
+        mCurrentCall = client.newCall(request);
 
         mResponse = null;
         Debugger.error(TAG,"wait response === ");
-        Response execute = call.execute();
+        Response execute = mCurrentCall.execute();
         Debugger.error(TAG,"wait2 response === ");
         if(!execute.isSuccessful()) {
             return;
@@ -130,6 +131,14 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         ResponseBody body = execute.body();
         mResponse = body.string();
         Debugger.error(TAG,"response === " + mResponse);
+    }
+
+    @Override
+    public void stop() {
+        if(mCurrentCall != null) {
+            mCurrentCall.cancel();
+        }
+        super.stop();
     }
 
     @Override
