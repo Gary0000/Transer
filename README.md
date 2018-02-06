@@ -130,12 +130,13 @@ public static class Builder extends BaseTaskHandler.Builder<Builder,MyUploadHand
  TranserConfig config = new TranserConfig.Builder()
                 .setDownloadConcurrentThreadSize(3)
                 .setUploadConcurrentThreadSize(3)
-                .build();
+                .build();
         TranserService.init(this,config);
 ````
 
 2.添加单个任务
 
+- 使用TaskEventBus
 ```` java
 ITask task = new TaskBuilder()
                 .setTaskType(task_type)  //任务类型
@@ -174,7 +175,29 @@ ITask task = new TaskBuilder()
         TaskEventBus.getDefault().execute(cmd); //执行命令
 ````
 - 其他命令,详见ProcessType 中支持的 type 类型
-
+- 使用ITaskProcessor 动态代理 代替 TaskEventBus.getDefault().execute(cmd);
+````java
+  //在Application onCreate 中
+ TranserConfig config = new TranserConfig.Builder()
+                .setDownloadConcurrentThreadSize(3)
+                .setUploadConcurrentThreadSize(3)
+                .setSupportProcessorDynamicProxy(true) /支持Processor 动态代理 操作任务
+                .build();
+  TranserService.init(this,config);
+  
+  //添加一个任务
+  ITask task = createTask();
+  ProcessorDynamicProxy
+                .getInstance()
+                .create()
+                .addTask(task); //ITaskProcessor 中的方法
+              
+  //删除任务
+  ProcessorDynamicProxy
+                .getInstance()
+                .create()
+                .delete(taskId); //ITaskProcessor 中的方法
+````
 
 5.接收任务变更通知
 - 在Activity,Fragement,Service,Dialog 等 onResume 或 onStart 中:
@@ -216,6 +239,7 @@ public void onTasksChanged(List<ITask> tasks) {
 更新日志:
 - 2017/1/2 添加下载限速，设置分片大小
 - 2017/1/21 简化传输器配置，修复部分bug
+- 2018/2/6 增加Processor动态代理操作任务
 
 接下来将会增加的功能：
 - 其他方式的文件传输支持
