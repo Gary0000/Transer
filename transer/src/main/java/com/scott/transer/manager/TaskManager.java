@@ -91,7 +91,7 @@ public class TaskManager implements ITaskManager {
                 mProcessorProxy.startGroup(cmd.getGroupId());
                 break;
             case TYPE_START_ALL:
-                mProcessorProxy.startAll();
+                mProcessorProxy.startAll(cmd.getTaskType());
                 break;
             case TYPE_STOP_TASK:
                 mProcessorProxy.stop(cmd.getTaskId());
@@ -100,7 +100,7 @@ public class TaskManager implements ITaskManager {
                 mProcessorProxy.stop(cmd.getGroupId());
                 break;
             case TYPE_STOP_ALL:
-                mProcessorProxy.stopAll();
+                mProcessorProxy.stopAll(cmd.getTaskType());
                 break;
         }
         mCallback.onFinished(cmd.getTaskType(),cmd.getProceeType(),null);

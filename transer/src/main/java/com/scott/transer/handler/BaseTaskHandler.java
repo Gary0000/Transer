@@ -1,5 +1,7 @@
 package com.scott.transer.handler;
 
+import android.os.Looper;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ITaskEventDispatcher;
 import com.scott.annotionprocessor.ProcessType;
@@ -257,6 +259,14 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         isExit = true;
         mTask.setState(TaskState.STATE_STOP);
         //mTaskHandleThreadPool.remove(mHandleRunnable);
+        Thread thread = Thread.currentThread();
+        if(thread.getId() != Looper.getMainLooper().getThread().getId()) {
+            thread.interrupt();
+        }
+
+        if(mTaskHandleThreadPool != null) {
+            mTaskHandleThreadPool.remove(mHandleRunnable);
+        }
         mListenner.onStop(mTask);
     }
 
@@ -287,10 +297,13 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 Debugger.error(TAG," ===== START RUN =======");
                 handle(mTask);
             } catch (Exception e) {
+                Debugger.error(TAG,e.getMessage());
                 e.printStackTrace();
-                mTask.setState(TaskState.STATE_ERROR);
+                if(mTask.getState() != TaskState.STATE_STOP) {
+                    mTask.setState(TaskState.STATE_ERROR);
+                    mListenner.onError(TaskErrorCode.ERROR_CODE_EXCEPTION, mTask);
+                }
                 isExit = true;
-                mListenner.onError(TaskErrorCode.ERROR_CODE_EXCEPTION,mTask);
             }
         }
     }

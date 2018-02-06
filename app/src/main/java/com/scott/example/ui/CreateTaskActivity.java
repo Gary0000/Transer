@@ -19,6 +19,8 @@ import com.scott.transer.ITaskCmd;
 import com.scott.transer.TaskBuilder;
 import com.scott.transer.TaskCmdBuilder;
 import com.scott.transer.event.TaskEventBus;
+import com.scott.transer.manager.ITaskProcessor;
+import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxy;
 
 import java.io.File;
 
@@ -105,8 +107,28 @@ public class CreateTaskActivity extends BaseActivity {
     }
 
     @OnClick(R.id.btn_create_task)
-    public void createTask() {
+    public void createTaskByEventBus() {
 
+        ITask task = createTask();
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setTaskType(task_type)
+                .setProcessType(ProcessType.TYPE_ADD_TASK)
+                .setTask(task)
+                .build();
+
+        TaskEventBus.getDefault().execute(cmd);
+    }
+
+    @OnClick(R.id.btn_create_task_proxy)
+    public void createTaskByDynamicProxy() {
+        ITask task = createTask();
+        ProcessorDynamicProxy
+                .getInstance()
+                .create()
+                .addTask(task);
+    }
+
+    private ITask createTask() {
         String source = null;
         String dest = null;
 
@@ -134,13 +156,6 @@ public class CreateTaskActivity extends BaseActivity {
                 .setDestSource(dest)
                 .setName(NAME)
                 .build();
-
-        ITaskCmd cmd = new TaskCmdBuilder()
-                .setTaskType(task_type)
-                .setProcessType(ProcessType.TYPE_ADD_TASK)
-                .setTask(task)
-                .build();
-
-        TaskEventBus.getDefault().execute(cmd);
+        return task;
     }
 }

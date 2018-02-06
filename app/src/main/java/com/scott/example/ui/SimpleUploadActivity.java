@@ -118,6 +118,13 @@ public class SimpleUploadActivity extends BaseActivity {
         }
 
         @Override
+        public void onStop(ITask params) {
+            super.onStop(params);
+            Debugger.error("OnlyDownloadActivity","stop ==========");
+        }
+
+
+        @Override
         public void onSpeedChanged(long speed, final ITask params) {
             super.onSpeedChanged(speed, params);
             runOnUiThread(new Runnable() {

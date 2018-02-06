@@ -16,9 +16,9 @@ public interface ITaskProcessor {
 
     void setTaskManager(ITaskManager manager);
 
-    void addTask(ITask task);
-
     void addTasks(List<ITask> tasks);
+
+    void addTask(ITask task);
 
     void deleteTask(String taskId);
 
@@ -50,11 +50,11 @@ public interface ITaskProcessor {
 
     void startGroup(String groupId);
 
-    void startAll();
+    void startAll(TaskType taskType);
 
     void stop(String taskId);
 
     void stopGroup(String groupId);
 
-    void stopAll();
+    void stopAll(TaskType taskType);
 }

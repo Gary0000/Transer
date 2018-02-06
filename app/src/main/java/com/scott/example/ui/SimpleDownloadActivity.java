@@ -147,6 +147,12 @@ public class SimpleDownloadActivity extends BaseActivity {
         }
 
         @Override
+        public void onStop(ITask params) {
+            super.onStop(params);
+            Debugger.error("OnlyDownloadActivity","stop ==========");
+        }
+
+        @Override
         public void onSpeedChanged(long speed, final ITask params) {
             super.onSpeedChanged(speed, params);
             Debugger.error("OnlyDownloadActivity","speed = " + TaskUtils.getFileSize(speed) + "/s");

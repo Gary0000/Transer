@@ -21,6 +21,7 @@ public class BaseApplication extends Application {
         TranserConfig config = new TranserConfig.Builder()
                 .setDownloadConcurrentThreadSize(3)
                 .setUploadConcurrentThreadSize(3)
+                .setSupportProcessorDynamicProxy(true)
                 .build();
         TranserService.init(this,config);
     }

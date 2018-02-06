@@ -186,8 +186,11 @@ public class TaskDbProcessor implements ITaskProcessor {
     }
 
     @Override
-    public void startAll() {
+    public void startAll(TaskType taskType) {
+        TaskTypeConverter converter = new TaskTypeConverter();
+        int nType = converter.convertToDatabaseValue(taskType);
         List<Task> list = mTaskDao.queryBuilder()
+                .where(TaskDao.Properties.Type.eq(nType))
                 .list();
         for(Task task : list) {
             task.setState(TaskState.STATE_READY);
@@ -216,8 +219,11 @@ public class TaskDbProcessor implements ITaskProcessor {
     }
 
     @Override
-    public void stopAll() {
+    public void stopAll(TaskType taskType) {
+        TaskTypeConverter converter = new TaskTypeConverter();
+        int nType = converter.convertToDatabaseValue(taskType);
         List<Task> list = mTaskDao.queryBuilder()
+                .where(TaskDao.Properties.Type.eq(nType))
                 .list();
         for(Task task : list) {
             task.setState(TaskState.STATE_STOP);

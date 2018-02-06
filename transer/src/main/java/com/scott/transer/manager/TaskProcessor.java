@@ -246,9 +246,11 @@ public class TaskProcessor implements ITaskProcessor {
     }
 
     @Override
-    public void startAll() {
+    public void startAll(TaskType taskType) {
         for(ITaskHolder holder : mTasks) {
-            startOrStop(holder,true);
+            if(holder.getType() == taskType) {
+                startOrStop(holder, true);
+            }
         }
     }
 
@@ -272,9 +274,11 @@ public class TaskProcessor implements ITaskProcessor {
     }
 
     @Override
-    public void stopAll() {
+    public void stopAll(TaskType taskType) {
         for(ITaskHolder holder : mTasks) {
-            startOrStop(holder,false);
+            if(holder.getType() == taskType) {
+                startOrStop(holder, false);
+            }
         }
     }
 }

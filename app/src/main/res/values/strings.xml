@@ -13,4 +13,8 @@
     <string name="task_failed">任务失败</string>
     <string name="task_wait">正在等待...</string>
     <string name="task_event_bus">任务事件管理器使用</string>
+    <string name="task_eventbus_create">使用TaskEventBus创建任务</string>
+    <string name="dynamic_proxy_create">使用ITaskProcessor动态代理创建</string>
+    <string name="upload">上传</string>
+    <string name="download">下载</string>
 </resources>
