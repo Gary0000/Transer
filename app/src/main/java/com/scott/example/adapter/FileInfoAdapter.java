@@ -1,15 +1,19 @@
 package com.scott.example.adapter;
 
 
+import android.content.Context;
 import android.support.annotation.Nullable;
+import android.widget.CompoundButton;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.scott.annotionprocessor.TaskType;
 import com.scott.example.R;
 import com.scott.example.moudle.FileInfo;
 import com.scott.example.utils.TaskUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,12 +26,13 @@ import java.util.List;
 
 public class FileInfoAdapter extends BaseQuickAdapter<FileInfo,BaseViewHolder>{
 
+    private List<Integer> mSelectIndexs = new ArrayList<>();
     public FileInfoAdapter(int layoutResId, @Nullable List<FileInfo> data) {
         super(layoutResId, data);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, FileInfo item) {
+    protected void convert(final BaseViewHolder helper, FileInfo item) {
         helper.setText(R.id.tv_name,item.name);
         Date date = new Date(item.date);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

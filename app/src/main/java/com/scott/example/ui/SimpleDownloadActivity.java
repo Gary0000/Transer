@@ -1,6 +1,5 @@
 package com.scott.example.ui;
 
-import android.os.Environment;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -59,10 +58,9 @@ public class SimpleDownloadActivity extends BaseActivity {
 
     private ITaskHandler mHandler;
 
-    final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager";
-    final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
     final String FILE_MD5 = "de37fe1c8f049bdd83090d40f806cd67";
     final String TAG = SimpleDownloadActivity.class.getSimpleName();
+    final String FILE_NAME = "test.zip";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,17 +72,17 @@ public class SimpleDownloadActivity extends BaseActivity {
 
         //创建一个任务
         ITask task = new TaskBuilder()
-                .setName("test.zip") //设置任务名称
-                .setDataSource(URL)  //设置数据源
-                .setDestSource(FILE_PATH) //设置目标路径
+                .setName(FILE_NAME) //设置任务名称
+                .setDataSource(Contacts.API.getUrl(Contacts.API.DOWNLOAD_URL))  //设置数据源
+                .setDestSource(Contacts.LOCAL_STORAGE.getBaseSavePath()) //设置目标路径
                 .build();
 
         mHandler = new DefaultHttpDownloadHandler.Builder()
                 .setTask(task)
-                .addParam("path","test.zip")
-                .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
+                .addParam("path",FILE_NAME)
+                //.setSpeedLimited(BaseTaskHandler.SPEED_LIMIT_SIZE.SPEED_1MB)
                 .setCallback(new DownloadListener())
-                .defaultThreadPool(3)
+                .runOnNewThread()
                 .setEnableCoverFile(true)
                 .build();
         setTitle(getString(R.string.simple_download));
@@ -130,7 +128,7 @@ public class SimpleDownloadActivity extends BaseActivity {
         public void onFinished(final ITask task) {
             Debugger.error(TAG,"finished === " + task);
             super.onFinished(task);
-            final String newMd5 = TaskUtils.getFileMD5(new File(FILE_PATH));
+            final String newMd5 = TaskUtils.getFileMD5(new File(Contacts.LOCAL_STORAGE.getBaseSavePath() + File.separator + FILE_NAME));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

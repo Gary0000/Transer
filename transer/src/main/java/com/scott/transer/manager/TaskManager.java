@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class TaskManager implements ITaskManager {
 
-    private ITaskProcessor mProcessorProxy;
+    private ITaskInternalProcessor mProcessorProxy;
     private ITaskProcessCallback mCallback;
     private Map<TaskType,ThreadPoolExecutor> mThreadPool = new HashMap<>();
     private Map<TaskType,ITaskHandlerFactory> mTaskHandlerCreators = new HashMap<>();
@@ -107,7 +107,7 @@ public class TaskManager implements ITaskManager {
     }
 
     @Override
-    public void setTaskProcessor(ITaskProcessor operation) {
+    public void setTaskProcessor(ITaskInternalProcessor operation) {
         mProcessorProxy = operation;
     }
 

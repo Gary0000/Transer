@@ -17,4 +17,5 @@
     <string name="dynamic_proxy_create">使用ITaskProcessor动态代理创建</string>
     <string name="upload">上传</string>
     <string name="download">下载</string>
+    <string name="select">选择</string>
 </resources>

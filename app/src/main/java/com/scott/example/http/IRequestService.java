@@ -1,6 +1,7 @@
 package com.scott.example.http;
 
 import com.scott.example.moudle.FileInfo;
+import com.scott.example.utils.Contacts;
 
 import java.util.List;
 
@@ -17,6 +18,6 @@ import rx.Observable;
 
 public interface IRequestService {
 
-    @GET("FileListGet")
+    @GET(Contacts.API.FILE_LIST_GET)
     Observable<List<FileInfo>> getFileList(@Query("path") String path, @Query("pageSize") int pageSize);
 }

@@ -41,11 +41,11 @@ public class CreateTaskActivity extends BaseActivity {
     private TaskType task_type = TaskType.TYPE_HTTP_UPLOAD;
 
     final String NAME = "test.zip";
-    final String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + NAME;
-    final String DOWNLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/DownloadManager";
+    final String DOWNLOAD_PATH = Contacts.LOCAL_STORAGE.getBaseSavePath() + File.separator + NAME;
+    final String DOWNLOAD_URL = Contacts.API.getUrl(Contacts.API.DOWNLOAD_URL);
     ;
     final String UPLOAD_PATH = DOWNLOAD_PATH;
-    final String UPLOAD_URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
+    final String UPLOAD_URL = Contacts.API.getUrl(Contacts.API.UPLOAD_URL);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +56,11 @@ public class CreateTaskActivity extends BaseActivity {
         switch (task_type) {
             case TYPE_HTTP_DOWNLOAD:
                 editPath.setText(DOWNLOAD_PATH);
-                editUrl.setText(DOWNLOAD_URL);
+                editUrl.setText(DOWNLOAD_PATH);
                 break;
             case TYPE_HTTP_UPLOAD:
-                editPath.setText(UPLOAD_PATH);
-                editUrl.setText(UPLOAD_URL);
+                editPath.setText(Contacts.LOCAL_STORAGE.getBaseSavePath() + File.separator + NAME);
+                editUrl.setText(Contacts.API.getUrl(Contacts.API.UPLOAD_URL));
                 break;
         }
         setTitle(getString(R.string.create_task));

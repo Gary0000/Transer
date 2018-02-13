@@ -12,6 +12,10 @@ public class Debugger {
 
     static boolean DEBUG = true;
 
+    public static boolean isDebug() {
+        return DEBUG;
+    }
+
     public static void info(String tag,String info) {
 
         if(DEBUG) {

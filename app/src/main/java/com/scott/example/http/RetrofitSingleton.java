@@ -20,7 +20,7 @@ public class RetrofitSingleton {
 
     private RetrofitSingleton() {
         mRetrofit = new Retrofit.Builder()
-                .baseUrl("http://" + Contacts.TEST_HOST + "/WebDemo/")
+                .baseUrl(Contacts.API.getWebAppUrl())
                 .client(OkHttpProxy.getClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())

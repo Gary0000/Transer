@@ -19,7 +19,7 @@ import java.util.List;
  * <p>Describe:</p>
  */
 
-public class TaskDbProcessor implements ITaskProcessor {
+public class TaskDbProcessor implements ITaskInternalProcessor {
 
     private TaskDao mTaskDao;
     public TaskDbProcessor() {

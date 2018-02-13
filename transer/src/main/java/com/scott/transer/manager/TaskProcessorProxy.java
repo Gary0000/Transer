@@ -12,12 +12,12 @@ import java.util.List;
  * <p>Describe:</p>
  */
 
-public class TaskProcessorProxy implements ITaskProcessor {
+public class TaskProcessorProxy implements ITaskInternalProcessor {
 
-    ITaskProcessor mProcessor;
-    ITaskProcessor mDbProcessor;
+    ITaskInternalProcessor mProcessor;
+    ITaskInternalProcessor mDbProcessor;
 
-    public TaskProcessorProxy(ITaskProcessor taskProcessor, ITaskProcessor dbProcessor) {
+    public TaskProcessorProxy(ITaskInternalProcessor taskProcessor, ITaskInternalProcessor dbProcessor) {
         mProcessor = taskProcessor;
         mDbProcessor = dbProcessor;
     }

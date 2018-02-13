@@ -7,15 +7,12 @@ import java.util.List;
 
 /**
  * <p>Author:    shijiale</p>
- * <p>Date:      2017-12-13 15:00</p>
+ * <p>Date:      2018-02-11 21:14</p>
  * <p>Email:     shilec@126.com</p>
  * <p>Describe:</p>
  */
 
 public interface ITaskProcessor {
-
-    void setTaskManager(ITaskManager manager);
-
     void addTasks(List<ITask> tasks);
 
     void addTask(ITask task);
@@ -41,10 +38,6 @@ public interface ITaskProcessor {
     List<ITask> getAllTasks(TaskType type);
 
     List<ITask> getTasks(int state, TaskType type);
-
-    void updateTask(ITask task);
-
-    void updateTaskWithoutSave(ITask task);
 
     void start(String taskId);
 

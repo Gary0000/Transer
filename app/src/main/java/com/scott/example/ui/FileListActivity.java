@@ -19,6 +19,7 @@ import com.scott.example.adapter.FileInfoAdapter;
 import com.scott.example.http.IRequestService;
 import com.scott.example.http.RetrofitSingleton;
 import com.scott.example.moudle.FileInfo;
+import com.scott.transer.utils.Debugger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,6 +64,9 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
         public void onError(Throwable e) {
             if(isLoadMore) {
                 mAdapter.loadMoreFail();
+            }
+            if(Debugger.isDebug()) {
+                e.printStackTrace();
             }
         }
 

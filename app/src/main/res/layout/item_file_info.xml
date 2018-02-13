@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:layout_marginTop="2.5dp"
+    android:background="@android:color/white">
 
     <ImageView
         android:src="@mipmap/ic_launcher"

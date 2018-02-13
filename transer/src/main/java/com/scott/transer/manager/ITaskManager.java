@@ -24,7 +24,7 @@ public interface ITaskManager {
     void process(ITaskCmd cmd);
 
     //设置处理任务的处理器 例如:对任务的增删改查
-    void setTaskProcessor(ITaskProcessor operation);
+    void setTaskProcessor(ITaskInternalProcessor operation);
 
     //处理任务后的回调
     void setProcessCallback(ITaskProcessCallback callback);

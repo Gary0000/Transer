@@ -23,4 +23,5 @@ public class FileInfo implements IListData{
     public int getItemType() {
         return 0;
     }
+
 }

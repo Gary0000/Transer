@@ -12,7 +12,7 @@ import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskProcessCallback;
 import com.scott.annotionprocessor.ProcessType;
-import com.scott.transer.manager.ITaskProcessor;
+import com.scott.transer.manager.ITaskInternalProcessor;
 import com.scott.transer.manager.TaskProcessorProxy;
 import com.scott.transer.manager.TaskDbProcessor;
 import com.scott.transer.manager.TaskManager;
@@ -115,7 +115,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
         mTaskManagerProxy.setProcessCallback(this);
 
         //内存中的任务列表处理器
-        ITaskProcessor memoryProcessor;
+        ITaskInternalProcessor memoryProcessor;
         if(mConfig.mBuilder.mMemoryProcessor != null) {
             memoryProcessor = mConfig.mBuilder.mMemoryProcessor;
         } else {
@@ -123,7 +123,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
         }
 
         //任务持久化处理器
-        ITaskProcessor databaseProcessor;
+        ITaskInternalProcessor databaseProcessor;
         if(mConfig.mBuilder.mDatabaseProcessor != null) {
             databaseProcessor = mConfig.mBuilder.mDatabaseProcessor;
         } else {
@@ -179,7 +179,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
         mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_UPLOAD,uploadThreadPool);
 
         if(mConfig.mBuilder.isSupportProcessorDynamicProxy) {
-            ITaskProcessor processor = ProcessorDynamicProxyFactory.getInstance().create();
+            ITaskInternalProcessor processor = (ITaskInternalProcessor) ProcessorDynamicProxyFactory.getInstance().create();
             processor.setTaskManager(mTaskManagerProxy);
         }
         mTaskManagerProxy.addThreadPool(TaskType.TYPE_HTTP_DOWNLOAD,uploadThreadPool);

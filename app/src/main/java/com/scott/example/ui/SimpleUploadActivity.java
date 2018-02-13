@@ -1,6 +1,5 @@
 package com.scott.example.ui;
 
-import android.os.Environment;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,9 +16,6 @@ import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
 
 import java.io.File;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,9 +52,8 @@ public class SimpleUploadActivity extends BaseActivity {
     private ITaskHandler mHandler;
     private ITask task;
 
-    final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
-    final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
     final String TAG = SimpleUploadActivity.class.getSimpleName();
+    final String FILE_NAME = "test.zip";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,18 +63,18 @@ public class SimpleUploadActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         task = new TaskBuilder()
-                .setName("test.zip")
+                .setName(FILE_NAME)
                 .setTaskId("1233444")
                 .setSessionId("123123123131")
-                .setDataSource(FILE_PATH)
-                .setDestSource(URL)
+                .setDataSource(Contacts.LOCAL_STORAGE.getBaseSavePath() + File.separator + FILE_NAME)
+                .setDestSource(Contacts.API.getUrl(Contacts.API.UPLOAD_URL))
                 .build();
 
         mHandler = new DefaultHttpUploadHandler.Builder()
                 .setTask(task)
-                .addParam("path","test.zip")
+                .addParam("path",FILE_NAME)
                 .setCallback(new UploadListenner())
-                .defaultThreadPool(3)
+                .runOnNewThread()
                 .build();
         setTitle(getString(R.string.simple_upload));
     }

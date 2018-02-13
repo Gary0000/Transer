@@ -1,5 +1,7 @@
 package com.scott.transer.handler;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
@@ -95,7 +97,8 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             }
         }
 
-        File file = new File(getTask().getDestSource());
+        File file = new File(getTask().getDestSource()
+                + File.separator + getTask().getName());
         mFileSize = getNetSize(url); //从服务端获取文件大小
         if(mFileSize == 0) {
             return;
@@ -168,16 +171,21 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         mCurrentCall = client.newCall(request);
 
         Response response = mCurrentCall.execute();
+        if(!response.isSuccessful()) {
+            return -1;
+        }
         String header = response.header("Content-Length");
+        if(header == null) {
+            throw new IllegalStateException("Please check whether the server supports the HEAD request!");
+        }
         long length = Long.parseLong(header);
-
         return length;
     }
 
     @Override
     protected long getLimitSpeed() {
         if(mLimitSpeed <= 0) {
-            return SPEED_LISMT.SPEED_UNLIMITED;
+            return SPEED_LIMIT_SIZE.SPEED_UNLIMITED;
         }
         return mLimitSpeed;
     }

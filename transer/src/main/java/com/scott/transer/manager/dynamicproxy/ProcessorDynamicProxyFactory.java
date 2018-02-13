@@ -1,5 +1,6 @@
 package com.scott.transer.manager.dynamicproxy;
 
+import com.scott.transer.manager.ITaskInternalProcessor;
 import com.scott.transer.manager.ITaskProcessor;
 
 import java.lang.reflect.InvocationHandler;
@@ -44,8 +45,8 @@ public class ProcessorDynamicProxyFactory {
 
     public ITaskProcessor create() {
         synchronized (ProcessorDynamicProxyFactory.class) {
-            mProcessor = (ITaskProcessor) Proxy.newProxyInstance(getClass().getClassLoader(),
-                        new Class[]{ITaskProcessor.class}, mInvotionHandler);
+            mProcessor = (ITaskInternalProcessor) Proxy.newProxyInstance(getClass().getClassLoader(),
+                        new Class[]{ITaskInternalProcessor.class}, mInvotionHandler);
         }
         return mProcessor;
     }

@@ -11,6 +11,28 @@
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="54dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/tv_title"
+                android:textStyle="bold"
+                android:gravity="center_vertical"
+                android:textSize="18sp"
+                android:text="Transer"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/tv_select"
+                android:gravity="center_vertical"
+                android:layout_alignParentRight="true"
+                android:textColor="@android:color/white"
+                android:text="选择"
+                android:layout_marginRight="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
     </android.support.v7.widget.Toolbar>
     <LinearLayout
         android:orientation="vertical"

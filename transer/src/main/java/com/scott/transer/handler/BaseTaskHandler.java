@@ -1,6 +1,7 @@
 package com.scott.transer.handler;
 
 import android.os.Looper;
+import android.text.TextUtils;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ITaskEventDispatcher;
@@ -9,7 +10,6 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.Task;
 import com.scott.transer.TaskErrorCode;
 import com.scott.transer.TaskState;
-import com.scott.transer.event.EventDispatcher;
 import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         return DEFAULT_PICE_SIZE;
     }
 
-    public interface SPEED_LISMT {
+    public interface SPEED_LIMIT_SIZE {
         long SPEED_100KB = 100 * 1024;
         long SPEED_200KB = 200 * 1024;
         long SPEED_300KB = 300 * 1024;
@@ -132,8 +132,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
 
-        if(fileSize() == 0) {
+        if(fileSize() <= 0) {
             isExit = true;
+            mListenner.onError(TaskErrorCode.ERROR_FILE_NOT_EXSIT,mTask);
             return;
         }
         //获取到的源数据大小设置到task
@@ -159,7 +160,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     //限制下载速度
     protected long getLimitSpeed() {
-        long limitSize = SPEED_LISMT.SPEED_UNLIMITED;
+        long limitSize = SPEED_LIMIT_SIZE.SPEED_UNLIMITED;
         return limitSize;
     }
 
@@ -185,7 +186,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mLastCalculateLength += getPiceRealSize();
             //如果当前传输速度大于限制的速度，则等待一段时间
             if(endCalculateTime - mLastCaluteTime < MAX_DELAY_TIME && mLastCalculateLength >= getLimitSpeed()
-                    && getLimitSpeed() != SPEED_LISMT.SPEED_UNLIMITED) {
+                    && getLimitSpeed() != SPEED_LIMIT_SIZE.SPEED_UNLIMITED) {
                 long waitTime = 1000 - (endCalculateTime - mLastCaluteTime);
                 Thread.sleep(waitTime);
                 mLastCalculateLength = 0;
@@ -289,12 +290,41 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         return mTask.getType();
     }
 
+    private void checkParams() {
+        if(TextUtils.isEmpty(getTask().getDataSource())) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("DataSource can not be a null value,");
+            if(getType() == TaskType.TYPE_HTTP_DOWNLOAD) {
+                stringBuilder.append("is the path of the file you want to download");
+            } else {
+                stringBuilder.append("is the path you want to upload files");
+            }
+            throw new IllegalArgumentException(stringBuilder.toString());
+        }
+
+        if(TextUtils.isEmpty(getTask().getDestSource())) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("DestSource can not be a null value,");
+            if(getType() == TaskType.TYPE_HTTP_DOWNLOAD) {
+                builder.append("destSource is the path saved by the file you downloaded");
+            } else {
+                builder.append("destSource is the path you want to upload to the server");
+            }
+            throw new IllegalArgumentException(builder.toString());
+        }
+
+        if(TextUtils.isEmpty(getTask().getName())) {
+            throw new IllegalArgumentException("name can not be a null value!");
+        }
+    }
+
     class HandleRunnable implements Runnable {
 
         @Override
         public void run() {
             try {
                 Debugger.error(TAG," ===== START RUN =======");
+                checkParams();
                 handle(mTask);
             } catch (Exception e) {
                 Debugger.error(TAG,e.getMessage());
@@ -343,6 +373,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         private ITask mTask;
         private int mCoreThreadSize;
         private ITaskEventDispatcher mDispatcher;
+        private boolean isRunOnNewThread = false;
 
         public Builder() {
 
@@ -409,7 +440,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
 
         /***
-         * 设置线程池，下载或上传将会在线程中执行 或者调用 defaultThreadPool(int coreSize)
+         * 设置线程池，下载或上传将会在线程中执行 或者调用 runOnNewThread(int coreSize)
          * 设置默认的线程池，否则，上传/下载 将会在当前调用的线程内执行
          * @param executor
          * @return
@@ -430,12 +461,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
 
         /**
-         * 设置默认的线程池，否则，上传/下载 将会在当前调用的线程内执行
-         * @param coreSize
+         * 在一个线程中去执行
          * @return
          */
-        public B defaultThreadPool(int coreSize) {
-            mCoreThreadSize = coreSize;
+        public B runOnNewThread() {
+            isRunOnNewThread = true;
             return (B)this;
         }
 
@@ -460,7 +490,10 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mTarget.setHeaders(mHeaders);
             mTarget.setParams(mParams);
 
-            if(mThreadPool == null && mCoreThreadSize > 0) {
+            if(mThreadPool == null && isRunOnNewThread) {
+                if(mCoreThreadSize <= 0) {
+                    mCoreThreadSize = 1;
+                }
                 mThreadPool = new ThreadPoolExecutor(mCoreThreadSize,mCoreThreadSize,
                         6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
             }

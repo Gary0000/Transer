@@ -1,7 +1,6 @@
 package com.scott.example.ui;
 
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -12,10 +11,8 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
-import com.scott.example.ui.SimpleUploadActivity;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
-import com.scott.transer.SimpleTaskHandlerListenner;
 import com.scott.transer.TaskBuilder;
 import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
@@ -61,7 +58,7 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
     private ITaskHandler mHandler;
     private ITask task;
 
-    final String URL = "http://" + Contacts.TEST_HOST + "/WebDemo/UploadManager";
+    final String URL = Contacts.API.getUrl(Contacts.API.UPLOAD_URL);
     final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
     final String TAG = SimpleUploadActivity.class.getSimpleName();
 
@@ -84,7 +81,7 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
                 .setTask(task)
                 .addParam("path","test.zip")
                 .setEventDispatcher(TaskEventBus.getDefault().getDispatcher()) //设置EventDispatcher,
-                .defaultThreadPool(3)
+                .runOnNewThread()
                 .build();
         setTitle(getString(R.string.simple_upload));
     }

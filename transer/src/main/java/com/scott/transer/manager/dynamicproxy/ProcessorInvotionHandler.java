@@ -4,14 +4,11 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.ITaskCmd;
-import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskCmdBuilder;
 import com.scott.transer.manager.ITaskManager;
-import com.scott.transer.manager.ITaskProcessor;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.List;
 
 /**

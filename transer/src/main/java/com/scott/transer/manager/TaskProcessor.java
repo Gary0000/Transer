@@ -21,7 +21,7 @@ import java.util.List;
  * <p>Describe:</p>
  */
 
-public class TaskProcessor implements ITaskProcessor {
+public class TaskProcessor implements ITaskInternalProcessor {
 
     private List<ITaskHolder> mTasks;
     private ITaskManager mTaskManager;

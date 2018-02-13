@@ -1,10 +1,9 @@
 package com.scott.transer;
 
 import com.scott.annotionprocessor.TaskType;
-import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.transer.manager.ITaskManager;
-import com.scott.transer.manager.ITaskProcessor;
+import com.scott.transer.manager.ITaskInternalProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,9 +27,9 @@ public class TranserConfig {
 
     public static class Builder {
 
-        ITaskProcessor mMemoryProcessor;
+        ITaskInternalProcessor mMemoryProcessor;
 
-        ITaskProcessor mDatabaseProcessor;
+        ITaskInternalProcessor mDatabaseProcessor;
 
         int mUploadConcurrentThreadSize;
 
@@ -56,7 +55,7 @@ public class TranserConfig {
          * @param processor
          * @return
          */
-        public Builder setMemoryProcessor(ITaskProcessor processor) {
+        public Builder setMemoryProcessor(ITaskInternalProcessor processor) {
             mMemoryProcessor = processor;
             return this;
         }
@@ -66,7 +65,7 @@ public class TranserConfig {
          * @param processor
          * @return
          */
-        public Builder setDatabaseProcessor(ITaskProcessor processor) {
+        public Builder setDatabaseProcessor(ITaskInternalProcessor processor) {
             mDatabaseProcessor = processor;
             return this;
         }

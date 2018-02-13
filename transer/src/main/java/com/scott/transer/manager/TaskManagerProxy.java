@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITaskHandlerCallback {
 
     private ITaskManager mManager;
-    private ITaskProcessor mProcessor; //processor proxy
+    private ITaskInternalProcessor mProcessor; //processor proxy
     private ExecutorService mCmdThreadPool; //cmd thread pool
     private ITaskProcessCallback mProcessCallback;
     private final String TAG = TaskManagerProxy.class.getSimpleName();
@@ -65,7 +65,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     }
 
     @Override
-    public void setTaskProcessor(ITaskProcessor operation) {
+    public void setTaskProcessor(ITaskInternalProcessor operation) {
         mProcessor = operation;
     }
 

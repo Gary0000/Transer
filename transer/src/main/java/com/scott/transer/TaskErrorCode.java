@@ -19,4 +19,6 @@ public interface TaskErrorCode {
     int ERROR_CODE_NETWORK = 0X100005;
 
     int ERROR_FILE_EMPTY = 0X100006;
+
+    int ERROR_FILE_NOT_EXSIT = 0X100007;
 }
