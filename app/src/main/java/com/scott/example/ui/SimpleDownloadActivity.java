@@ -13,7 +13,6 @@ import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.SimpleTaskHandlerListenner;
 import com.scott.transer.TaskBuilder;
-import com.scott.transer.handler.BaseTaskHandler;
 import com.scott.transer.handler.DefaultHttpDownloadHandler;
 import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
@@ -73,8 +72,8 @@ public class SimpleDownloadActivity extends BaseActivity {
         //创建一个任务
         ITask task = new TaskBuilder()
                 .setName(FILE_NAME) //设置任务名称
-                .setDataSource(Contacts.API.getUrl(Contacts.API.DOWNLOAD_URL))  //设置数据源
-                .setDestSource(Contacts.LOCAL_STORAGE.getBaseSavePath()) //设置目标路径
+                .setSourceUrl(Contacts.API.getUrl(Contacts.API.DOWNLOAD_URL))  //设置数据源
+                .setDestUrl(Contacts.LOCAL_STORAGE.getBaseSavePath()) //设置目标路径
                 .build();
 
         mHandler = new DefaultHttpDownloadHandler.Builder()
@@ -160,6 +159,14 @@ public class SimpleDownloadActivity extends BaseActivity {
                     tvSpeed.setText(TaskUtils.getFileSize(params.getSpeed()));
                 }
             });
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mHandler != null) {
+            mHandler.stop();
         }
     }
 }

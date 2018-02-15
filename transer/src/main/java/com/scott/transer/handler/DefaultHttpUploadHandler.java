@@ -5,9 +5,6 @@ import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
 import com.scott.transer.utils.Debugger;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -108,7 +105,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
                         + "-" + (task.getEndOffset() - 1) + "/" + mFile.length())
                 .addHeader("Content-Disposition", "attachment; filename=" + task.getName())
                 .addHeader("Connection", "Keep-Alive")
-                .url(task.getDestSource())
+                .url(task.getDestUrl())
                 .post(mRequestBody);
         //加入header
         if(getHeaders() != null) {
@@ -126,7 +123,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         Response execute = mCurrentCall.execute();
         Debugger.error(TAG,"wait2 response === ");
         if(!execute.isSuccessful()) {
-            return;
+            throw new IllegalStateException(execute.message());
         }
         ResponseBody body = execute.body();
         mResponse = body.string();
@@ -156,7 +153,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
 
     @Override
     protected void prepare(ITask task) throws IOException{
-        mFile = new RandomAccessFile(task.getDataSource(),"r");
+        mFile = new RandomAccessFile(task.getSourceUrl(),"r");
         //将文件指针移动到上次传输的位置
         mFile.seek(task.getCompleteLength());
     }

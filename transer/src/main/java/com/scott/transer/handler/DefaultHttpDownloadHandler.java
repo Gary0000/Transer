@@ -1,7 +1,5 @@
 package com.scott.transer.handler;
 
-import android.text.TextUtils;
-
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
@@ -86,7 +84,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     protected void prepare(ITask task) throws Exception {
 
         //设置url 参数
-        String url = getTask().getDataSource();
+        String url = getTask().getSourceUrl();
         if (getParams() != null) {
             for (String k : getParams().keySet()) {
                 if (!url.contains("?")) {
@@ -97,7 +95,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             }
         }
 
-        File file = new File(getTask().getDestSource()
+        File file = new File(getTask().getDestUrl()
                 + File.separator + getTask().getName());
         mFileSize = getNetSize(url); //从服务端获取文件大小
         if(mFileSize == 0) {

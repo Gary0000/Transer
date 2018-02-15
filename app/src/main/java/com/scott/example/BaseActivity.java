@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -21,10 +22,17 @@ import butterknife.ButterKnife;
 public class BaseActivity extends AppCompatActivity {
 
     private ViewGroup mContentView;
-    private Toolbar mToolBar;
     private TextView mTvTitle;
     private TextView mTvSelect;
-    private int mState = 0;
+    private TextView mTvSubmit;
+
+    protected TextView getSelectView() {
+        return mTvSelect;
+    }
+
+    protected TextView getSubmitView() {
+        return mTvSubmit;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,39 +41,19 @@ public class BaseActivity extends AppCompatActivity {
         super.setContentView(R.layout.activity_base);
 
         mContentView = findViewById(R.id.base_content_view);
-        mToolBar = findViewById(R.id.tool_bar);
         mTvSelect = findViewById(R.id.tv_select);
         mTvTitle = findViewById(R.id.tv_title);
+        mTvSubmit = findViewById(R.id.tv_submit);
 
-        mToolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        mToolBar.setTitleTextColor(Color.WHITE);
-        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+        mTvSelect.setVisibility(View.INVISIBLE);
+        mTvSubmit.setVisibility(View.INVISIBLE);
+        findViewById(R.id.iv_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BaseActivity.this.onBackPressed();
+                BaseActivity.super.onBackPressed();
             }
         });
-        mToolBar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_menu_white_24dp));
-        mTvSelect.setVisibility(View.INVISIBLE);
     }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (menu != null) {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
-                try {
-                    Method m = menu.getClass().getDeclaredMethod(
-                            "setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (NoSuchMethodException e) {
-                } catch (Exception e) {
-                }
-            }
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
-
 
     @Override
     public void setContentView(int layoutResID) {
@@ -76,13 +64,5 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void setTitle(CharSequence title) {
         mTvTitle.setText(title);
-    }
-
-    protected void enableSelect() {
-        mTvSelect.setVisibility(View.VISIBLE);
-    }
-
-    protected void disenableSelect() {
-        mTvSelect.setVisibility(View.INVISIBLE);
     }
 }

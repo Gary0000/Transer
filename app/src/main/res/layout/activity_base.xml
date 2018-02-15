@@ -6,12 +6,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.scott.example.BaseActivity">
-    <android.support.v7.widget.Toolbar
+    <LinearLayout
         android:background="@color/colorPrimary"
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="54dp">
+        <ImageView
+            android:id="@+id/iv_back"
+            android:scaleType="center"
+            android:src="@drawable/ic_arrow_back_white_24dp"
+            android:layout_width="54dp"
+            android:layout_height="match_parent" />
         <RelativeLayout
+            android:layout_marginLeft="8dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
@@ -24,6 +31,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
             <TextView
+                android:layout_toLeftOf="@+id/tv_select"
+                android:id="@+id/tv_submit"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/white"
+                android:text="完成"
+                android:layout_marginRight="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <TextView
                 android:id="@+id/tv_select"
                 android:gravity="center_vertical"
                 android:layout_alignParentRight="true"
@@ -33,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
         </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
+    </LinearLayout>
     <LinearLayout
         android:orientation="vertical"
         android:id="@+id/base_content_view"

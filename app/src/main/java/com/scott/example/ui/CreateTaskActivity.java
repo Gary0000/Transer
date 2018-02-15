@@ -1,6 +1,5 @@
 package com.scott.example.ui;
 
-import android.os.Environment;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -150,8 +149,8 @@ public class CreateTaskActivity extends BaseActivity {
 
         ITask task = new TaskBuilder()
                 .setTaskType(task_type)
-                .setDataSource(source)
-                .setDestSource(dest)
+                .setSourceUrl(source)
+                .setDestUrl(dest)
                 .setName(NAME)
                 .build();
         return task;

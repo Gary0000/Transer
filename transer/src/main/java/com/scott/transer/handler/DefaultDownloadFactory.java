@@ -1,5 +1,7 @@
 package com.scott.transer.handler;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.manager.ITaskManager;
 
@@ -27,6 +29,9 @@ public class DefaultDownloadFactory implements ITaskHandlerFactory {
 
         Map<String,String> params = new HashMap<>();
         params.put("path",task.getName());
+        if(!TextUtils.isEmpty(task.getSourcePath())) {
+            params.put("root",task.getSourcePath());
+        }
         handler.setParams(params);
         return handler;
     }

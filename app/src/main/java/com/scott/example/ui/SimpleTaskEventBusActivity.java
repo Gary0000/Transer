@@ -73,8 +73,8 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
                 .setName("test.zip")
                 .setTaskId("1233444")
                 .setSessionId("123123123131")
-                .setDataSource(FILE_PATH)
-                .setDestSource(URL)
+                .setSourceUrl(FILE_PATH)
+                .setDestUrl(URL)
                 .build();
 
         mHandler = new DefaultHttpUploadHandler.Builder()

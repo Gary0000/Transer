@@ -66,13 +66,13 @@ public class SimpleUploadActivity extends BaseActivity {
                 .setName(FILE_NAME)
                 .setTaskId("1233444")
                 .setSessionId("123123123131")
-                .setDataSource(Contacts.LOCAL_STORAGE.getBaseSavePath() + File.separator + FILE_NAME)
-                .setDestSource(Contacts.API.getUrl(Contacts.API.UPLOAD_URL))
+                .setSourceUrl(Contacts.LOCAL_STORAGE.getBaseSavePath() + File.separator + FILE_NAME)
+                .setDestUrl(Contacts.API.getUrl(Contacts.API.UPLOAD_URL))
                 .build();
 
         mHandler = new DefaultHttpUploadHandler.Builder()
                 .setTask(task)
-                .addParam("path",FILE_NAME)
+                .addHeader("path","upload")
                 .setCallback(new UploadListenner())
                 .runOnNewThread()
                 .build();
@@ -153,5 +153,13 @@ public class SimpleUploadActivity extends BaseActivity {
     @OnClick(R.id.btn_start)
     public void start() {
         mHandler.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mHandler != null) {
+            mHandler.stop();
+        }
     }
 }

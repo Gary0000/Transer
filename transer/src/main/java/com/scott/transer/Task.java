@@ -1,5 +1,7 @@
 package com.scott.transer;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.utils.NumberUtils;
@@ -36,6 +38,8 @@ public class Task implements ITask {
     private int state;
     private String name;
     private long speed;
+    private String destPath;
+    private String sourcePath;
 
     @Convert(converter = TaskTypeConverter.class,columnType = Integer.class)
     private TaskType type;
@@ -43,8 +47,8 @@ public class Task implements ITask {
 
 
     public Task(ITaskBuilder builder) {
-        this.dataSource = builder.getDataSource();
-        this.destSource = builder.getDestSource();
+        this.dataSource = builder.getSourceUrl();
+        this.destSource = builder.getDestUrl();
         this.sesstionId = builder.getSesstionId();
         this.length = builder.getLength();
         this.startOffset = builder.getStartOffset();
@@ -59,20 +63,19 @@ public class Task implements ITask {
         this.userId = builder.getUserId();
         this.name = builder.getName();
         this.speed = builder.getSpeed();
-
-        if(taskId == null) {
-            taskId = NumberUtils.getRandomStr(0);
-        }
-
-        if(sesstionId == null) {
-            sesstionId = taskId;
-        }
+        this.destPath = builder.getDestPath();
+        this.sourcePath = builder.getSourcePath();
     }
 
-    @Generated(hash = 2003111027)
-    public Task(String dataSource, String destSource, String sesstionId, long length, long startOffset,
-            long endOffset, String taskId, String groupId, String groupName, long completeTime,
-            long completeLength, int state, String name, long speed, TaskType type, String userId) {
+
+
+
+    @Generated(hash = 572294146)
+    public Task(String dataSource, String destSource, String sesstionId,
+            long length, long startOffset, long endOffset, String taskId,
+            String groupId, String groupName, long completeTime,
+            long completeLength, int state, String name, long speed,
+            String destPath, String sourcePath, TaskType type, String userId) {
         this.dataSource = dataSource;
         this.destSource = destSource;
         this.sesstionId = sesstionId;
@@ -87,26 +90,47 @@ public class Task implements ITask {
         this.state = state;
         this.name = name;
         this.speed = speed;
+        this.destPath = destPath;
+        this.sourcePath = sourcePath;
         this.type = type;
         this.userId = userId;
     }
+
+
+
 
     @Generated(hash = 733837707)
     public Task() {
     }
 
+
+
+
     @Override
-    public String getDataSource() {
+    public String getSourceUrl() {
         return dataSource;
     }
 
     @Override
-    public String getDestSource() {
+    public String getSourcePath() {
+        return sourcePath;
+    }
+
+    @Override
+    public String getDestUrl() {
         return destSource;
     }
 
     @Override
+    public String getDestPath() {
+        return destPath;
+    }
+
+    @Override
     public String getSesstionId() {
+        if(TextUtils.isEmpty(sesstionId)) {
+            sesstionId = NumberUtils.getRandomStr(8);
+        }
         return sesstionId;
     }
 
@@ -127,6 +151,9 @@ public class Task implements ITask {
 
     @Override
     public String getTaskId() {
+        if(TextUtils.isEmpty(taskId)) {
+            taskId = name.hashCode() + "" + System.currentTimeMillis();
+        }
         return taskId;
     }
 
@@ -258,5 +285,28 @@ public class Task implements ITask {
     public void setName(String name) {
         this.name = name;
     }
+
+
+    public String getDestSource() {
+        return this.destSource;
+    }
+
+
+    public void setDestPath(String destPath) {
+        this.destPath = destPath;
+    }
+
+
+
+
+    public String getDataSource() {
+        return this.dataSource;
+    }
+
+
+    public void setSourcePath(String sourcePath) {
+        this.sourcePath = sourcePath;
+    }
+
 
 }

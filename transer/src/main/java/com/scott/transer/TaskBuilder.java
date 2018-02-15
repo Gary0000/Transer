@@ -45,14 +45,28 @@ public class TaskBuilder implements ITaskBuilder {
 
     private long speed;
 
+    private String destPath;
+
+    private String sourcePath;
+
     @Override
-    public String getDataSource() {
+    public String getSourceUrl() {
         return dataSource;
     }
 
     @Override
-    public String getDestSource() {
+    public String getSourcePath() {
+        return sourcePath;
+    }
+
+    @Override
+    public String getDestUrl() {
         return destSource;
+    }
+
+    @Override
+    public String getDestPath() {
+        return destPath;
     }
 
     @Override
@@ -127,13 +141,13 @@ public class TaskBuilder implements ITaskBuilder {
 
 
     @Override
-    public ITaskBuilder setDataSource(String dataSource) {
+    public ITaskBuilder setSourceUrl(String dataSource) {
         this.dataSource = dataSource;
         return this;
     }
 
     @Override
-    public ITaskBuilder setDestSource(String destSource) {
+    public ITaskBuilder setDestUrl(String destSource) {
         this.destSource = destSource;
         return this;
     }
@@ -240,6 +254,18 @@ public class TaskBuilder implements ITaskBuilder {
     @Override
     public ITaskBuilder setSpeed(long speed) {
         this.speed = speed;
+        return this;
+    }
+
+    @Override
+    public ITaskBuilder setDestPath(String destPath) {
+        this.destPath = destPath;
+        return this;
+    }
+
+    @Override
+    public ITaskBuilder setSourcePath(String sourcePath) {
+        this.sourcePath = sourcePath;
         return this;
     }
 }

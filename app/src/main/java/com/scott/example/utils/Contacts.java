@@ -20,7 +20,7 @@ public class Contacts {
 
         public static final String HOST_SCHEMA = "http";
 
-        public static final String WEB_APP = "WebDemo";
+        public static final String WEB_APP = "TranserServer";
 
         public static final String DOWNLOAD_URL = "download";
 
@@ -62,5 +62,19 @@ public class Contacts {
             }
             return root;
         }
+
+        public static String getSavePath(String path) {
+            path = getBaseSavePath() + File.separator + path;
+            File file = new File(path);
+
+            if(!file.exists()) {
+                if(!file.mkdirs()) {
+                    return null;
+                }
+                return path;
+            }
+            return path;
+        }
     }
+
 }

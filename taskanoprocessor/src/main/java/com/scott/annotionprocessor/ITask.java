@@ -13,9 +13,13 @@ import java.util.Map;
 
 public interface ITask {
 
-    String getDataSource();
+    String getSourceUrl();
 
-    String getDestSource();
+    String getSourcePath();
+
+    String getDestUrl();
+
+    String getDestPath();
 
     String getSesstionId();
 

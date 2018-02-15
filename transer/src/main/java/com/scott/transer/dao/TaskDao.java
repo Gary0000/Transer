@@ -41,8 +41,10 @@ public class TaskDao extends AbstractDao<Task, String> {
         public final static Property State = new Property(11, int.class, "state", false, "STATE");
         public final static Property Name = new Property(12, String.class, "name", false, "NAME");
         public final static Property Speed = new Property(13, long.class, "speed", false, "SPEED");
-        public final static Property Type = new Property(14, Integer.class, "type", false, "TYPE");
-        public final static Property UserId = new Property(15, String.class, "userId", false, "USER_ID");
+        public final static Property DestPath = new Property(14, String.class, "destPath", false, "DEST_PATH");
+        public final static Property SourcePath = new Property(15, String.class, "sourcePath", false, "SOURCE_PATH");
+        public final static Property Type = new Property(16, Integer.class, "type", false, "TYPE");
+        public final static Property UserId = new Property(17, String.class, "userId", false, "USER_ID");
     }
 
     private final TaskTypeConverter typeConverter = new TaskTypeConverter();
@@ -73,8 +75,10 @@ public class TaskDao extends AbstractDao<Task, String> {
                 "\"STATE\" INTEGER NOT NULL ," + // 11: state
                 "\"NAME\" TEXT," + // 12: name
                 "\"SPEED\" INTEGER NOT NULL ," + // 13: speed
-                "\"TYPE\" INTEGER," + // 14: type
-                "\"USER_ID\" TEXT);"); // 15: userId
+                "\"DEST_PATH\" TEXT," + // 14: destPath
+                "\"SOURCE_PATH\" TEXT," + // 15: sourcePath
+                "\"TYPE\" INTEGER," + // 16: type
+                "\"USER_ID\" TEXT);"); // 17: userId
     }
 
     /** Drops the underlying database table. */
@@ -129,14 +133,24 @@ public class TaskDao extends AbstractDao<Task, String> {
         }
         stmt.bindLong(14, entity.getSpeed());
  
+        String destPath = entity.getDestPath();
+        if (destPath != null) {
+            stmt.bindString(15, destPath);
+        }
+ 
+        String sourcePath = entity.getSourcePath();
+        if (sourcePath != null) {
+            stmt.bindString(16, sourcePath);
+        }
+ 
         TaskType type = entity.getType();
         if (type != null) {
-            stmt.bindLong(15, typeConverter.convertToDatabaseValue(type));
+            stmt.bindLong(17, typeConverter.convertToDatabaseValue(type));
         }
  
         String userId = entity.getUserId();
         if (userId != null) {
-            stmt.bindString(16, userId);
+            stmt.bindString(18, userId);
         }
     }
 
@@ -186,14 +200,24 @@ public class TaskDao extends AbstractDao<Task, String> {
         }
         stmt.bindLong(14, entity.getSpeed());
  
+        String destPath = entity.getDestPath();
+        if (destPath != null) {
+            stmt.bindString(15, destPath);
+        }
+ 
+        String sourcePath = entity.getSourcePath();
+        if (sourcePath != null) {
+            stmt.bindString(16, sourcePath);
+        }
+ 
         TaskType type = entity.getType();
         if (type != null) {
-            stmt.bindLong(15, typeConverter.convertToDatabaseValue(type));
+            stmt.bindLong(17, typeConverter.convertToDatabaseValue(type));
         }
  
         String userId = entity.getUserId();
         if (userId != null) {
-            stmt.bindString(16, userId);
+            stmt.bindString(18, userId);
         }
     }
 
@@ -219,8 +243,10 @@ public class TaskDao extends AbstractDao<Task, String> {
             cursor.getInt(offset + 11), // state
             cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // name
             cursor.getLong(offset + 13), // speed
-            cursor.isNull(offset + 14) ? null : typeConverter.convertToEntityProperty(cursor.getInt(offset + 14)), // type
-            cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15) // userId
+            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14), // destPath
+            cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15), // sourcePath
+            cursor.isNull(offset + 16) ? null : typeConverter.convertToEntityProperty(cursor.getInt(offset + 16)), // type
+            cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17) // userId
         );
         return entity;
     }
@@ -241,8 +267,10 @@ public class TaskDao extends AbstractDao<Task, String> {
         entity.setState(cursor.getInt(offset + 11));
         entity.setName(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
         entity.setSpeed(cursor.getLong(offset + 13));
-        entity.setType(cursor.isNull(offset + 14) ? null : typeConverter.convertToEntityProperty(cursor.getInt(offset + 14)));
-        entity.setUserId(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
+        entity.setDestPath(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setSourcePath(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
+        entity.setType(cursor.isNull(offset + 16) ? null : typeConverter.convertToEntityProperty(cursor.getInt(offset + 16)));
+        entity.setUserId(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
      }
     
     @Override

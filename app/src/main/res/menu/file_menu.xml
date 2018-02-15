@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/btn_upload_tasks"
+        android:icon="@drawable/ic_cloud_upload_deep_orange_300_24dp"
+        android:title="@string/upload"/>
+    <item android:id="@+id/btn_download_tasks"
+        android:icon="@drawable/ic_cloud_download_deep_orange_300_24dp"
+        android:title="@string/download"/>
+</menu>

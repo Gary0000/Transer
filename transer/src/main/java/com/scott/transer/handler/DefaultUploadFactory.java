@@ -3,6 +3,9 @@ package com.scott.transer.handler;
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.manager.ITaskManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2018-01-19 15:45</p>
@@ -19,6 +22,9 @@ public class DefaultUploadFactory implements ITaskHandlerFactory {
     public ITaskHandler create(ITask task, ITaskManager manager) {
         ITaskHandler handler = new DefaultHttpUploadHandler();
         handler.setThreadPool(manager.getTaskThreadPool(task.getType()));
+        Map<String,String> headers = new HashMap<>();
+        headers.put("path",task.getDestPath() + "/");
+        handler.setHeaders(headers);
         handler.setHandlerListenner(callback);
         handler.setTask(task);
         return handler;

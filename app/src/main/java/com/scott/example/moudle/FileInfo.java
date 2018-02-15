@@ -1,5 +1,7 @@
 package com.scott.example.moudle;
 
+import android.text.TextUtils;
+
 import com.scott.example.adapter.IListData;
 
 /**
@@ -24,4 +26,17 @@ public class FileInfo implements IListData{
         return 0;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof FileInfo)) {
+            return false;
+        }
+        FileInfo info = (FileInfo) obj;
+        return TextUtils.equals(info.path,info.path);
+    }
+
+    public interface FILE_TYPE {
+        int DIRECTORY = 0;
+        int FILE = 1;
+    }
 }

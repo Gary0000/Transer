@@ -234,10 +234,6 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 mHandleRunnable.run();
             }
 
-            mStateThread = new Thread(mStateRunnable);
-            mStateThread.setName("speed_" + getTask().getName() + "_thread");
-            mStateThread.setDaemon(true);
-            mStateThread.start();
             mTask.setState(TaskState.STATE_READY);
             //mTask.setLength(fileSize());
             mListenner.onReady(mTask);
@@ -269,6 +265,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mTaskHandleThreadPool.remove(mHandleRunnable);
         }
         mListenner.onStop(mTask);
+        release();
     }
 
     protected void release() {
@@ -291,7 +288,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     }
 
     private void checkParams() {
-        if(TextUtils.isEmpty(getTask().getDataSource())) {
+        if(TextUtils.isEmpty(getTask().getSourceUrl())) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("DataSource can not be a null value,");
             if(getType() == TaskType.TYPE_HTTP_DOWNLOAD) {
@@ -302,7 +299,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             throw new IllegalArgumentException(stringBuilder.toString());
         }
 
-        if(TextUtils.isEmpty(getTask().getDestSource())) {
+        if(TextUtils.isEmpty(getTask().getDestUrl())) {
             StringBuilder builder = new StringBuilder();
             builder.append("DestSource can not be a null value,");
             if(getType() == TaskType.TYPE_HTTP_DOWNLOAD) {
@@ -324,6 +321,10 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         public void run() {
             try {
                 Debugger.error(TAG," ===== START RUN =======");
+                mStateThread = new Thread(mStateRunnable);
+                mStateThread.setName("speed_" + getTask().getName() + "_thread");
+                mStateThread.setDaemon(true);
+                mStateThread.start();
                 checkParams();
                 handle(mTask);
             } catch (Exception e) {

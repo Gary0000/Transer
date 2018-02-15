@@ -11,9 +11,9 @@ import com.scott.annotionprocessor.TaskType;
 
 public interface ITaskBuilder extends ITask {
 
-    ITaskBuilder setDataSource(String dataSource);
+    ITaskBuilder setSourceUrl(String dataSource);
 
-    ITaskBuilder setDestSource(String destSource);
+    ITaskBuilder setDestUrl(String destSource);
 
     ITaskBuilder setSesstionId(String sesstionId);
 
@@ -48,4 +48,8 @@ public interface ITaskBuilder extends ITask {
     ITaskBuilder setSessionId(String sesstionId);
 
     ITaskBuilder setSpeed(long speed);
+
+    ITaskBuilder setDestPath(String destPath);
+
+    ITaskBuilder setSourcePath(String sourcePath);
 }
