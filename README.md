@@ -26,7 +26,7 @@
         <service android:name="com.scott.transer.TranserService"/>
 
 ## 帮助文档
-[文档](https://github.com/shilec/Transer/blob/master/transer_doc)
+[文档](https://github.com/shilec/Transer/blob/master/transer_doc.md)
 
 
 #####开源库使用:</br>
