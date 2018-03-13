@@ -1,6 +1,6 @@
-## 简单的下载或上传(不使用续传功能或者自己保存任务信息):
+### 简单的下载或上传(不使用续传功能或者自己保存任务信息):
 
-#####下载 (示例代码 SmpleDownloadActivity)
+##### 下载 (示例代码 SmpleDownloadActivity)
 
 
         //创建一个任务
@@ -22,7 +22,7 @@
      mHandler.start() 或者
 	 mHandler.stop()
 
-######上传 (示例代码 SimpleUploadActivity)
+###### 上传 (示例代码 SimpleUploadActivity)
 
     task = new TaskBuilder()
                 .setName("test.zip")
@@ -38,7 +38,7 @@
                 .defaultThreadPool(3)
                 .build();
 
-######使用TaskEventBus代替ITaskHandlerCallback (示例代码 SimpleTaskEventBusActivity)
+###### 使用TaskEventBus代替ITaskHandlerCallback (示例代码 SimpleTaskEventBusActivity)
 
 1. 初始化TaskEventBus
 
@@ -66,7 +66,7 @@
 
         见下面 TaskEventBus 的使用
 
-## 自定义ITaskHandler (示例代码 MyUploadHandler)
+### 自定义ITaskHandler (示例代码 MyUploadHandler)
 
 - 默认的handler将不会验证服务端的返回值，继承DefaultDownloadHandler 或 DefaultUploadHandler 适配服务端返回值的验证
 
@@ -110,7 +110,7 @@
 		                .defaultThreadPool(3)
 		                .build();
 
-## 自定义Handler 的Builder,用于增加自定义的参数或配置（示例代码 DefaultDownloadHandler.Builder)
+### 自定义Handler 的Builder,用于增加自定义的参数或配置（示例代码 DefaultDownloadHandler.Builder)
 
 		public static class Builder extends BaseTaskHandler.Builder<Builder,MyUploadHandler> {
 		
@@ -137,7 +137,7 @@
 		    }
 
 
-## 使用任务管理:
+### 使用任务管理:
 
 1. 配置传输服务
 
@@ -227,7 +227,7 @@
 		       //TODO update ui on any processtype
 		}
 
-#####TaskScriber
+##### TaskScriber
 > 默认情况下TaskScriber 会接受所有任务变更的消息，也可以指定只接受某个操作的消息例如：
 
 		@TaskSubscriber(taskType = TYPE_DOWNLOAD, processType = TYPE_CHANGE_TASK)
