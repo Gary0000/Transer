@@ -29,7 +29,7 @@
 [文档](https://github.com/shilec/Transer/blob/master/transer_doc.md)
 
 
-#####开源库使用:</br>
+##### 开源库使用:</br>
 
 <a href="http://jakewharton.github.io/butterknife/">ButterKnife</a></br>
 <a href="https://github.com/yanzhenjie/AndPermission">AndPermission</a></br>
@@ -40,18 +40,18 @@
 <a href="https://github.com/greenrobot/greenDAO">GreenDao</a></br>
 <a href="https://github.com/square/okhttp">OkHttp</a></br>
 
-#####功能更新日志:
+##### 功能更新日志:
 
 - 2017/1/2 添加下载限速，设置分片大小
 - 2017/1/21 简化传输器配置，修复部分bug
 - 2018/2/6 增加Processor动态代理操作任务
 - 2018/2/6 增加JitPack 依赖的支持
 
-#####接下来将会增加的功能：
+##### 接下来将会增加的功能：
 
 - 其他方式的文件传输支持
 - 优化性能
 
-#####服务端测试Demo详见：
+##### 服务端测试Demo详见：
 
 - <a href="https://github.com/shilec/TranserServer">TranserServer</a>
