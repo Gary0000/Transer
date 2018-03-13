@@ -256,10 +256,10 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         isExit = true;
         mTask.setState(TaskState.STATE_STOP);
         //mTaskHandleThreadPool.remove(mHandleRunnable);
-        Thread thread = Thread.currentThread();
-        if(thread.getId() != Looper.getMainLooper().getThread().getId()) {
-            thread.interrupt();
-        }
+//        Thread thread = Thread.currentThread();
+//        if(thread.getId() != Looper.getMainLooper().getThread().getId()) {
+//            thread.interrupt();
+//        }
 
         if(mTaskHandleThreadPool != null) {
             mTaskHandleThreadPool.remove(mHandleRunnable);

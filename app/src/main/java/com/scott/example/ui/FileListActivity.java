@@ -90,7 +90,8 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
             tasks.add(task);
         }
 
-        ITaskProcessor processor = ProcessorDynamicProxyFactory.getInstance()
+        ITaskProcessor processor = ProcessorDynamicProxyFactory
+                .getInstance()
                 .create();
         processor.addTasks(tasks);
     }

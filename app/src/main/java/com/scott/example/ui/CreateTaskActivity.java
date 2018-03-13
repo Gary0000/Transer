@@ -26,6 +26,10 @@ import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
+/**
+ * 使用FileListActivity创建任务
+ */
+@Deprecated
 public class CreateTaskActivity extends BaseActivity {
 
     @BindView(R.id.edit_source)

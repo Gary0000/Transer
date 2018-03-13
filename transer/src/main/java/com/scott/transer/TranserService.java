@@ -189,7 +189,10 @@ public class TranserService extends Service implements ITaskProcessCallback{
     public void onFinished(TaskType taskType, ProcessType type,List<ITask> tasks) {
         TaskEventBus.getDefault().getDispatcher().dispatchTasks(taskType,type,tasks);
         //注册了TYPE_DEFAULT 会收到任何变更
-        TaskEventBus.getDefault().getDispatcher().dispatchTasks(taskType,ProcessType.TYPE_DEFAULT,tasks);
+        if(type != ProcessType.TYPE_DEFAULT) {
+            TaskEventBus.getDefault().getDispatcher().
+                    dispatchTasks(taskType, ProcessType.TYPE_DEFAULT, tasks);
+        }
     }
 
 

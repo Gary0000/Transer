@@ -147,7 +147,7 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
             builder.addMethod(method.build());
 
             for(TaskType type : TaskType.values()) {
-                method = MethodSpec.methodBuilder("On" + type.name())
+                method = MethodSpec.methodBuilder("on" + type.name())
                         .addParameter(ProcessType.class, "processType")
                         .addParameter(List.class, "tasks",Modifier.FINAL)
                         .addModifiers(Modifier.PRIVATE)
@@ -169,11 +169,10 @@ public class TaskEventAnnotionProcessor extends AbstractProcessor {
 
     private String generateCurTypeCode(Map<TaskType,List<Map<String,TaskSubcriberParams>>> taskTypeMethods) {
         StringBuilder sb = new StringBuilder();
-        List<Map<String,TaskSubcriberParams>> params = null;
         sb.append("switch(taskType) {\n");
         for(TaskType taskType : taskTypeMethods.keySet()) {
             sb.append("    case " + taskType + ": \n");
-            sb.append("    On" + taskType + "(processType,tasks);\n");
+            sb.append("    on" + taskType + "(processType,tasks);\n");
             sb.append("    break;\n");
 
         }
