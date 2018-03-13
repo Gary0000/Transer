@@ -25,6 +25,22 @@
 
         <service android:name="com.scott.transer.TranserService"/>
 
+4. 在 app 的 application 的 onCreate 中初始化TranserService
+
+        TranserConfig config = new TranserConfig.Builder()
+
+                .setDownloadConcurrentThreadSize(3)
+
+                .setUploadConcurrentThreadSize(3)
+
+                .setSupportProcessorDynamicProxy(true)
+
+                .build();
+
+        TranserService.init(this,config);
+       
+       
+
 ## 帮助文档
 [文档](https://github.com/shilec/Transer/blob/master/transer_doc.md)
 
