@@ -6,7 +6,7 @@ import android.content.Intent;
 import com.scott.annotionprocessor.ITaskEventDispatcher;
 import com.scott.annotionprocessor.TaskEventAnnotionProcessor;
 import com.scott.annotionprocessor.TaskSubcriberParams;
-import com.scott.transer.ITaskCmd;
+import com.scott.transer.TaskCmd;
 import com.scott.transer.TranserService;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
@@ -31,7 +31,7 @@ import java.util.Queue;
 
 public class EventDispatcher implements ITaskEventDispatcher {
 
-    private Queue<ITaskCmd> mCmdQueue = new ArrayDeque<>();
+    private Queue<TaskCmd> mCmdQueue = new ArrayDeque<>();
     private Context mContext;
     private List<Object> mScribers = new ArrayList<>();
     private Map<Object,TaskSubcriberParams> mScriberParams = new HashMap<>();
@@ -61,7 +61,7 @@ public class EventDispatcher implements ITaskEventDispatcher {
      * @param cmd
      */
     @Deprecated
-    public void dispatchCmd(ITaskCmd cmd) {
+    public void dispatchCmd(TaskCmd cmd) {
         synchronized (mCmdQueue) {
             mCmdQueue.add(cmd);
             Intent intent = new Intent(mContext, TranserService.class);
@@ -71,7 +71,7 @@ public class EventDispatcher implements ITaskEventDispatcher {
     }
 
     //防止Intent Extra size 限制
-    public synchronized ITaskCmd getTaskCmd() {
+    public synchronized TaskCmd getTaskCmd() {
         return mCmdQueue.poll();
     }
 

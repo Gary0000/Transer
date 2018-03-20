@@ -13,9 +13,8 @@ import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
 import com.scott.example.utils.Contacts;
-import com.scott.transer.ITaskCmd;
-import com.scott.transer.TaskBuilder;
-import com.scott.transer.TaskCmdBuilder;
+import com.scott.transer.Task;
+import com.scott.transer.TaskCmd;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
 
@@ -111,7 +110,7 @@ public class CreateTaskActivity extends BaseActivity {
     public void createTaskByEventBus() {
 
         ITask task = createTask();
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTaskType(task_type)
                 .setProcessType(ProcessType.TYPE_ADD_TASK)
                 .setTask(task)
@@ -151,7 +150,7 @@ public class CreateTaskActivity extends BaseActivity {
         }
 
 
-        ITask task = new TaskBuilder()
+        ITask task = new Task.Builder()
                 .setTaskType(task_type)
                 .setSourceUrl(source)
                 .setDestUrl(dest)

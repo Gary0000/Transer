@@ -3,7 +3,7 @@ package com.scott.transer.event;
 import android.content.Context;
 
 import com.scott.annotionprocessor.ThreadMode;
-import com.scott.transer.ITaskCmd;
+import com.scott.transer.TaskCmd;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +65,7 @@ public class TaskEventBus {
      * @param cmd
      */
     @Deprecated
-    public synchronized void execute(ITaskCmd cmd) {
+    public synchronized void execute(TaskCmd cmd) {
         if(mDispatcher == null) {
             return;
         }

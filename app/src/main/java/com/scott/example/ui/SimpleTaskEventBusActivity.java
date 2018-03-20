@@ -13,7 +13,7 @@ import com.scott.example.BaseActivity;
 import com.scott.example.R;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
-import com.scott.transer.TaskBuilder;
+import com.scott.transer.Task;
 import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.handler.DefaultHttpUploadHandler;
@@ -69,7 +69,7 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        task = new TaskBuilder()
+        task = new Task.Builder()
                 .setName("test.zip")
                 .setTaskId("1233444")
                 .setSessionId("123123123131")

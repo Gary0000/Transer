@@ -10,7 +10,7 @@ import com.scott.example.R;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.SimpleTaskHandlerListenner;
-import com.scott.transer.TaskBuilder;
+import com.scott.transer.Task;
 import com.scott.transer.handler.DefaultHttpUploadHandler;
 import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
@@ -62,7 +62,7 @@ public class SimpleUploadActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        task = new TaskBuilder()
+        task = new Task.Builder()
                 .setName(FILE_NAME)
                 .setTaskId("1233444")
                 .setSessionId("123123123131")

@@ -2,7 +2,7 @@ package com.scott.transer.manager;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
-import com.scott.transer.ITaskCmd;
+import com.scott.transer.TaskCmd;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.transer.handler.ITaskHolder;
 
@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public interface ITaskManager {
 
     // 执行用户发来的命令
-    void process(ITaskCmd cmd);
+    void process(TaskCmd cmd);
 
     //设置处理任务的处理器 例如:对任务的增删改查
     void setTaskProcessor(ITaskInternalProcessor operation);

@@ -1,13 +1,11 @@
 package com.scott.example.ui;
 
-import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +18,12 @@ import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.BaseFragment;
 import com.scott.example.R;
 import com.scott.example.adapter.TaskListRecyclerAdapter;
-import com.scott.transer.ITaskCmd;
-import com.scott.transer.TaskCmdBuilder;
+import com.scott.transer.TaskCmd;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * <P>Author: shijiale</P>
@@ -77,7 +73,7 @@ public class TaskFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         super.onResume();
         TaskEventBus.getDefault().regesit(this);
 
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTaskType(mTaskType)
                 .setProcessType(ProcessType.TYPE_QUERY_TASKS_ALL)
                 .build();
@@ -120,7 +116,7 @@ public class TaskFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTaskType(mTaskType)
                 .setProcessType(ProcessType.TYPE_QUERY_TASKS_ALL)
                 .build();

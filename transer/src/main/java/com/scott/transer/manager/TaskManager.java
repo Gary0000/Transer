@@ -1,7 +1,7 @@
 package com.scott.transer.manager;
 
 import com.scott.annotionprocessor.ITask;
-import com.scott.transer.ITaskCmd;
+import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.annotionprocessor.TaskType;
@@ -32,7 +32,7 @@ public class TaskManager implements ITaskManager {
 
 
     @Override
-    public void process(ITaskCmd cmd) {
+    public void process(TaskCmd cmd) {
 
         switch (cmd.getProceeType()) {
             case TYPE_ADD_TASKS:

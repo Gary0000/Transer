@@ -2,8 +2,7 @@ package com.scott.transer.manager;
 
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
-import com.scott.transer.ITaskCmd;
-import com.scott.transer.TaskCmdBuilder;
+import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
 import com.scott.transer.handler.ITaskHandlerCallback;
 import com.scott.transer.handler.ITaskHandlerFactory;
@@ -52,7 +51,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     }
 
     @Override
-    public void process(final ITaskCmd cmd) {
+    public void process(final TaskCmd cmd) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -122,7 +121,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 
     @Override
     public void onReady(ITask task) {
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
                 .build();
@@ -132,7 +131,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     @Override
     public void onStart(ITask task) {
         //Debugger.error(TAG,"start = " + params);
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
                 .build();
@@ -142,7 +141,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     @Override
     public void onStop(ITask task) {
         //Debugger.error(TAG,"stop = " + params);
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
                 .build();
@@ -152,7 +151,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     @Override
     public void onError(int code, ITask task) {
         //Debugger.error(TAG,"error = " + params);
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setState(TaskState.STATE_STOP)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
@@ -162,7 +161,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 
     @Override
     public void onSpeedChanged(long speed, ITask task) {
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK_WTIHOUT_SAVE)
                 .setState(TaskState.STATE_RUNNING)
@@ -174,7 +173,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     @Override
     public void onPiceSuccessful(ITask task) {
         Debugger.error(TAG," PICE STATE = " + task.getState());
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
                 .setState(TaskState.STATE_RUNNING)
@@ -185,7 +184,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     @Override
     public void onFinished(ITask task) {
         //Debugger.error(TAG,"finished = " + task);
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
                 .setState(TaskState.STATE_FINISH)

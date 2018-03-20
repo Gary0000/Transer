@@ -24,8 +24,7 @@ import com.scott.example.http.IRequestService;
 import com.scott.example.http.RetrofitSingleton;
 import com.scott.example.moudle.FileInfo;
 import com.scott.example.utils.Contacts;
-import com.scott.transer.ITaskBuilder;
-import com.scott.transer.TaskBuilder;
+import com.scott.transer.Task;
 import com.scott.transer.manager.ITaskProcessor;
 import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
 import com.scott.transer.utils.Debugger;
@@ -73,7 +72,7 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
     private void createTasks(TaskType taskType) {
         List<ITask> tasks = new ArrayList<>();
         for(FileInfo info : mAdapter.getCheckedItems()) {
-            ITaskBuilder builder = new TaskBuilder()
+            Task.Builder builder = new Task.Builder()
                     .setTaskType(taskType)
                     .setName(info.name);
             if(taskType == TaskType.TYPE_HTTP_DOWNLOAD) {

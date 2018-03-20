@@ -6,8 +6,7 @@ import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
-import com.scott.transer.ITaskCmd;
-import com.scott.transer.TaskCmdBuilder;
+import com.scott.transer.TaskCmd;
 import com.scott.transer.event.TaskEventBus;
 
 import butterknife.ButterKnife;
@@ -43,7 +42,7 @@ public class SimpleTaskListActivity extends BaseActivity {
 
     @OnClick(R.id.btn_stop_all)
     public void stopAll() {
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTaskType(taskType)
                 .setProcessType(ProcessType.TYPE_STOP_ALL)
                 .build();
@@ -53,7 +52,7 @@ public class SimpleTaskListActivity extends BaseActivity {
 
     @OnClick(R.id.btn_start_all)
     public void startAll() {
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTaskType(taskType)
                 .setProcessType(ProcessType.TYPE_START_ALL)
                 .build();
@@ -62,7 +61,7 @@ public class SimpleTaskListActivity extends BaseActivity {
 
     @OnClick(R.id.btn_delete_all)
     public void deleteAll() {
-        ITaskCmd cmd = new TaskCmdBuilder()
+        TaskCmd cmd = new TaskCmd.Builder()
                 .setTaskType(taskType)
                 .setProcessType(ProcessType.TYPE_DELETE_TASKS_ALL)
                 .build();

@@ -95,7 +95,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
         //使用ITaskProcessor 动态代理执行任务操作 将不会走这里。
         switch (action) {
             case ACTION_EXECUTE_CMD:
-                ITaskCmd cmd = TaskEventBus.getDefault().getDispatcher().getTaskCmd();
+                TaskCmd cmd = TaskEventBus.getDefault().getDispatcher().getTaskCmd();
                 if(cmd != null) {
                     mTaskManagerProxy.process(cmd);
                 }

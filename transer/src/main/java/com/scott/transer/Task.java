@@ -46,30 +46,6 @@ public class Task implements ITask {
     private String userId;
 
 
-    public Task(ITaskBuilder builder) {
-        this.dataSource = builder.getSourceUrl();
-        this.destSource = builder.getDestUrl();
-        this.sesstionId = builder.getSesstionId();
-        this.length = builder.getLength();
-        this.startOffset = builder.getStartOffset();
-        this.endOffset = builder.getEndOffset();
-        this.taskId = builder.getTaskId();
-        this.groupId = builder.getGroupId();
-        this.groupName = builder.getGroupName();
-        this.completeTime = builder.getCompleteTime();
-        this.completeLength = builder.getCompleteLength();
-        this.state = builder.getState();
-        this.type = builder.getType();
-        this.userId = builder.getUserId();
-        this.name = builder.getName();
-        this.speed = builder.getSpeed();
-        this.destPath = builder.getDestPath();
-        this.sourcePath = builder.getSourcePath();
-    }
-
-
-
-
     @Generated(hash = 572294146)
     public Task(String dataSource, String destSource, String sesstionId,
             long length, long startOffset, long endOffset, String taskId,
@@ -308,5 +284,137 @@ public class Task implements ITask {
         this.sourcePath = sourcePath;
     }
 
+    
+    public static class Builder {
+        
+        public Builder() {
+            task = new Task();
+        }
+        
+        private Task task;
+        
+        public Builder setSourceUrl(String dataSource) {
+            task.dataSource = dataSource;
+            return this;
+        }
 
+        
+        public Builder setDestUrl(String destSource) {
+            task.destSource = destSource;
+            return this;
+        }
+
+        
+        public Builder setSesstionId(String sesstionId) {
+            task.sesstionId = sesstionId;
+            return this;
+        }
+
+        
+        public Builder setLength(long length) {
+            task.length = length;
+            return this;
+        }
+
+        
+        public Builder setStartoffset(long offset) {
+            task.startOffset = offset;
+            return this;
+        }
+
+        
+        public Builder setEndOffset(long offset) {
+            task.endOffset = offset;
+            return this;
+        }
+
+        
+        public Builder setGroupId(String groupId) {
+            task.groupId = groupId;
+            return this;
+        }
+
+        
+        public Builder setGroupName(String groupName) {
+            task.groupName = groupName;
+            return this;
+        }
+
+        
+        public Builder setCompleteTime(long completeTime) {
+            task.completeTime = completeTime;
+            return this;
+        }
+
+        
+        public Builder setCompleteLength(long length) {
+            task.completeLength = length;
+            return this;
+        }
+
+        
+        public Builder setState(int state) {
+            task.state = state;
+            return this;
+        }
+
+        
+        public Builder setTaskType(TaskType type) {
+            task.type = type;
+            return this;
+        }
+
+        
+        public Builder setUserId(String userId) {
+            task.userId = userId;
+            return this;
+        }
+
+        
+        public ITask build() {
+            return task;
+        }
+
+        
+        public Builder setTask(Task task) {
+            this.task = task;
+            return this;
+        }
+
+        
+        public Builder setName(String name) {
+            task.name = name;
+            return this;
+        }
+
+        
+        public Builder setTaskId(String taskId) {
+            task.taskId = taskId;
+            return this;
+        }
+
+        
+        public Builder setSessionId(String sesstionId) {
+            task.sesstionId = sesstionId;
+            return this;
+        }
+
+        
+        public Builder setSpeed(long speed) {
+            task.speed = speed;
+            return this;
+        }
+
+        
+        public Builder setDestPath(String destPath) {
+            task.destPath = destPath;
+            return this;
+        }
+
+        
+        public Builder setSourcePath(String sourcePath) {
+            task.sourcePath = sourcePath;
+            return this;
+        }
+    }
 }

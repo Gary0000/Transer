@@ -12,7 +12,7 @@ import com.scott.example.R;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.SimpleTaskHandlerListenner;
-import com.scott.transer.TaskBuilder;
+import com.scott.transer.Task;
 import com.scott.transer.handler.DefaultHttpDownloadHandler;
 import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
@@ -70,7 +70,7 @@ public class SimpleDownloadActivity extends BaseActivity {
         tvMd5.setText(FILE_MD5);
 
         //创建一个任务
-        ITask task = new TaskBuilder()
+        ITask task = new Task.Builder()
                 .setName(FILE_NAME) //设置任务名称
                 .setSourceUrl(Contacts.API.getUrl(Contacts.API.DOWNLOAD_URL))  //设置数据源
                 .setDestUrl(Contacts.LOCAL_STORAGE.getBaseSavePath()) //设置目标路径

@@ -12,54 +12,108 @@ import java.util.List;
  * <P>Email: shilec@126.com</p>
  */
 
-public class TaskCmd implements ITaskCmd{
+public class TaskCmd {
 
-    private ITaskCmdBuilder mBuilder;
+    private TaskType taskType;
+    private ProcessType processType;
+    private ITask task;
+    private List<ITask> tasks;
+    private String[] taskids;
+    private String taskId;
+    private int state;
+    private String groupId;
 
-    TaskCmd(ITaskCmdBuilder builder) {
-        mBuilder = builder;
-    }
-
-    @Override
     public String getTaskId() {
-        return mBuilder.getTask() == null ?
-                mBuilder.getTaskId() : mBuilder.getTask().getTaskId();
+        return taskId;
     }
 
-    @Override
     public String getGroupId() {
-        return mBuilder.getTask() == null ?
-                mBuilder.getGroupId() : mBuilder.getTask().getGroupId();
+        return groupId;
     }
 
-    @Override
     public int getState() {
-        return mBuilder.getState();
+        return state;
     }
 
-    @Override
     public ITask getTask() {
-        return mBuilder.getTask();
+        return task;
     }
 
-    @Override
     public List<ITask> getTasks() {
-        return mBuilder.getTasks();
+        return tasks;
     }
 
-    @Override
     public String[] getTaskIds() {
-        return mBuilder.getTaskIds();
+        return taskids;
     }
 
-    @Override
     public ProcessType getProceeType() {
-        return mBuilder.getProceeType();
+        return processType;
     }
 
-    @Override
     public TaskType getTaskType() {
-        return mBuilder.getTask() == null ?
-                mBuilder.getTaskType() : mBuilder.getTask().getType();
+        return taskType;
+    }
+    
+    public static class Builder {
+        private TaskCmd cmd;
+        
+        public Builder setTaskId(String taskId) {
+            cmd.taskId = taskId;
+            return this;
+        }
+
+        
+        public Builder setGroupId(String groupId) {
+            cmd.groupId = groupId;
+            return this;
+        }
+
+        
+        public Builder setState(int state) {
+            cmd.state = state;
+            return this;
+        }
+
+        
+        public Builder setTask(ITask task) {
+            cmd.task = task;
+            return this;
+        }
+
+        
+        public Builder setTasks(List<ITask> tasks) {
+            cmd.tasks = tasks;
+            return this;
+        }
+
+        
+        public Builder setTaskIds(String[] taskIds) {
+            cmd.taskids = taskIds;
+            return this;
+        }
+
+        
+        public Builder setProcessType(ProcessType type) {
+            cmd.processType = type;
+            return this;
+        }
+
+        
+        public Builder setTaskType(TaskType type) {
+            cmd.taskType = type;
+            return this;
+        }
+
+        
+        public Builder setTaskCmd(TaskCmd cmd) {
+            this.cmd = cmd;
+            return this;
+        }
+
+        
+        public TaskCmd build() {
+            return cmd;
+        }
     }
 }

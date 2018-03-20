@@ -9,8 +9,7 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.example.R;
 import com.scott.example.utils.TaskUtils;
-import com.scott.transer.ITaskCmdBuilder;
-import com.scott.transer.TaskCmdBuilder;
+import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
 
@@ -53,7 +52,7 @@ public class TaskListRecyclerAdapter extends BaseQuickAdapter<ITask,BaseViewHold
 
     @Override
     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-        ITaskCmdBuilder builder = new TaskCmdBuilder()
+        TaskCmd.Builder builder = new TaskCmd.Builder()
                 .setTask(getItem(position));
         switch (view.getId()) {
             case R.id.btn_start:
