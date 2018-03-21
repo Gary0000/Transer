@@ -34,7 +34,7 @@ public class SimpleTaskListActivity extends BaseActivity {
         bundle.putSerializable(TaskFragment.EXTRA_TASK_TYPE, taskType);
         taskFragment.setArguments(bundle);
 
-        getFragmentManager()
+        getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.rl_container,taskFragment)
                 .commit();

@@ -23,15 +23,28 @@ public class TaskCmd {
     private int state;
     private String groupId;
 
+    private TaskCmd() {
+
+    }
+
     public String getTaskId() {
+        if(task != null) {
+            return task.getTaskId();
+        }
         return taskId;
     }
 
     public String getGroupId() {
+        if(task != null) {
+            return task.getGroupId();
+        }
         return groupId;
     }
 
     public int getState() {
+        if(task != null) {
+            return task.getState();
+        }
         return state;
     }
 
@@ -52,11 +65,14 @@ public class TaskCmd {
     }
 
     public TaskType getTaskType() {
+        if(task != null) {
+            return task.getType();
+        }
         return taskType;
     }
     
     public static class Builder {
-        private TaskCmd cmd;
+        private TaskCmd cmd = new TaskCmd();
         
         public Builder setTaskId(String taskId) {
             cmd.taskId = taskId;

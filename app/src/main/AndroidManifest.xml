@@ -30,7 +30,8 @@
         <activity android:name=".ui.SimpleTaskListActivity" />
         <activity android:name=".BaseActivity" />
         <activity android:name=".ui.FileListActivity" />
-        <activity android:name=".ui.SimpleTaskEventBusActivity"></activity>
+        <activity android:name=".ui.SimpleTaskEventBusActivity" />
+        <activity android:name=".ui.TaskGroupActivity"></activity>
     </application>
 
 </manifest>

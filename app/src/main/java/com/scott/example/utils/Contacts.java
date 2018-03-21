@@ -14,7 +14,7 @@ public class Contacts {
 
     public static class API {
 
-        public static final String HOST_URL = "192.168.1.103";
+        public static final String HOST_URL = "192.168.1.112";
 
         public static final String HOST_PORT = "8080";
 

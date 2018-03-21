@@ -74,4 +74,9 @@ public class MainActivity extends BaseActivity {
     public void createTask() {
         startActivity(new Intent(this,CreateTaskActivity.class));
     }
+
+    @OnClick(R.id.btn_task_group)
+    public void taskGroupManage() {
+        startActivity(new Intent(this,TaskGroupActivity.class));
+    }
 }

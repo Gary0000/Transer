@@ -71,9 +71,15 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
 
     private void createTasks(TaskType taskType) {
         List<ITask> tasks = new ArrayList<>();
+
+        String groupId = System.currentTimeMillis() + "";
+        String groupName = mAdapter.getCheckedItems().get(0).name;
+
         for(FileInfo info : mAdapter.getCheckedItems()) {
             Task.Builder builder = new Task.Builder()
                     .setTaskType(taskType)
+                    .setGroupId(groupId)
+                    .setGroupName(groupName)
                     .setName(info.name);
             if(taskType == TaskType.TYPE_HTTP_DOWNLOAD) {
                 builder.setSourceUrl(Contacts.API.getUrl(Contacts.API.DOWNLOAD_URL))

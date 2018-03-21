@@ -8,6 +8,7 @@
     android:background="#eeeeeeee"
     android:padding="10dp"
     android:layout_marginBottom="4dp"
+    android:descendantFocusability="blocksDescendants"
     tools:context="com.scott.example.ui.SimpleDownloadActivity">
 
     <TextView
