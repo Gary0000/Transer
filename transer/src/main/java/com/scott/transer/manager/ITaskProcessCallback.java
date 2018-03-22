@@ -15,6 +15,6 @@ import java.util.List;
 
 public interface ITaskProcessCallback {
 
-    void onFinished(TaskType taskType, ProcessType processType, List<ITask> tasks);
+    void onFinished(String userId,TaskType taskType, ProcessType processType, List<ITask> tasks);
 
 }

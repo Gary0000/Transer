@@ -1,5 +1,7 @@
 package com.scott.transer.manager;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.TaskState;
@@ -64,9 +66,15 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public void deleteGroup(String groupId) {
+    public void deleteGroup(String groupId,String userId) {
+        if(TextUtils.isEmpty(groupId)) {
+            throw new IllegalArgumentException("groupId can " +
+                    "not be a null value!");
+        }
+
         for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getGroupId() == groupId) {
+            if(holder.getTask().getGroupId() == groupId &&
+                    holder.getTask().getUserId() == userId) {
                 mTasks.remove(holder);
                 ITaskHandlerHolder h = (ITaskHandlerHolder) holder;
                 if(h.getTaskHandler() != null) {
@@ -92,10 +100,11 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public void deleteCompleted(TaskType type) {
+    public void deleteCompleted(TaskType type,String userId) {
         for(ITaskHolder holder : mTasks) {
             if(holder.getTask().getState() == TaskState.STATE_FINISH &&
-                    holder.getType() == type) {
+                    holder.getType() == type &&
+                    holder.getTask().getUserId() == userId) {
                 mTasks.remove(holder);
                 ITaskHandlerHolder h = (ITaskHandlerHolder) holder;
                 if(h.getTaskHandler() != null) {
@@ -106,9 +115,11 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public void delete(int state,TaskType type) {
+    public void delete(int state,TaskType type,String userId) {
         for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getState() == state && holder.getType() == type) {
+            if(holder.getTask().getState() == state &&
+                    holder.getType() == type &&
+                    holder.getTask().getUserId() == userId) {
                 mTasks.remove(holder);
                 ITaskHandlerHolder h = (ITaskHandlerHolder) holder;
                 if(h.getTaskHandler() != null) {
@@ -119,12 +130,12 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public void deleteAll(TaskType type) {
+    public void deleteAll(TaskType type,String userId) {
 
         Iterator<ITaskHolder> iterator = mTasks.iterator();
         while (iterator.hasNext()) {
             ITaskHolder next = iterator.next();
-            if(next.getType() == type) {
+            if(next.getType() == type && next.getTask().getUserId() == userId) {
                 ITaskHandlerHolder h = (ITaskHandlerHolder) next;
                 if(h.getTaskHandler() != null) {
                     h.getTaskHandler().stop();
@@ -158,10 +169,11 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public List<ITask> getGroup(String groupId) {
+    public List<ITask> getGroup(String groupId,String userId) {
         List<ITask> tasks = new ArrayList<>();
         for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getGroupId() == groupId) {
+            if(holder.getTask().getGroupId() == groupId &&
+                    holder.getTask().getUserId() == userId) {
                 tasks.add(holder.getTask());
             }
         }
@@ -169,10 +181,11 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public List<ITask> getAllTasks(TaskType type) {
+    public List<ITask> getAllTasks(TaskType type,String userId) {
         List<ITask> tasks = new ArrayList<>();
         for(ITaskHolder holder : mTasks) {
-            if(type == holder.getType()) {
+            if(type == holder.getType() &&
+                    TextUtils.equals(userId,holder.getTask().getUserId())) {
                 tasks.add(holder.getTask());
             }
         }
@@ -180,10 +193,12 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public List<ITask> getTasks(int state,TaskType type) {
+    public List<ITask> getTasks(int state,TaskType type,String userId) {
         List<ITask> tasks = new ArrayList<>();
         for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getState() == state && type == holder.getType()) {
+            if(holder.getTask().getState() == state
+                    && type == holder.getType() &&
+                    TextUtils.equals(userId,holder.getTask().getUserId())) {
                 tasks.add(holder.getTask());
             }
         }
@@ -195,7 +210,7 @@ public class TaskProcessor implements ITaskInternalProcessor {
         Debugger.error(TAG,"STATE === " + task.getState());
         for(ITaskHolder holder : mTasks) {
             ITask task1 = holder.getTask();
-            if(task1.getTaskId() == task.getTaskId()) {
+            if(TextUtils.equals(task.getTaskId(),task1.getTaskId())) {
                 holder.setTask(task);
                 if(holder.getTask().getState() == TaskState.STATE_FINISH) {
                     ((ITaskHandlerHolder)holder).setTaskHandler(null);
@@ -212,9 +227,8 @@ public class TaskProcessor implements ITaskInternalProcessor {
 
     @Override
     public void start(String taskId) {
-
         for(ITaskHolder h : mTasks) {
-            if(h.getTask().getTaskId() == taskId) {
+            if(TextUtils.equals(h.getTask().getTaskId(),taskId)) {
                 startOrStop(h,true);
                 break;
             }
@@ -237,18 +251,20 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public void startGroup(String groupId) {
+    public void startGroup(String groupId,String userId) {
         for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getGroupId() == groupId) {
+            if(TextUtils.equals(holder.getTask().getGroupId(),groupId)
+                    && TextUtils.equals(holder.getTask().getUserId(),userId)) {
                 startOrStop(holder,true);
             }
         }
     }
 
     @Override
-    public void startAll(TaskType taskType) {
+    public void startAll(TaskType taskType,String userId) {
         for(ITaskHolder holder : mTasks) {
-            if(holder.getType() == taskType) {
+            if(holder.getType() == taskType &&
+                    TextUtils.equals(holder.getTask().getUserId(),userId)) {
                 startOrStop(holder, true);
             }
         }
@@ -257,7 +273,7 @@ public class TaskProcessor implements ITaskInternalProcessor {
     @Override
     public void stop(String taskId) {
         for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getTaskId() == taskId) {
+            if(TextUtils.equals(holder.getTask().getTaskId(),taskId)) {
                 startOrStop(holder,false);
                 break;
             }
@@ -265,18 +281,20 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public void stopGroup(String groupId) {
+    public void stopGroup(String groupId,String userId) {
         for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getGroupId() == groupId) {
+            if(TextUtils.equals(holder.getTask().getGroupId(),groupId)
+                    && TextUtils.equals(holder.getTask().getUserId(),userId)) {
                 startOrStop(holder,false);
             }
         }
     }
 
     @Override
-    public void stopAll(TaskType taskType) {
+    public void stopAll(TaskType taskType,String userId) {
         for(ITaskHolder holder : mTasks) {
-            if(holder.getType() == taskType) {
+            if(holder.getType() == taskType &&
+                    TextUtils.equals(holder.getTask().getUserId(),userId)) {
                 startOrStop(holder, false);
             }
         }

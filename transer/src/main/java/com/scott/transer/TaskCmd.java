@@ -22,6 +22,11 @@ public class TaskCmd {
     private String taskId;
     private int state;
     private String groupId;
+    private String userId;
+
+    public String getUserId() {
+        return userId;
+    }
 
     private TaskCmd() {
 
@@ -79,7 +84,11 @@ public class TaskCmd {
             return this;
         }
 
-        
+        public Builder setUserId(String userId) {
+            cmd.userId = userId;
+            return this;
+        }
+
         public Builder setGroupId(String groupId) {
             cmd.groupId = groupId;
             return this;

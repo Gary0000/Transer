@@ -18,6 +18,7 @@ import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.BaseFragment;
 import com.scott.example.R;
 import com.scott.example.adapter.TaskListRecyclerAdapter;
+import com.scott.example.utils.Contacts;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.utils.Debugger;
@@ -74,6 +75,7 @@ public class TaskFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         TaskEventBus.getDefault().regesit(this);
 
         TaskCmd cmd = new TaskCmd.Builder()
+                .setUserId(Contacts.USER_ID)
                 .setTaskType(mTaskType)
                 .setProcessType(ProcessType.TYPE_QUERY_TASKS_ALL)
                 .build();

@@ -25,6 +25,7 @@ public class BaseActivity extends AppCompatActivity {
     private TextView mTvTitle;
     private TextView mTvSelect;
     private TextView mTvSubmit;
+    private TextView mTvUserSelect;
 
     protected TextView getSelectView() {
         return mTvSelect;
@@ -32,6 +33,10 @@ public class BaseActivity extends AppCompatActivity {
 
     protected TextView getSubmitView() {
         return mTvSubmit;
+    }
+
+    protected TextView getSwitchUserView() {
+        return mTvUserSelect;
     }
 
     @Override
@@ -44,9 +49,11 @@ public class BaseActivity extends AppCompatActivity {
         mTvSelect = findViewById(R.id.tv_select);
         mTvTitle = findViewById(R.id.tv_title);
         mTvSubmit = findViewById(R.id.tv_submit);
+        mTvUserSelect = findViewById(R.id.tv_user);
 
-        mTvSelect.setVisibility(View.INVISIBLE);
-        mTvSubmit.setVisibility(View.INVISIBLE);
+        mTvSelect.setVisibility(View.GONE);
+        mTvSubmit.setVisibility(View.GONE);
+        mTvUserSelect.setVisibility(View.GONE);
         findViewById(R.id.iv_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

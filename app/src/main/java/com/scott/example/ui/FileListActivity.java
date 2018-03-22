@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.scott.annotionprocessor.ITask;
+import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
@@ -25,6 +26,9 @@ import com.scott.example.http.RetrofitSingleton;
 import com.scott.example.moudle.FileInfo;
 import com.scott.example.utils.Contacts;
 import com.scott.transer.Task;
+import com.scott.transer.TaskCmd;
+import com.scott.transer.TranserService;
+import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.manager.ITaskProcessor;
 import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
 import com.scott.transer.utils.Debugger;
@@ -77,6 +81,7 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
 
         for(FileInfo info : mAdapter.getCheckedItems()) {
             Task.Builder builder = new Task.Builder()
+                    .setUserId(Contacts.USER_ID)
                     .setTaskType(taskType)
                     .setGroupId(groupId)
                     .setGroupName(groupName)
@@ -95,10 +100,16 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
             tasks.add(task);
         }
 
-        ITaskProcessor processor = ProcessorDynamicProxyFactory
-                .getInstance()
-                .create();
-        processor.addTasks(tasks);
+//        ITaskProcessor processor = ProcessorDynamicProxyFactory
+//                .getInstance()
+//                .create();
+//        processor.addTasks(tasks);
+        TaskCmd cmd = new TaskCmd.Builder()
+                .setTasks(tasks)
+                .setProcessType(ProcessType.TYPE_ADD_TASKS)
+                .setUserId(Contacts.USER_ID)
+                .build();
+        TaskEventBus.getDefault().execute(cmd);
     }
 
     private final class MyScriber extends Subscriber<List<FileInfo>> {

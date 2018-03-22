@@ -1,11 +1,18 @@
 package com.scott.example.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 
 import com.scott.annotionprocessor.TaskType;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
+import com.scott.example.utils.Contacts;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 
@@ -13,6 +20,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity {
+
+    SelectUserDialog mDialog;
+    int mCurrentIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +35,31 @@ public class MainActivity extends BaseActivity {
                 .callback(this)
                 .start();
         setTitle("Transer");
+
+        getSwitchUserView().setVisibility(View.VISIBLE);
+        getSwitchUserView().setText(Contacts.USER_ID);
+        getSwitchUserView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSwitchUserDialog();
+            }
+        });
     }
+
+    private void showSwitchUserDialog() {
+        mDialog = new SelectUserDialog(MainActivity.this, Contacts.TEMP_USERS,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(which == AlertDialog.BUTTON_POSITIVE) {
+                            getSwitchUserView().setText(mDialog.getCurrentName());
+                            Contacts.USER_ID = mDialog.getCurrentName();
+                            mCurrentIndex = mDialog.getCurrentIndex();
+                        }
+                    }},mCurrentIndex);
+        mDialog.show();
+    }
+
 
     @OnClick(R.id.btn_simple_download)
     public void onSimpleDownload() {

@@ -113,7 +113,7 @@ public class TaskGroupAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity,
         ITask task = ((ITaskHolder)item).getTask();
         final TaskGroupItem groupItem = (TaskGroupItem) item;
 
-        helper.setText(R.id.tv_title,task.getName() + " 等" + groupItem.getSubItems().size() + "项");
+        helper.setText(R.id.tv_title,task.getGroupId());
         helper.setText(R.id.tv_count,groupItem.getSubItems().size() + "");
         helper.setText(R.id.tv_group_info,task.getGroupName());
 

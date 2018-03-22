@@ -46,4 +46,14 @@ public class TaskGroupItem extends AbstractExpandableItem<TaskChildItem>
         return mSubItems == null ?
                 TaskGroupAdapter.TYPE_CHILD : TaskGroupAdapter.TYPE_GROUP;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof TaskChildItem)) {
+            return false;
+        }
+
+        TaskChildItem item = (TaskChildItem) obj;
+        return task.equals(item.getTask());
+    }
 }

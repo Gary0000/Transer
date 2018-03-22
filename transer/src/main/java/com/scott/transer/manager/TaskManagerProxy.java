@@ -1,5 +1,7 @@
 package com.scott.transer.manager;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.TaskCmd;
@@ -104,11 +106,19 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 
 
     @Override
-    public void onFinished(TaskType taskType, ProcessType processType, List<ITask> tasks) {
+    public void onFinished(String userId,TaskType taskType, ProcessType processType, List<ITask> tasks) {
         List<ITask> taskList = new ArrayList<>();
         for(ITaskHolder holder : mManager.getTasks()) {
-            if(taskType == holder.getType()) {
-                taskList.add(holder.getTask());
+
+            if(userId != null) {
+                if(taskType == holder.getType() &&
+                        TextUtils.equals(userId,holder.getTask().getUserId())) {
+                    taskList.add(holder.getTask());
+                }
+            } else {
+                if(taskType == holder.getType()) {
+                    taskList.add(holder.getTask());
+                }
             }
         }
 
@@ -116,7 +126,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 //        ITask[] objects = (ITask[]) taskList.toArray();
 //        ITask[] objects1 = Arrays.copyOf(objects, objects.length);
 //        tasks = Arrays.asList(objects1);
-        mProcessCallback.onFinished(taskType,processType,taskList);
+        mProcessCallback.onFinished(userId,taskType,processType,taskList);
     }
 
     @Override

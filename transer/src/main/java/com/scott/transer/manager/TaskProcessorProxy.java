@@ -1,5 +1,7 @@
 package com.scott.transer.manager;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 
@@ -42,43 +44,59 @@ public class TaskProcessorProxy implements ITaskInternalProcessor {
 
     @Override
     public void deleteTask(String taskId) {
+        if(TextUtils.isEmpty(taskId)) {
+            throw new IllegalArgumentException("if you want to use " +
+                    "deleteTask by taskId,the task id can not be a null value!");
+        }
         mProcessor.deleteTask(taskId);
         mDbProcessor.deleteTask(taskId);
     }
 
     @Override
-    public void deleteGroup(String groupId) {
-        mProcessor.deleteTask(groupId);
-        mDbProcessor.deleteTask(groupId);
+    public void deleteGroup(String groupId,String userId) {
+        if(TextUtils.isEmpty(groupId)) {
+            throw new IllegalArgumentException("if you want to use " +
+                    "deleteGroup by groupId,the group id can not be a null value!");
+        }
+        mProcessor.deleteGroup(groupId,userId);
+        mDbProcessor.deleteGroup(groupId,userId);
     }
 
     @Override
     public void deleteTasks(String[] taskIds) {
+        if(taskIds == null || taskIds.length == 0) {
+            throw new IllegalArgumentException("if you want to use " +
+                    "deleteTasks by taskIds,the task ids can not be a null value!");
+        }
         mProcessor.deleteTasks(taskIds);
         mDbProcessor.deleteTasks(taskIds);
     }
 
     @Override
-    public void deleteCompleted(TaskType type) {
-        mProcessor.deleteCompleted(type);
-        mDbProcessor.deleteCompleted(type);
+    public void deleteCompleted(TaskType type,String userId) {
+        mProcessor.deleteCompleted(type,userId);
+        mDbProcessor.deleteCompleted(type,userId);
     }
 
     @Override
-    public void delete(int state,TaskType taskType) {
-        mProcessor.delete(state,taskType);
-        mDbProcessor.delete(state,taskType);
+    public void delete(int state,TaskType taskType,String userId) {
+        mProcessor.delete(state,taskType,userId);
+        mDbProcessor.delete(state,taskType,userId);
     }
 
 
     @Override
-    public void deleteAll(TaskType type) {
-        mProcessor.deleteAll(type);
-        mDbProcessor.deleteAll(type);
+    public void deleteAll(TaskType type,String userId) {
+        mProcessor.deleteAll(type,userId);
+        mDbProcessor.deleteAll(type,userId);
     }
 
     @Override
     public ITask getTask(String taskId) {
+        if(TextUtils.isEmpty(taskId)) {
+            throw new IllegalArgumentException("if you want to use " +
+                    "getTask by taskId,the task id can not be a null value!");
+        }
         ITask task = mProcessor.getTask(taskId);
         if(task == null) {
             task = mDbProcessor.getTask(taskId);
@@ -89,8 +107,12 @@ public class TaskProcessorProxy implements ITaskInternalProcessor {
 
     @Override
     public List<ITask> getTasks(String[] taskIds) {
+        if(taskIds == null || taskIds.length == 0) {
+            throw new IllegalArgumentException("if you want to use " +
+                    "deleteTask by taskId,the task id can not be a null value!");
+        }
         List<ITask> tasks = mProcessor.getTasks(taskIds);
-        if(tasks == null) {
+        if(tasks == null || tasks.isEmpty()) {
             tasks = mDbProcessor.getTasks(taskIds);
             mProcessor.addTasks(tasks);
         }
@@ -98,30 +120,34 @@ public class TaskProcessorProxy implements ITaskInternalProcessor {
     }
 
     @Override
-    public List<ITask> getGroup(String groupId) {
-        List<ITask> tasks = mProcessor.getGroup(groupId);
-        if(tasks == null) {
-            tasks = mDbProcessor.getGroup(groupId);
-            mProcessor.addTasks(tasks);
+    public List<ITask> getGroup(String groupId,String userId) {
+        if(TextUtils.isEmpty(groupId)) {
+            throw new IllegalArgumentException("if you want to use " +
+                    "getGroup by groupId,the group id can not be a null value!");
         }
-        return tasks;
-    }
-
-    @Override
-    public List<ITask> getAllTasks(TaskType taskType) {
-        List<ITask> tasks = mProcessor.getAllTasks(taskType);
+        List<ITask> tasks = mProcessor.getGroup(groupId,userId);
         if(tasks == null || tasks.isEmpty()) {
-            tasks = mDbProcessor.getAllTasks(taskType);
+            tasks = mDbProcessor.getGroup(groupId,userId);
             mProcessor.addTasks(tasks);
         }
         return tasks;
     }
 
     @Override
-    public List<ITask> getTasks(int state,TaskType taskType) {
-        List<ITask> tasks = mProcessor.getTasks(state,taskType);
-        if(tasks == null) {
-            tasks = mDbProcessor.getTasks(state,taskType);
+    public List<ITask> getAllTasks(TaskType taskType,String userId) {
+        List<ITask> tasks = mProcessor.getAllTasks(taskType,userId);
+        if(tasks == null || tasks.isEmpty()) {
+            tasks = mDbProcessor.getAllTasks(taskType,userId);
+            mProcessor.addTasks(tasks);
+        }
+        return tasks;
+    }
+
+    @Override
+    public List<ITask> getTasks(int state,TaskType taskType,String userId) {
+        List<ITask> tasks = mProcessor.getTasks(state,taskType,userId);
+        if(tasks == null || tasks.isEmpty()) {
+            tasks = mDbProcessor.getTasks(state,taskType,userId);
             mProcessor.addTasks(tasks);
         }
         return tasks;
@@ -141,37 +167,53 @@ public class TaskProcessorProxy implements ITaskInternalProcessor {
 
     @Override
     public void start(String taskId) {
+        if(TextUtils.isEmpty(taskId)) {
+            throw new IllegalArgumentException("if you want to use" +
+                    "start by taskId,the task id can not be a null value!");
+        }
         mProcessor.start(taskId);
         mDbProcessor.start(taskId);
     }
 
     @Override
-    public void startGroup(String groupId) {
-        mProcessor.start(groupId);
-        mDbProcessor.startGroup(groupId);
+    public void startGroup(String groupId,String userId) {
+        if(TextUtils.isEmpty(groupId)) {
+            throw new IllegalArgumentException("if you want to use" +
+                    "start by groupId,the task id can not be a null value!");
+        }
+        mProcessor.startGroup(groupId,userId);
+        mDbProcessor.startGroup(groupId,userId);
     }
 
     @Override
-    public void startAll(TaskType taskType) {
-        mProcessor.startAll(taskType);
-        mDbProcessor.stopAll(taskType);
+    public void startAll(TaskType taskType,String userId) {
+        mProcessor.startAll(taskType,userId);
+        mDbProcessor.stopAll(taskType,userId);
     }
 
     @Override
     public void stop(String taskId) {
+        if(TextUtils.isEmpty(taskId)) {
+            throw new IllegalArgumentException("if you want to use" +
+                    "stop by taskId,the task id can not be a null value!");
+        }
         mProcessor.stop(taskId);
         mDbProcessor.stop(taskId);
     }
 
     @Override
-    public void stopGroup(String groupId) {
-        mProcessor.stopGroup(groupId);
-        mDbProcessor.stopGroup(groupId);
+    public void stopGroup(String groupId,String userId) {
+        if(TextUtils.isEmpty(groupId)) {
+            throw new IllegalArgumentException("if you want to use" +
+                    "stop by groupId,the group id can not be a null value!");
+        }
+        mProcessor.stopGroup(groupId,userId);
+        mDbProcessor.stopGroup(groupId,userId);
     }
 
     @Override
-    public void stopAll(TaskType taskType) {
-        mProcessor.stopAll(taskType);
-        mDbProcessor.stopAll(taskType);
+    public void stopAll(TaskType taskType,String userId) {
+        mProcessor.stopAll(taskType,userId);
+        mDbProcessor.stopAll(taskType,userId);
     }
 }

@@ -12,6 +12,16 @@ import java.io.File;
 
 public class Contacts {
 
+    //测试的user 列表
+    public final static String[] TEMP_USERS = new String[]{
+            "shijiale",
+            "shilec",
+            "scott"
+    };
+
+    //用来当做user id
+    public static String USER_ID = TEMP_USERS[0];
+
     public static class API {
 
         public static final String HOST_URL = "192.168.1.112";

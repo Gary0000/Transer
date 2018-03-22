@@ -23,6 +23,7 @@ import com.scott.example.adapter.TaskGroupAdapter;
 import com.scott.example.adapter.TaskListRecyclerAdapter;
 import com.scott.example.moudle.TaskChildItem;
 import com.scott.example.moudle.TaskGroupItem;
+import com.scott.example.utils.Contacts;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.handler.ITaskHolder;
@@ -81,6 +82,7 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
         TaskEventBus.getDefault().regesit(this);
 
         TaskCmd cmd = new TaskCmd.Builder()
+                .setUserId(Contacts.USER_ID)
                 .setTaskType(mTaskType)
                 .setProcessType(ProcessType.TYPE_QUERY_TASKS_ALL)
                 .build();
@@ -169,6 +171,7 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
     public void onRefresh() {
         TaskCmd cmd = new TaskCmd.Builder()
                 .setTaskType(mTaskType)
+                .setUserId(Contacts.USER_ID)
                 .setProcessType(ProcessType.TYPE_QUERY_TASKS_ALL)
                 .build();
         TaskEventBus.getDefault().execute(cmd);

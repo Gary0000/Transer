@@ -9,7 +9,9 @@ import java.util.List;
  * <p>Author:    shijiale</p>
  * <p>Date:      2018-02-11 21:14</p>
  * <p>Email:     shilec@126.com</p>
- * <p>Describe:</p>
+ * <p>Describe:
+ *     taskId 作为主键，任何时候都唯一
+ * </p>
  */
 
 public interface ITaskProcessor {
@@ -19,35 +21,35 @@ public interface ITaskProcessor {
 
     void deleteTask(String taskId);
 
-    void deleteGroup(String groupId);
+    void deleteGroup(String groupId,String userId);
 
     void deleteTasks(String[] taskIds);
 
-    void deleteCompleted(TaskType type);
+    void deleteCompleted(TaskType type,String userId);
 
-    void delete(int state,TaskType type);
+    void delete(int state,TaskType type,String userId);
 
-    void deleteAll(TaskType type);
+    void deleteAll(TaskType type,String userId);
 
     ITask getTask(String taskId);
 
     List<ITask> getTasks(String[] taskIds);
 
-    List<ITask> getGroup(String groupId);
+    List<ITask> getGroup(String groupId,String userId);
 
-    List<ITask> getAllTasks(TaskType type);
+    List<ITask> getAllTasks(TaskType type,String userId);
 
-    List<ITask> getTasks(int state, TaskType type);
+    List<ITask> getTasks(int state, TaskType type,String userId);
 
     void start(String taskId);
 
-    void startGroup(String groupId);
+    void startGroup(String groupId,String userId);
 
-    void startAll(TaskType taskType);
+    void startAll(TaskType taskType,String userId);
 
     void stop(String taskId);
 
-    void stopGroup(String groupId);
+    void stopGroup(String groupId,String userId);
 
-    void stopAll(TaskType taskType);
+    void stopAll(TaskType taskType,String userId);
 }
