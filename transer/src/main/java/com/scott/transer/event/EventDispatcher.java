@@ -56,11 +56,6 @@ public class EventDispatcher implements ITaskEventDispatcher {
         mContext = context;
     }
 
-    /**
-     * 使用动态代理代替Intent 发送命令
-     * @param cmd
-     */
-    @Deprecated
     public void dispatchCmd(TaskCmd cmd) {
         synchronized (mCmdQueue) {
             mCmdQueue.add(cmd);

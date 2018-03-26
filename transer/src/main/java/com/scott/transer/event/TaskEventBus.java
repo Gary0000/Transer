@@ -60,11 +60,6 @@ public class TaskEventBus {
         return sInstance;
     }
 
-    /**
-     * 使用{@link com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory}
-     * @param cmd
-     */
-    @Deprecated
     public synchronized void execute(TaskCmd cmd) {
         if(mDispatcher == null) {
             return;

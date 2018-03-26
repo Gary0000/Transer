@@ -417,4 +417,12 @@ public class Task implements ITask {
             return this;
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof ITask)) {
+            return false;
+        }
+        return TextUtils.equals(taskId,((ITask)obj).getTaskId());
+    }
 }

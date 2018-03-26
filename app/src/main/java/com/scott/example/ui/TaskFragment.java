@@ -119,6 +119,7 @@ public class TaskFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         TaskCmd cmd = new TaskCmd.Builder()
+                .setUserId(Contacts.USER_ID)
                 .setTaskType(mTaskType)
                 .setProcessType(ProcessType.TYPE_QUERY_TASKS_ALL)
                 .build();

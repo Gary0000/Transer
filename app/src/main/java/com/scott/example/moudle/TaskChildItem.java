@@ -13,7 +13,7 @@ import com.scott.transer.handler.ITaskHolder;
  * <p>Describe:</p>
  */
 
-public class TaskChildItem implements MultiItemEntity,ITaskHolder{
+public class TaskChildItem implements MultiItemEntity,ITaskHolder {
 
     private ITask task;
 
@@ -37,6 +37,16 @@ public class TaskChildItem implements MultiItemEntity,ITaskHolder{
 
     @Override
     public int getItemType() {
-        return TaskGroupAdapter.TYPE_CHILD;
+        return TaskItemType.TYPE_CHILD;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof ITaskHolder)) {
+            return false;
+        }
+
+        ITaskHolder item = (ITaskHolder) obj;
+        return task.equals(item.getTask());
     }
 }

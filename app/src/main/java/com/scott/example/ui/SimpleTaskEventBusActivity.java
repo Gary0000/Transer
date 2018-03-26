@@ -70,6 +70,7 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         task = new Task.Builder()
+                .setTaskType(TaskType.TYPE_HTTP_UPLOAD)
                 .setName("test.zip")
                 .setTaskId("1233444")
                 .setSessionId("123123123131")
@@ -79,7 +80,7 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
 
         mHandler = new DefaultHttpUploadHandler.Builder()
                 .setTask(task)
-                .addParam("path","test.zip")
+                .addHeader("path","root/")
                 .setEventDispatcher(TaskEventBus.getDefault().getDispatcher()) //设置EventDispatcher,
                 .runOnNewThread()
                 .build();

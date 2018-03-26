@@ -6,6 +6,7 @@ import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
+import com.scott.example.utils.Contacts;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.event.TaskEventBus;
 
@@ -43,6 +44,7 @@ public class SimpleTaskListActivity extends BaseActivity {
     @OnClick(R.id.btn_stop_all)
     public void stopAll() {
         TaskCmd cmd = new TaskCmd.Builder()
+                .setUserId(Contacts.USER_ID)
                 .setTaskType(taskType)
                 .setProcessType(ProcessType.TYPE_STOP_ALL)
                 .build();
@@ -53,6 +55,7 @@ public class SimpleTaskListActivity extends BaseActivity {
     @OnClick(R.id.btn_start_all)
     public void startAll() {
         TaskCmd cmd = new TaskCmd.Builder()
+                .setUserId(Contacts.USER_ID)
                 .setTaskType(taskType)
                 .setProcessType(ProcessType.TYPE_START_ALL)
                 .build();
@@ -62,6 +65,7 @@ public class SimpleTaskListActivity extends BaseActivity {
     @OnClick(R.id.btn_delete_all)
     public void deleteAll() {
         TaskCmd cmd = new TaskCmd.Builder()
+                .setUserId(Contacts.USER_ID)
                 .setTaskType(taskType)
                 .setProcessType(ProcessType.TYPE_DELETE_TASKS_ALL)
                 .build();

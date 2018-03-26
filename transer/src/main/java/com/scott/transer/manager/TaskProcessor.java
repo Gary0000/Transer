@@ -119,7 +119,7 @@ public class TaskProcessor implements ITaskInternalProcessor {
         for(ITaskHolder holder : mTasks) {
             if(holder.getTask().getState() == state &&
                     holder.getType() == type &&
-                    holder.getTask().getUserId() == userId) {
+                    TextUtils.equals(holder.getTask().getUserId(),userId)) {
                 mTasks.remove(holder);
                 ITaskHandlerHolder h = (ITaskHandlerHolder) holder;
                 if(h.getTaskHandler() != null) {
@@ -135,7 +135,7 @@ public class TaskProcessor implements ITaskInternalProcessor {
         Iterator<ITaskHolder> iterator = mTasks.iterator();
         while (iterator.hasNext()) {
             ITaskHolder next = iterator.next();
-            if(next.getType() == type && next.getTask().getUserId() == userId) {
+            if(next.getType() == type && TextUtils.equals(next.getTask().getUserId(),userId)) {
                 ITaskHandlerHolder h = (ITaskHandlerHolder) next;
                 if(h.getTaskHandler() != null) {
                     h.getTaskHandler().stop();
@@ -173,7 +173,7 @@ public class TaskProcessor implements ITaskInternalProcessor {
         List<ITask> tasks = new ArrayList<>();
         for(ITaskHolder holder : mTasks) {
             if(holder.getTask().getGroupId() == groupId &&
-                    holder.getTask().getUserId() == userId) {
+                    TextUtils.equals(holder.getTask().getUserId(),userId)) {
                 tasks.add(holder.getTask());
             }
         }

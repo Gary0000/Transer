@@ -20,6 +20,8 @@ import java.lang.reflect.Proxy;
  * 虽然使用ITaskProcessor 操作任务，有的方法会有返回值，但是实际是不会有返回值的，
  * 任务状态变更还是会在@TaskScribe 注解的方法回掉。
  *
+ * 目前不能完全支持所有操作类型
+ *
  */
 
 public class ProcessorDynamicProxyFactory {

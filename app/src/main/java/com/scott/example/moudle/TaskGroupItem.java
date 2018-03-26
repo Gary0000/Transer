@@ -4,8 +4,9 @@ import com.chad.library.adapter.base.entity.AbstractExpandableItem;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
-import com.scott.example.adapter.TaskGroupAdapter;
 import com.scott.transer.handler.ITaskHolder;
+
+import java.util.List;
 
 /**
  * <p>Author:    shijiale</p>
@@ -15,7 +16,7 @@ import com.scott.transer.handler.ITaskHolder;
  */
 
 public class TaskGroupItem extends AbstractExpandableItem<TaskChildItem>
-        implements MultiItemEntity ,ITaskHolder{
+        implements MultiItemEntity ,ITaskHolder {
     private ITask task;
 
     public TaskGroupItem(ITask task) {
@@ -44,16 +45,18 @@ public class TaskGroupItem extends AbstractExpandableItem<TaskChildItem>
     @Override
     public int getItemType() {
         return mSubItems == null ?
-                TaskGroupAdapter.TYPE_CHILD : TaskGroupAdapter.TYPE_GROUP;
+                TaskItemType.TYPE_CHILD : TaskItemType.TYPE_GROUP;
     }
+
+
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof TaskChildItem)) {
+        if(!(obj instanceof ITaskHolder)) {
             return false;
         }
 
-        TaskChildItem item = (TaskChildItem) obj;
+        ITaskHolder item = (ITaskHolder) obj;
         return task.equals(item.getTask());
     }
 }

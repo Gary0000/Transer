@@ -2,14 +2,13 @@ package com.scott.example.adapter;
 
 import android.view.View;
 
-import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.chad.library.adapter.base.entity.AbstractExpandableItem;
+import com.chad.library.adapter.base.entity.IExpandable;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.example.R;
+import com.scott.example.moudle.TaskChildItem;
 import com.scott.example.moudle.TaskGroupItem;
 import com.scott.example.moudle.TaskItemType;
 import com.scott.example.utils.Contacts;
@@ -24,50 +23,45 @@ import java.util.List;
 
 /**
  * <p>Author:    shijiale</p>
- * <p>Date:      2018-03-21 12:49</p>
+ * <p>Date:      2018-03-26 14:51</p>
  * <p>Email:     shilec@126.com</p>
  * <p>Describe:
- *      1.recycler view 实现的 ExpandableListView 对应的适配器
- *      每次刷新无法保存展开状态
+ *
+ *      ExpandableListView 对应的适配器
  * </p>
  */
 
-public class TaskGroupAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity,BaseViewHolder> {
+public class TaskGroupExpandAdapter extends QuickExpandableListAdapter<MultiItemEntity,BaseExpandViewHolder>{
 
-    /**
-     * Same as QuickAdapter#QuickAdapter(Context,int) but with
-     * some initialization data.
-     *
-     * @param data A new list is created out of this one to avoid mutable list
-     */
-    public TaskGroupAdapter(List<MultiItemEntity> data) {
-        super(data);
-        addItemType(TaskItemType.TYPE_CHILD, R.layout.item_task_item);
-        addItemType(TaskItemType.TYPE_GROUP,R.layout.item_task_group);
+    public TaskGroupExpandAdapter(List<MultiItemEntity> datas) {
+        super(datas);
+        addItemView(TaskItemType.TYPE_CHILD, R.layout.item_task_item);
+        addItemView(TaskItemType.TYPE_GROUP,R.layout.item_task_group);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, MultiItemEntity item) {
-        switch (helper.getItemViewType()) {
+    protected void convert(BaseExpandViewHolder holder, MultiItemEntity item) {
+        switch (holder.getItemType()) {
             case TaskItemType.TYPE_CHILD:
-                onConvertChildItem(helper,item);
+                onConvertChildItem(holder,item);
                 break;
             case TaskItemType.TYPE_GROUP:
-                onConvertGroupItem(helper,item);
+                onConvertGroupItem(holder,item);
                 break;
         }
     }
 
-    private void onConvertChildItem(final BaseViewHolder helper, MultiItemEntity entity) {
 
-        ITask item = ((ITaskHolder)entity).getTask();
+    private void onConvertChildItem(final BaseExpandViewHolder helper, MultiItemEntity entity) {
+
+        final ITask item = ((ITaskHolder)entity).getTask();
 
         helper.itemView.findViewById(R.id.btn_start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TaskCmd builder = new TaskCmd.Builder()
                         .setUserId(Contacts.USER_ID)
-                        .setTask(((ITaskHolder)getItem(helper.getAdapterPosition())).getTask())
+                        .setTask(item)
                         .setProcessType(ProcessType.TYPE_START_TASK)
                         .build();
                 TaskEventBus.getDefault().execute(builder);
@@ -78,7 +72,7 @@ public class TaskGroupAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity,
             public void onClick(View v) {
                 TaskCmd builder = new TaskCmd.Builder()
                         .setUserId(Contacts.USER_ID)
-                        .setTask(((ITaskHolder)getItem(helper.getAdapterPosition())).getTask())
+                        .setTask(item)
                         .setProcessType(ProcessType.TYPE_STOP_TASK)
                         .build();
                 TaskEventBus.getDefault().execute(builder);
@@ -89,7 +83,7 @@ public class TaskGroupAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity,
             public void onClick(View v) {
                 TaskCmd builder = new TaskCmd.Builder()
                         .setUserId(Contacts.USER_ID)
-                        .setTask(((ITaskHolder)getItem(helper.getAdapterPosition())).getTask())
+                        .setTask(item)
                         .setProcessType(ProcessType.TYPE_DELETE_TASK)
                         .build();
                 TaskEventBus.getDefault().execute(builder);
@@ -119,17 +113,6 @@ public class TaskGroupAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity,
         helper.setText(R.id.tv_title,task.getGroupId());
         helper.setText(R.id.tv_count,groupItem.getSubItems().size() + "");
         helper.setText(R.id.tv_group_info,task.getGroupName());
-
-        helper.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(groupItem.isExpanded()) {
-                    collapse(helper.getAdapterPosition(),false);
-                } else {
-                    expand(helper.getAdapterPosition(), false);
-                }
-            }
-        });
     }
 
     private void updateUIbyState(int state, BaseViewHolder helper, ITask task) {

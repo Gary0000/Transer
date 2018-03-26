@@ -8,6 +8,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.example.R;
+import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
@@ -53,6 +54,7 @@ public class TaskListRecyclerAdapter extends BaseQuickAdapter<ITask,BaseViewHold
     @Override
     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
         TaskCmd.Builder builder = new TaskCmd.Builder()
+                .setUserId(Contacts.USER_ID)
                 .setTask(getItem(position));
         switch (view.getId()) {
             case R.id.btn_start:

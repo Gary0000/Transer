@@ -7,10 +7,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 
+import com.chad.library.adapter.base.entity.AbstractExpandableItem;
+import com.chad.library.adapter.base.entity.IExpandable;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
@@ -20,6 +24,7 @@ import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.BaseFragment;
 import com.scott.example.R;
 import com.scott.example.adapter.TaskGroupAdapter;
+import com.scott.example.adapter.TaskGroupExpandAdapter;
 import com.scott.example.adapter.TaskListRecyclerAdapter;
 import com.scott.example.moudle.TaskChildItem;
 import com.scott.example.moudle.TaskGroupItem;
@@ -43,9 +48,12 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
 
     private List<MultiItemEntity> mDatas = new ArrayList<>();
 
-    private TaskGroupAdapter mAdapter;
+    //private TaskGroupAdapter mAdapter;
+    //private RecyclerView mListView;
 
-    private RecyclerView mListView;
+    private ExpandableListView mListView;
+    private TaskGroupExpandAdapter mAdapter;
+
     private final String TAG = TaskFragment.class.getSimpleName();
     private TaskType mTaskType;
     public static final String EXTRA_TASK_TYPE = "task_type";
@@ -61,17 +69,18 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_task_list, container, false);
+        View root = inflater.inflate(R.layout.fragment_task_expand_list, container, false);
 
         mSwipeRefreshLayout = root.findViewById(R.id.swipeLayout);
         mSwipeRefreshLayout.setColorSchemeColors(Color.rgb(47, 223, 189));
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
         mListView = root.findViewById(R.id.rcy_tasks);
-        mListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        //mListView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         //mTaskAdapter = new TaskListAdapter(mTasks);
-        mAdapter = new TaskGroupAdapter(mDatas);
+        //mAdapter = new TaskGroupAdapter(mDatas);
+        mAdapter = new TaskGroupExpandAdapter(mDatas);
         mListView.setAdapter(mAdapter);
         return root;
     }
@@ -95,17 +104,17 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
         TaskEventBus.getDefault().unregesit(this);
     }
 
-    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_DOWNLOAD,threadMode = ThreadMode.MODE_MAIN)
+    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_DOWNLOAD, threadMode = ThreadMode.MODE_MAIN)
     public void onDownloadTasksChange(final List<ITask> tasks) {
 
-        if(mTaskType != TaskType.TYPE_HTTP_DOWNLOAD) return;
+        if (mTaskType != TaskType.TYPE_HTTP_DOWNLOAD) return;
         //Debugger.error(TAG,tasks.toString());
         onTasksChange(tasks);
     }
 
-    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_UPLOAD,threadMode = ThreadMode.MODE_MAIN)
+    @TaskSubscriber(taskType = TaskType.TYPE_HTTP_UPLOAD, threadMode = ThreadMode.MODE_MAIN)
     public void onUploadTaskChange(final List<ITask> tasks) {
-        if(mTaskType != TaskType.TYPE_HTTP_UPLOAD) return;
+        if (mTaskType != TaskType.TYPE_HTTP_UPLOAD) return;
         onTasksChange(tasks);
     }
 
@@ -119,50 +128,53 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
         }
 
         List<MultiItemEntity> items = convertItems(tasks);
-        Debugger.error(TAG,"thread ==== " + Thread.currentThread().getName());
+        //items = restoreExpandState(items);
+
+        Debugger.error(TAG, "thread ==== " + Thread.currentThread().getName());
         mDatas.clear();
         mDatas.addAll(items);
         mAdapter.notifyDataSetChanged();
     }
 
+    private List<MultiItemEntity> restoreExpandState(List<MultiItemEntity> items) {
+        for (int i = 0; i < items.size(); i++) {
+            MultiItemEntity item = items.get(i);
+            if (!mDatas.contains(item)) {
+                continue;
+            }
+            Debugger.info("TaskGroupFragment", "mDatas contain item ----");
+
+            AbstractExpandableItem<?> oldExpandItem = (AbstractExpandableItem<?>) mDatas.get(mDatas.indexOf(item));
+            AbstractExpandableItem<?> newExpandItem = (AbstractExpandableItem<?>) items.get(i);
+            newExpandItem.setExpanded(oldExpandItem.isExpanded());
+        }
+        return items;
+    }
+
     private List<MultiItemEntity> convertItems(List<ITask> tasks) {
 
         List<MultiItemEntity> items = new ArrayList<>();
-        if(tasks == null) {
+        if (tasks == null) {
             return items;
         }
-        for(int i = 0; i < tasks.size(); i++) {
+        for (int i = 0; i < tasks.size(); i++) {
             ITask task = tasks.get(i);
 
-            /*
-                如果当前列表中存在相同Group的 Item,则检查该Item 的 subItem 是
-                否为空，如果不为空，则将当前的task作为subitem插入
-                如果为空，则将当前的Item作为 groupItem 插入
-             */
-            List<TaskChildItem> subItems = null;
-            for(MultiItemEntity item : items) {
-                ITaskHolder holder = (ITaskHolder) item;
-                if(holder.getTask() != null
-                        && TextUtils.equals(holder.getTask().getGroupId(),task.getGroupId())) {
-                    subItems = ((TaskGroupItem)item).getSubItems();
-                    if(subItems == null) {
-                        subItems = new ArrayList<>();
-                        ((TaskGroupItem)item).setSubItems(subItems);
-
-                        TaskChildItem childItem = new TaskChildItem(task);
-                        subItems.add(childItem);
-                    }
+            MultiItemEntity group = null;
+            for (MultiItemEntity item : items) {
+                ITask task1 = ((ITaskHolder) item).getTask();
+                if (TextUtils.equals(task.getGroupId(), task1.getGroupId())) {
+                    group = item;
                     break;
                 }
             }
 
-            if(subItems == null) {
-                TaskGroupItem item = new TaskGroupItem(task);
-                items.add(item);
-            } else {
-                TaskChildItem item = new TaskChildItem(task);
-                subItems.add(item);
+            if (group == null) {
+                group = new TaskGroupItem(task);
+                ((TaskGroupItem) group).setSubItems(new ArrayList<TaskChildItem>());
+                items.add(group);
             }
+            ((TaskGroupItem) group).getSubItems().add(new TaskChildItem(task));
         }
         return items;
     }

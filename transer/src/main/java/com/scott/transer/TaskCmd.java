@@ -25,6 +25,9 @@ public class TaskCmd {
     private String userId;
 
     public String getUserId() {
+        if(task != null) {
+            return task.getUserId();
+        }
         return userId;
     }
 
