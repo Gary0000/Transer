@@ -19,7 +19,7 @@
 
 2. 在app 的 build.gradle 中加入
 
-         compile 'com.github.shilec:Transer:1.0.0-beta'
+         compile 'com.github.shilec:Transer:1.0.1-d'
 
 3. 在app 的AndroidManifest.xml中 申明 TranserService
 
