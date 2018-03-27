@@ -479,9 +479,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 throw new IllegalStateException("buildTarget() not impl!");
             }
 
-            if(mTask == null) {
-                throw new IllegalArgumentException("task is null,you must call setTask to set task!");
-            }
+//            if(mTask == null) {
+//                throw new IllegalArgumentException("task is null,you must call setTask to set task!");
+//            }
 
             if(mCallback == null && mDispatcher != null) {
                 mCallback = new EventDispacherAdapter(mDispatcher);

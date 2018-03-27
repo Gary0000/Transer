@@ -15,23 +15,12 @@ import java.util.Map;
  * </p>
  */
 
-public class DefaultUploadFactory implements ITaskHandlerFactory {
-    private ITaskHandlerCallback callback;
+public class DefaultUploadFactory extends AbsHandlerFactory {
 
     @Override
-    public ITaskHandler create(ITask task, ITaskManager manager) {
-        ITaskHandler handler = new DefaultHttpUploadHandler();
-        handler.setThreadPool(manager.getTaskThreadPool(task.getType()));
-        Map<String,String> headers = new HashMap<>();
-        headers.put("path",task.getDestPath() + "/");
-        handler.setHeaders(headers);
-        handler.setHandlerListenner(callback);
-        handler.setTask(task);
-        return handler;
-    }
-
-    @Override
-    public void setTaskHandlerCallback(ITaskHandlerCallback callback) {
-        this.callback = callback;
+    protected ITaskHandler create(ITask task) {
+        return new DefaultHttpUploadHandler.Builder()
+                .addHeader("path",task.getDestPath() + "/")
+                .build();
     }
 }

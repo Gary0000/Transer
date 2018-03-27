@@ -13,6 +13,7 @@ import com.scott.example.moudle.TaskGroupItem;
 import com.scott.example.moudle.TaskItemType;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
+import com.scott.transer.Task;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
@@ -107,12 +108,54 @@ public class TaskGroupExpandAdapter extends QuickExpandableListAdapter<MultiItem
 
     private void onConvertGroupItem(final BaseViewHolder helper, final MultiItemEntity item) {
 
-        ITask task = ((ITaskHolder)item).getTask();
+        final ITask task = ((ITaskHolder)item).getTask();
         final TaskGroupItem groupItem = (TaskGroupItem) item;
 
-        helper.setText(R.id.tv_title,task.getGroupId());
-        helper.setText(R.id.tv_count,groupItem.getSubItems().size() + "");
-        helper.setText(R.id.tv_group_info,task.getGroupName());
+        helper.setText(R.id.tv_title,task.getGroupName());
+        helper.setText(R.id.tv_count,"等" + groupItem.getSubItems().size() + "项");
+        helper.setText(R.id.tv_size,TaskUtils.getFileSize(groupItem.getCompleteSize()) + "/" + TaskUtils.getFileSize(groupItem.getAllSize()));
+        helper.setText(R.id.tv_leave_count,groupItem.getLeaveCount() + "/" + groupItem.getAllCount());
+        if(task.getState() == TaskState.STATE_FINISH) {
+            helper.getView(R.id.btn_start).setVisibility(View.INVISIBLE);
+        } else {
+            helper.getView(R.id.btn_start).setVisibility(View.VISIBLE);
+        }
+
+        if(task.getState() == TaskState.STATE_RUNNING || task.getState() == TaskState.STATE_READY) {
+            helper.setText(R.id.btn_start,"暂停");
+            helper.getView(R.id.btn_start).setSelected(false);
+        } else {
+            helper.setText(R.id.btn_start,"开始");
+            helper.getView(R.id.btn_start).setSelected(true);
+        }
+
+        helper.itemView.findViewById(R.id.btn_start).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                TaskCmd builder = new TaskCmd.Builder()
+                        .setTaskType(task.getType())
+                        .setUserId(Contacts.USER_ID)
+                        .setGroupId(task.getGroupId())
+                        .setProcessType(helper.getView(R.id.btn_start).isSelected() ?
+                                ProcessType.TYPE_START_GROUP : ProcessType.TYPE_STOP_GROUP)
+                        .build();
+                TaskEventBus.getDefault().execute(builder);
+            }
+        });
+
+        helper.itemView.findViewById(R.id.btn_delete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TaskCmd builder = new TaskCmd.Builder()
+                        .setTaskType(task.getType())
+                        .setUserId(Contacts.USER_ID)
+                        .setGroupId(task.getGroupId())
+                        .setProcessType(ProcessType.TYPE_DELETE_TASKS_GROUP)
+                        .build();
+                TaskEventBus.getDefault().execute(builder);
+            }
+        });
     }
 
     private void updateUIbyState(int state, BaseViewHolder helper, ITask task) {

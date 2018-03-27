@@ -53,10 +53,12 @@ public class TaskProcessor implements ITaskInternalProcessor {
 
     @Override
     public void deleteTask(String taskId) {
-        for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getTaskId() == taskId) {
-                mTasks.remove(holder);
-                ITaskHandlerHolder h = (ITaskHandlerHolder) holder;
+        Iterator<ITaskHolder> iterator = mTasks.iterator();
+        while (iterator.hasNext()) {
+            ITaskHolder next = iterator.next();
+            if(TextUtils.equals(taskId,next.getTask().getTaskId())) {
+                iterator.remove();
+                ITaskHandlerHolder h = (ITaskHandlerHolder) next;
                 if(h.getTaskHandler() != null) {
                     h.getTaskHandler().stop();
                 }
@@ -72,11 +74,13 @@ public class TaskProcessor implements ITaskInternalProcessor {
                     "not be a null value!");
         }
 
-        for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getGroupId() == groupId &&
-                    holder.getTask().getUserId() == userId) {
-                mTasks.remove(holder);
-                ITaskHandlerHolder h = (ITaskHandlerHolder) holder;
+        Iterator<ITaskHolder> iterator = mTasks.iterator();
+        while (iterator.hasNext()) {
+            ITaskHolder next = iterator.next();
+            if(TextUtils.equals(groupId,next.getTask().getGroupId()) &&
+                    TextUtils.equals(userId,next.getTask().getUserId())) {
+                iterator.remove();
+                ITaskHandlerHolder h = (ITaskHandlerHolder) next;
                 if(h.getTaskHandler() != null) {
                     h.getTaskHandler().stop();
                 }
@@ -86,14 +90,17 @@ public class TaskProcessor implements ITaskInternalProcessor {
 
     @Override
     public void deleteTasks(String[] taskIds) {
-        for(ITaskHolder holer : mTasks) {
+        Iterator<ITaskHolder> iterator = mTasks.iterator();
+        while (iterator.hasNext()) {
+            ITaskHolder next = iterator.next();
             for(String taskId : taskIds) {
-                if(holer.getTask().getTaskId() == taskId) {
-                    mTasks.remove(holer);
-                    ITaskHandlerHolder h = (ITaskHandlerHolder) holer;
-                    if(h.getTaskHandler() != null) {
+                if (TextUtils.equals(taskId, next.getTask().getTaskId())) {
+                    iterator.remove();
+                    ITaskHandlerHolder h = (ITaskHandlerHolder) next;
+                    if (h.getTaskHandler() != null) {
                         h.getTaskHandler().stop();
                     }
+                    break;
                 }
             }
         }
@@ -101,12 +108,13 @@ public class TaskProcessor implements ITaskInternalProcessor {
 
     @Override
     public void deleteCompleted(TaskType type,String userId) {
-        for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getState() == TaskState.STATE_FINISH &&
-                    holder.getType() == type &&
-                    holder.getTask().getUserId() == userId) {
-                mTasks.remove(holder);
-                ITaskHandlerHolder h = (ITaskHandlerHolder) holder;
+        Iterator<ITaskHolder> iterator = mTasks.iterator();
+        while (iterator.hasNext()) {
+            ITaskHolder next = iterator.next();
+            if(type == next.getType() && next.getTask().getState() == TaskState.STATE_FINISH &&
+                    TextUtils.equals(userId,next.getTask().getUserId())) {
+                iterator.remove();
+                ITaskHandlerHolder h = (ITaskHandlerHolder) next;
                 if(h.getTaskHandler() != null) {
                     h.getTaskHandler().stop();
                 }
@@ -116,12 +124,13 @@ public class TaskProcessor implements ITaskInternalProcessor {
 
     @Override
     public void delete(int state,TaskType type,String userId) {
-        for(ITaskHolder holder : mTasks) {
-            if(holder.getTask().getState() == state &&
-                    holder.getType() == type &&
-                    TextUtils.equals(holder.getTask().getUserId(),userId)) {
-                mTasks.remove(holder);
-                ITaskHandlerHolder h = (ITaskHandlerHolder) holder;
+        Iterator<ITaskHolder> iterator = mTasks.iterator();
+        while (iterator.hasNext()) {
+            ITaskHolder next = iterator.next();
+            if(type == next.getType() && next.getTask().getState() == state &&
+                    TextUtils.equals(userId,next.getTask().getUserId())) {
+                iterator.remove();
+                ITaskHandlerHolder h = (ITaskHandlerHolder) next;
                 if(h.getTaskHandler() != null) {
                     h.getTaskHandler().stop();
                 }

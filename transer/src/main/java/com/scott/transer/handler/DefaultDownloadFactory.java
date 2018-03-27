@@ -17,27 +17,13 @@ import java.util.Map;
  * </p>
  */
 
-public class DefaultDownloadFactory implements ITaskHandlerFactory {
-    private ITaskHandlerCallback callback;
+public class DefaultDownloadFactory extends AbsHandlerFactory {
 
     @Override
-    public ITaskHandler create(ITask task, ITaskManager manager) {
-        ITaskHandler handler = new DefaultHttpDownloadHandler();
-        handler.setThreadPool(manager.getTaskThreadPool(task.getType()));
-        handler.setHandlerListenner(callback);
-        handler.setTask(task);
-
-        Map<String,String> params = new HashMap<>();
-        params.put("path",task.getName());
-        if(!TextUtils.isEmpty(task.getSourcePath())) {
-            params.put("root",task.getSourcePath());
-        }
-        handler.setParams(params);
-        return handler;
-    }
-
-    @Override
-    public void setTaskHandlerCallback(ITaskHandlerCallback callback) {
-        this.callback = callback;
+    protected ITaskHandler create(ITask task) {
+        return new DefaultHttpDownloadHandler.Builder()
+                .addParam("path",task.getName())
+                .addParam("root",task.getSourceUrl())
+                .build();
     }
 }

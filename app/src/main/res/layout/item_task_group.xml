@@ -5,25 +5,58 @@
     android:layout_marginTop="8dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:descendantFocusability="blocksDescendants"
+    android:layout_height="120dp">
 
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:maxLength="20"
+            android:text="test.zip"
+            android:ellipsize="middle"
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/tv_title"
+            android:text="等5项"
+            android:id="@+id/tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
     <TextView
-        android:maxLength="20"
-        android:text="123"
-        android:ellipsize="middle"
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:text="1"
-        android:layout_alignParentRight="true"
-        android:id="@+id/tv_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:text="12312312"
+        android:text="1024MB"
         android:layout_alignParentBottom="true"
-        android:id="@+id/tv_group_info"
+        android:id="@+id/tv_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:text="10/20"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@id/tv_size"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/tv_leave_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_toLeftOf="@id/btn_delete"
+        android:layout_alignParentBottom="true"
+        android:text="开始"
+        android:id="@+id/btn_start"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_marginLeft="3dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:text="删除"
+        android:id="@+id/btn_delete"
+        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </RelativeLayout>

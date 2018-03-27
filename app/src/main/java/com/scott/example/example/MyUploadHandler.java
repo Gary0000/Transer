@@ -1,8 +1,15 @@
 package com.scott.example.example;
 
+import android.text.TextUtils;
+
+import com.scott.annotionprocessor.ITask;
+import com.scott.example.utils.FileUtils;
 import com.scott.transer.handler.DefaultHttpUploadHandler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 /**
  * <p>Author:    shijiale</p>
@@ -29,15 +36,15 @@ public class MyUploadHandler extends DefaultHttpUploadHandler {
 
     @Override
     public boolean isPiceSuccessful() {
-        try{
-            String response = getNowResponse();
-            JSONObject jObj = new JSONObject(response);
-            int code = jObj.optInt("code");
-            if(code == 1 || isSuccessful()) {
+        String ret = getNowResponse();
+        try {
+            ret = ret.substring(0, ret.indexOf("/") + 1);
+            String reg = "[0-9]+-[0-9]+/";
+            if (ret.matches(reg)) {
                 return true;
             }
         } catch (Exception e) {
-            return false;
+            e.printStackTrace();
         }
         return false;
     }
@@ -45,15 +52,28 @@ public class MyUploadHandler extends DefaultHttpUploadHandler {
     @Override
     public boolean isSuccessful() {
         try {
-            String response = getNowResponse();
-            JSONObject jsonObject = new JSONObject(response);
-            int code = jsonObject.optInt("code");
-            if(code == 0) {
-                return true;
-            }
-        } catch (Exception e) {
-            return false;
+            JSONObject jObj = new JSONObject(getNowResponse());
+            int code = jObj.optInt("code");
+
+            return code == 0;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    protected void prepare(ITask task) throws IOException {
+        super.prepare(task);
+        //在prepare 设置文件MD5，是在线程中获取的，不会阻塞UI
+        String file_md5 = com.scott.transer.utils.FileUtils.getFileMD5Value(task.getSourceUrl());
+        getHeaders().put("file-md5",file_md5);
+    }
+
+    public static class Builder extends DefaultHttpUploadHandler.Builder {
+        @Override
+        protected DefaultHttpUploadHandler buildTarget() {
+            return new MyUploadHandler();
+        }
     }
 }

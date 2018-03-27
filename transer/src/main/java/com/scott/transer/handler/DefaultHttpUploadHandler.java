@@ -1,9 +1,12 @@
 package com.scott.transer.handler;
 
+import android.text.TextUtils;
+
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
 import com.scott.transer.utils.Debugger;
+import com.scott.transer.utils.FileUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

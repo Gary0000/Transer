@@ -30,6 +30,7 @@ import com.scott.example.moudle.TaskChildItem;
 import com.scott.example.moudle.TaskGroupItem;
 import com.scott.example.utils.Contacts;
 import com.scott.transer.TaskCmd;
+import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.handler.ITaskHolder;
 import com.scott.transer.utils.Debugger;
@@ -128,7 +129,6 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
         }
 
         List<MultiItemEntity> items = convertItems(tasks);
-        //items = restoreExpandState(items);
 
         Debugger.error(TAG, "thread ==== " + Thread.currentThread().getName());
         mDatas.clear();
@@ -136,21 +136,11 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
         mAdapter.notifyDataSetChanged();
     }
 
-    private List<MultiItemEntity> restoreExpandState(List<MultiItemEntity> items) {
-        for (int i = 0; i < items.size(); i++) {
-            MultiItemEntity item = items.get(i);
-            if (!mDatas.contains(item)) {
-                continue;
-            }
-            Debugger.info("TaskGroupFragment", "mDatas contain item ----");
-
-            AbstractExpandableItem<?> oldExpandItem = (AbstractExpandableItem<?>) mDatas.get(mDatas.indexOf(item));
-            AbstractExpandableItem<?> newExpandItem = (AbstractExpandableItem<?>) items.get(i);
-            newExpandItem.setExpanded(oldExpandItem.isExpanded());
-        }
-        return items;
-    }
-
+    /**
+     * 将当前任务列表转换成可以分组显示的数据
+     * @param tasks
+     * @return
+     */
     private List<MultiItemEntity> convertItems(List<ITask> tasks) {
 
         List<MultiItemEntity> items = new ArrayList<>();
@@ -169,12 +159,20 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
                 }
             }
 
+            //每个分组有一个child 列表
             if (group == null) {
                 group = new TaskGroupItem(task);
                 ((TaskGroupItem) group).setSubItems(new ArrayList<TaskChildItem>());
                 items.add(group);
             }
-            ((TaskGroupItem) group).getSubItems().add(new TaskChildItem(task));
+
+            TaskGroupItem groupItem = (TaskGroupItem) group;
+            groupItem.getSubItems().add(new TaskChildItem(task));
+            groupItem.setAllCount(groupItem.getSubItems().size());
+            groupItem.setAllSize(groupItem.getAllSize() + task.getLength());
+            groupItem.setLeaveCount(groupItem.getLeaveCount() +
+                    (task.getState() == TaskState.STATE_FINISH ? 0 : 1));
+            groupItem.setCompleteSize(groupItem.getCompleteSize() + task.getCompleteLength());
         }
         return items;
     }

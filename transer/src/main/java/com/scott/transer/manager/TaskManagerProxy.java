@@ -126,6 +126,12 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 //        ITask[] objects = (ITask[]) taskList.toArray();
 //        ITask[] objects1 = Arrays.copyOf(objects, objects.length);
 //        tasks = Arrays.asList(objects1);
+        if(TextUtils.isEmpty(userId)) {
+            throw new IllegalArgumentException("Do you forget the userId?");
+        }
+        if(taskType == null) {
+            throw new IllegalArgumentException("TaskCmd miss taskType param");
+        }
         mProcessCallback.onFinished(userId,taskType,processType,taskList);
     }
 

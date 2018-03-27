@@ -17,7 +17,12 @@ import java.util.List;
 
 public class TaskGroupItem extends AbstractExpandableItem<TaskChildItem>
         implements MultiItemEntity ,ITaskHolder {
+
     private ITask task;
+    private long allSize;
+    private long completeSize;
+    private int allCount;
+    private int leaveCount;
 
     public TaskGroupItem(ITask task) {
         this.task = task;
@@ -48,7 +53,37 @@ public class TaskGroupItem extends AbstractExpandableItem<TaskChildItem>
                 TaskItemType.TYPE_CHILD : TaskItemType.TYPE_GROUP;
     }
 
+    public long getAllSize() {
+        return allSize;
+    }
 
+    public void setAllSize(long allSize) {
+        this.allSize = allSize;
+    }
+
+    public long getCompleteSize() {
+        return completeSize;
+    }
+
+    public void setCompleteSize(long completeSize) {
+        this.completeSize = completeSize;
+    }
+
+    public int getAllCount() {
+        return allCount;
+    }
+
+    public void setAllCount(int allCount) {
+        this.allCount = allCount;
+    }
+
+    public int getLeaveCount() {
+        return leaveCount;
+    }
+
+    public void setLeaveCount(int leaveCount) {
+        this.leaveCount = leaveCount;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -59,4 +94,6 @@ public class TaskGroupItem extends AbstractExpandableItem<TaskChildItem>
         ITaskHolder item = (ITaskHolder) obj;
         return task.equals(item.getTask());
     }
+
+
 }

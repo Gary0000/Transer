@@ -118,7 +118,7 @@ public class TaskGroupAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity,
 
         helper.setText(R.id.tv_title,task.getGroupId());
         helper.setText(R.id.tv_count,groupItem.getSubItems().size() + "");
-        helper.setText(R.id.tv_group_info,task.getGroupName());
+        helper.setText(R.id.tv_size,task.getGroupName());
 
         helper.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

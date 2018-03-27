@@ -13,10 +13,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
+import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
@@ -73,6 +75,28 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
         return false;
     }
 
+    @TaskSubscriber(processType = ProcessType.TYPE_ADD_TASKS,taskType = TaskType.TYPE_HTTP_UPLOAD)
+    public void onAddUploadTasks() {
+        Toast.makeText(this,"添加任务成功!",Toast.LENGTH_SHORT).show();
+    }
+
+    @TaskSubscriber(processType = ProcessType.TYPE_ADD_TASKS,taskType = TaskType.TYPE_HTTP_DOWNLOAD)
+    public void onAddDownloadTasks() {
+        Toast.makeText(this,"添加任务成功!",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        TaskEventBus.getDefault().unregesit(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        TaskEventBus.getDefault().regesit(this);
+    }
+
     private void createTasks(TaskType taskType) {
         List<ITask> tasks = new ArrayList<>();
 
@@ -105,6 +129,7 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
 //                .create();
 //        processor.addTasks(tasks);
         TaskCmd cmd = new TaskCmd.Builder()
+                .setTaskType(isLocal ? TaskType.TYPE_HTTP_UPLOAD : TaskType.TYPE_HTTP_DOWNLOAD)
                 .setTasks(tasks)
                 .setProcessType(ProcessType.TYPE_ADD_TASKS)
                 .setUserId(Contacts.USER_ID)

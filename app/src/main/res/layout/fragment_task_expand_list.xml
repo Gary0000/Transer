@@ -17,6 +17,7 @@
         android:orientation="vertical"
         >
         <ExpandableListView
+            android:background="#fcfcfc"
             android:divider="@android:color/white"
             android:dividerHeight="4dp"
             android:id="@+id/rcy_tasks"

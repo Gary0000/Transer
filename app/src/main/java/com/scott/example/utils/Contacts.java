@@ -49,6 +49,7 @@ public class Contacts {
 
         public static String getUrl(String url) {
             return getWebAppUrl() + url;
+            //return getBaseUrl() + "api/v1/files/upload";
         }
     }
 
