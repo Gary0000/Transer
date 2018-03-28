@@ -23,7 +23,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  * <p>Date:      2017-12-14 14:42</p>
  * <p>Email:     shilec@126.com</p>
  * <p>Describe:
- *      manager 责任连的顶端，当前只有 TaskManagerProxy, TaskManager 两个节点
+ *      分层设计，最上层为代理对象。
+ *      下面一层为拦截器管理器
+ *      下面一层为命令分发管理器
  * </p>
  */
 
@@ -42,9 +44,9 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     @Override
     public void setManager(ITaskManager manager) {
         mManager = manager;
+        mProcessor.setTaskManager(manager);
         mManager.setProcessCallback(this);
         mManager.setTaskProcessor(mProcessor);
-        mProcessor.setTaskManager(this);
     }
 
     @Override

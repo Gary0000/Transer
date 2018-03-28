@@ -22,17 +22,19 @@ import java.util.concurrent.ThreadPoolExecutor;
  * <p>Author:    shijiale</p>
  * <p>Date:      2017-12-13 16:13</p>
  * <p>Email:     shilec@126.com</p>
- * <p>Describe:</p>
+ * <p>Describe:
+ *      分发命令的任务管理器
+ * </p>
  */
 
-public class TaskManager implements ITaskManager {
+public class DispatchCmdTaskManager implements ITaskManager {
 
     private ITaskInternalProcessor mProcessorProxy;
     private ITaskProcessCallback mCallback;
     private Map<TaskType,ThreadPoolExecutor> mThreadPool = new HashMap<>();
     private Map<TaskType,ITaskHandlerFactory> mTaskHandlerCreators = new HashMap<>();
     private List<ITaskHolder> mTasks = new ArrayList<>(); //task list
-    private final String TAG = TaskManager.class.getSimpleName();
+    private final String TAG = DispatchCmdTaskManager.class.getSimpleName();
 
     private void throwArgException(ProcessType type,String... args) {
         if(args == null || args.length == 0) {

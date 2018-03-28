@@ -12,9 +12,10 @@ import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskProcessCallback;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.manager.ITaskInternalProcessor;
+import com.scott.transer.manager.InterceptCmdTaskManager;
 import com.scott.transer.manager.TaskProcessorProxy;
 import com.scott.transer.manager.TaskDbProcessor;
-import com.scott.transer.manager.TaskManager;
+import com.scott.transer.manager.DispatchCmdTaskManager;
 import com.scott.transer.manager.TaskManagerProxy;
 import com.scott.transer.manager.TaskProcessor;
 import com.scott.annotionprocessor.ITask;
@@ -134,7 +135,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
         if(mConfig.mBuilder.mTaskManager != null) {
             mTaskManagerProxy.setManager(mConfig.mBuilder.mTaskManager);
         } else {
-            mTaskManagerProxy.setManager(new TaskManager());
+            mTaskManagerProxy.setManager(new InterceptCmdTaskManager());
         }
 
         //设置handler的工厂类
