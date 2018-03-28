@@ -19,7 +19,7 @@
 
 2. 在app 的 build.gradle 中加入
 
-         compile 'com.github.shilec:Transer:1.0.0-beta'
+         compile 'com.github.shilec:Transer:1.0.1-d'
 
 3. 在app 的AndroidManifest.xml中 申明 TranserService
 
@@ -28,18 +28,11 @@
 4. 在 app 的 application 的 onCreate 中初始化TranserService
 
         TranserConfig config = new TranserConfig.Builder()
-
                 .setDownloadConcurrentThreadSize(3)
-
                 .setUploadConcurrentThreadSize(3)
-
-                .setSupportProcessorDynamicProxy(true)
-
                 .build();
 
         TranserService.init(this,config);
-       
-       
 
 ## 帮助文档
 [文档](https://github.com/shilec/Transer/blob/master/transer_doc.md)
@@ -60,13 +53,10 @@
 
 - 2018/1/2 添加下载限速，设置分片大小
 - 2018/1/21 简化传输器配置，修复部分bug
-- 2018/2/6 增加Processor动态代理操作任务
+- 2018/3/6 增加Processor动态代理操作任务
 - 2018/2/6 增加JitPack 依赖的支持
+- 2018/3/27 增加分组任务，分用户支持
 
-##### 接下来将会增加的功能：
-
-- 其他方式的文件传输支持
-- 优化性能
 
 ##### 服务端测试Demo详见：
 
