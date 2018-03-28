@@ -44,7 +44,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     @Override
     public void setManager(ITaskManager manager) {
         mManager = manager;
-        mProcessor.setTaskManager(manager);
+        mProcessor.setTaskManager(this);
         mManager.setProcessCallback(this);
         mManager.setTaskProcessor(mProcessor);
     }

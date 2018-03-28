@@ -27,6 +27,13 @@ public class InterceptCmdTaskManager implements ITaskManager{
     private ITaskManager mTaskManager;
     private List<ICmdInterceptor> mInterceptors = new ArrayList<>();
 
+    public InterceptCmdTaskManager(List<ICmdInterceptor> interceptors) {
+        this();
+        if(interceptors != null && interceptors.size() > 0) {
+            mInterceptors.addAll(interceptors);
+        }
+    }
+
     public InterceptCmdTaskManager() {
         mInterceptors.add(new CheckParamInterceptor());
         mInterceptors.add(new AutoRenameTaskInterceptor(this));

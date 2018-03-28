@@ -4,8 +4,11 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskInternalProcessor;
+import com.scott.transer.manager.interceptor.ICmdInterceptor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -44,6 +47,16 @@ public class TranserConfig {
         Map<TaskType,ITaskHandlerFactory> mHanlderCreators = new HashMap<>();
 
         boolean isSupportProcessorDynamicProxy;
+
+        List<ICmdInterceptor> interceptors;
+
+        public Builder addCmdInterceptor(ICmdInterceptor interceptor) {
+            if(interceptors == null) {
+                interceptors = new ArrayList<>();
+            }
+            interceptors.add(interceptor);
+            return this;
+        }
 
         public Builder setSupportProcessorDynamicProxy(boolean isSupport) {
             isSupportProcessorDynamicProxy = isSupport;

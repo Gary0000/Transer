@@ -23,6 +23,7 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.DefaultDownloadFactory;
 import com.scott.transer.handler.DefaultUploadFactory;
 import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
+import com.scott.transer.manager.interceptor.ICmdInterceptor;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -135,7 +136,14 @@ public class TranserService extends Service implements ITaskProcessCallback{
         if(mConfig.mBuilder.mTaskManager != null) {
             mTaskManagerProxy.setManager(mConfig.mBuilder.mTaskManager);
         } else {
-            mTaskManagerProxy.setManager(new InterceptCmdTaskManager());
+            ITaskManager manager = null;
+            if(mConfig.mBuilder.interceptors != null &&
+                    !mConfig.mBuilder.interceptors.isEmpty()) {
+                manager = new InterceptCmdTaskManager(mConfig.mBuilder.interceptors);
+            } else {
+                manager = new InterceptCmdTaskManager();
+            }
+            mTaskManagerProxy.setManager(manager);
         }
 
         //设置handler的工厂类
