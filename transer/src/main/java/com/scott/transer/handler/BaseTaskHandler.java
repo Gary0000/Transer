@@ -25,7 +25,8 @@ import java.util.concurrent.TimeUnit;
  * <p>Date:      2017-12-14 15:31</p>
  * <p>Email:     shilec@126.com</p>
  * <p>Describe:
- *      如果实现其他的传输器需要继承自该类
+ *      如果实现其他的传输器需要继承自该类，该类和传输协议无关，所以可以继承
+ *      自该类实现不同协议的handler
  * </p>
  */
 public abstract class BaseTaskHandler implements ITaskHandler {
@@ -193,12 +194,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 Debugger.error(TAG,"wait time = " + waitTime + ",size = " + getPiceBuffSize() + ",realSize = " + getPiceRealSize() );
             }
 
-            mTask.setCompleteLength(mTask.getEndOffset());
-            mTask.setStartOffset(mTask.getEndOffset());
-            Debugger.info(TAG,"length = " + task.getLength() + "" +
-                    ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
-
             if(isPiceSuccessful()) { //判断一片是否成功
+                mTask.setCompleteLength(mTask.getEndOffset());
+                mTask.setStartOffset(mTask.getEndOffset());
                 mTask.setState(TaskState.STATE_RUNNING);
                 if(System.currentTimeMillis() - mLastPiceSuccessfulTime > MAX_DELAY_TIME) {
                     mLastPiceSuccessfulTime = System.currentTimeMillis();
@@ -210,6 +208,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 isExit = true;
                 break;
             }
+
+            Debugger.info(TAG,"length = " + task.getLength() + "" +
+                    ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
             Debugger.error(TAG,"========= setState = " + mTask.getState());
         }
 

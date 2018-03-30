@@ -24,13 +24,16 @@ public class Contacts {
 
     public static class API {
 
-        public static final String HOST_URL = "192.168.1.136";
+        public static final String HOST_URL = "192.168.1.129";
 
-        public static final String HOST_PORT = "8080";
+        //public static final String HOST_PORT = "8080";
+        public static final String HOST_PORT = "443";
 
-        public static final String HOST_SCHEMA = "http";
+        //public static final String HOST_SCHEMA = "http";
+        public static final String HOST_SCHEMA = "https";
 
-        public static final String WEB_APP = "TranserServer";
+        //public static final String WEB_APP = "TranserServer";
+        public static final String WEB_APP = "/api/v1/files/";
 
         public static final String DOWNLOAD_URL = "download";
 

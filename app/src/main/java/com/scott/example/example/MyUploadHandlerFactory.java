@@ -7,6 +7,9 @@ import com.scott.transer.handler.ITaskHandlerCallback;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.transer.manager.ITaskManager;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 
 /**
  * <p>Author:    shijiale</p>
@@ -19,10 +22,20 @@ public class MyUploadHandlerFactory extends AbsHandlerFactory {
 
     @Override
     protected ITaskHandler create(ITask task) {
+        String path = "Private/" + task.getName();
+        try {
+            path = URLEncoder.encode(path,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        if(path == null) {
+            return null;
+        }
         return new MyUploadHandler.Builder()
-                .addHeader("path","Private/" + task.getName())
-                .addHeader("access_id","11314d017f97c77a4fe69fcbf6197d7f")
-                .addHeader("file-md5","")
+                .addHeader("path",path)
+                .addHeader("auto-rename","1")
+                .addHeader("access-id","cf9aa2d34b739a9d33e2f3472b696594")
                 .build();
     }
 }

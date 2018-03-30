@@ -24,7 +24,7 @@ public class BaseApplication extends Application {
                 .setDownloadConcurrentThreadSize(3)
                 .setUploadConcurrentThreadSize(3)
                 .setSupportProcessorDynamicProxy(true)
-                //.addHandlerFactory(TaskType.TYPE_HTTP_UPLOAD,new MyUploadHandlerFactory())
+                .addHandlerFactory(TaskType.TYPE_HTTP_UPLOAD,new MyUploadHandlerFactory())
                 .build();
         TranserService.init(this,config);
 

@@ -11,6 +11,8 @@ import com.scott.transer.utils.FileUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -97,6 +99,15 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         return datas;
     }
 
+    private String encodeName(String name) {
+        try {
+            return URLEncoder.encode(name,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     protected void writePice(byte[] datas, Task task) throws IOException{
 
@@ -106,7 +117,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
                 .addHeader("Session-ID", task.getSesstionId())
                 .addHeader("Content-Range", "bytes " + task.getStartOffset()
                         + "-" + (task.getEndOffset() - 1) + "/" + mFile.length())
-                .addHeader("Content-Disposition", "attachment; filename=" + task.getName())
+                .addHeader("Content-Disposition", "attachment; filename=" + encodeName(task.getName()))
                 .addHeader("Connection", "Keep-Alive")
                 .url(task.getDestUrl())
                 .post(mRequestBody);
@@ -122,10 +133,11 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         mCurrentCall = client.newCall(request);
 
         mResponse = null;
-        Debugger.error(TAG,"wait response === ");
+        //Debugger.error(TAG,"wait response === ");
         Response execute = mCurrentCall.execute();
-        Debugger.error(TAG,"wait2 response === ");
+        //Debugger.error(TAG,"wait2 response === ");
         if(!execute.isSuccessful()) {
+            Debugger.error(TAG,"error msg = " + execute.body().string());
             throw new IllegalStateException(execute.message());
         }
         ResponseBody body = execute.body();

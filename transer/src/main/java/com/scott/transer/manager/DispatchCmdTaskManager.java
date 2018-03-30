@@ -59,39 +59,21 @@ public class DispatchCmdTaskManager implements ITaskManager {
                 mProcessorProxy.addTask(cmd.getTask());
                 break;
             case TYPE_DELETE_TASK:
-                if(TextUtils.isEmpty(cmd.getTaskId())) {
-                    throwArgException(ProcessType.TYPE_DELETE_TASK,"taskId");
-                }
                 mProcessorProxy.deleteTask(cmd.getTaskId());
                 break;
             case TYPE_DELETE_TASKS_SOME:
                 mProcessorProxy.deleteTasks(cmd.getTaskIds());
                 break;
             case TYPE_DELETE_TASKS_GROUP:
-                if(TextUtils.isEmpty(cmd.getGroupId())) {
-                    throwArgException(ProcessType.TYPE_DELETE_TASKS_GROUP,"groupId");
-                }
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_DELETE_TASKS_GROUP,"userId");
-                }
                 mProcessorProxy.deleteGroup(cmd.getGroupId(),cmd.getUserId());
                 break;
             case TYPE_DELETE_TASKS_ALL:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_DELETE_TASKS_ALL,"userId");
-                }
                 mProcessorProxy.deleteAll(cmd.getTaskType(),cmd.getUserId());
                 break;
             case TYPE_DELETE_TASKS_COMPLETED:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_DELETE_TASKS_COMPLETED,"userId");
-                }
                 mProcessorProxy.deleteCompleted(cmd.getTaskType(),cmd.getUserId());
                 break;
             case TYPE_DELETE_TASKS_STATE:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_DELETE_TASKS_STATE,"userId");
-                }
                 mProcessorProxy.delete(cmd.getTask().getState(),
                         cmd.getTaskType(),cmd.getUserId());
                 break;
@@ -102,30 +84,15 @@ public class DispatchCmdTaskManager implements ITaskManager {
                 mProcessorProxy.getTasks(cmd.getTaskIds());
                 break;
             case TYPE_QUERY_TASKS_ALL:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_QUERY_TASKS_ALL,"userId");
-                }
                 mProcessorProxy.getAllTasks(cmd.getTaskType(),cmd.getUserId());
                 break;
             case TYPE_QUERY_TASKS_COMPLETED:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_QUERY_TASKS_COMPLETED,"userId");
-                }
                 mProcessorProxy.getTasks(TaskState.STATE_FINISH,cmd.getTaskType(),cmd.getUserId());
                 break;
             case TYPE_QUERY_TASKS_GROUP:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_QUERY_TASKS_GROUP,"userId");
-                }
-                if(TextUtils.isEmpty(cmd.getGroupId())) {
-                    throwArgException(ProcessType.TYPE_QUERY_TASKS_GROUP,"groupId");
-                }
                 mProcessorProxy.getGroup(cmd.getGroupId(),cmd.getUserId());
                 break;
             case TYPE_QUERY_TASKS_STATE:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_QUERY_TASKS_STATE,"userId");
-                }
                 mProcessorProxy.getTasks(cmd.getState(),cmd.getTaskType()
                         ,cmd.getUserId());
                 break;
@@ -133,25 +100,15 @@ public class DispatchCmdTaskManager implements ITaskManager {
                 mProcessorProxy.updateTask(cmd.getTask());
                 break;
             case TYPE_UPDATE_TASK_WTIHOUT_SAVE:
-                Debugger.error(TAG,"speed = " + cmd.getTask().getSpeed());
                 mProcessorProxy.updateTaskWithoutSave(cmd.getTask());
                 break;
             case TYPE_START_TASK:
                 mProcessorProxy.start(cmd.getTaskId());
                 break;
             case TYPE_START_GROUP:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_START_GROUP,"userId");
-                }
-                if(TextUtils.isEmpty(cmd.getGroupId())) {
-                    throwArgException(ProcessType.TYPE_START_GROUP,"groupId");
-                }
                 mProcessorProxy.startGroup(cmd.getGroupId(),cmd.getUserId());
                 break;
             case TYPE_START_ALL:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_START_ALL,"userId");
-                }
                 mProcessorProxy.startAll(cmd.getTaskType(),cmd.getUserId());
                 break;
             case TYPE_STOP_TASK:
@@ -161,15 +118,9 @@ public class DispatchCmdTaskManager implements ITaskManager {
                 mProcessorProxy.stop(cmd.getGroupId());
                 break;
             case TYPE_STOP_ALL:
-                if(TextUtils.isEmpty(cmd.getUserId())) {
-                    throwArgException(ProcessType.TYPE_STOP_ALL,"userId");
-                }
                 mProcessorProxy.stopAll(cmd.getTaskType(),cmd.getUserId());
                 break;
         }
-//        if(TextUtils.isEmpty(cmd.getUserId())) {
-//            throwArgException(cmd.getProceeType(), "userId");
-//        }
         mCallback.onFinished(cmd.getUserId(),cmd.getTaskType(),cmd.getProceeType(),null);
     }
 

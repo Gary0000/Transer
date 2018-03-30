@@ -34,8 +34,8 @@ greendao {
 }
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':taskanoprocessor')
-    compile 'org.greenrobot:greendao:3.2.0'
-    compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.squareup.okhttp3:okhttp:3.3.1'
+    api project(':taskanoprocessor')
+    implementation 'org.greenrobot:greendao:3.2.0'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.3.1'
 }

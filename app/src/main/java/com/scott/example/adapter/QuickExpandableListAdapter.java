@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * <p>Author:    shijiale</p>
  * <p>Date:      2017/7/7.</p>
- * <p>Email:     shijl5@lenovo.com</p>
+ * <p>Email:     shilec@126.com</p>
  * <p>Describe:
  *    参考BRCV 实现的 ExpandableListView 的 Adapter
  *

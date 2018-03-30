@@ -1,10 +1,9 @@
 package com.scott.example.example;
 
-import android.text.TextUtils;
 
 import com.scott.annotionprocessor.ITask;
-import com.scott.example.utils.FileUtils;
 import com.scott.transer.handler.DefaultHttpUploadHandler;
+import com.scott.transer.utils.FileUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,10 +62,15 @@ public class MyUploadHandler extends DefaultHttpUploadHandler {
     }
 
     @Override
+    protected int getPiceBuffSize() {
+        return 1 * 1024 * 1024;
+    }
+
+    @Override
     protected void prepare(ITask task) throws IOException {
         super.prepare(task);
         //在prepare 设置文件MD5，是在线程中获取的，不会阻塞UI
-        String file_md5 = com.scott.transer.utils.FileUtils.getFileMD5Value(task.getSourceUrl());
+        String file_md5 = FileUtils.getFileMD5Value(task.getSourceUrl());
         getHeaders().put("file-md5",file_md5);
     }
 
