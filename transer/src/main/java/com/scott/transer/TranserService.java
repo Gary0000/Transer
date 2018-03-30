@@ -35,14 +35,9 @@ import java.util.concurrent.TimeUnit;
  * <p>Date:      2017-12-14 15:45</p>
  * <p>Email:     shilec@126.com</p>
  * <p>Describe:
- * 为什么要使用动态代理 或者 TaskEventBus 去间接操作任务，而不是 直接使用 TaskProcessor
- * 去操作任务？
  *
- * 因为通过TaskEventBus 也好，通过ITaskProcessor 的动态代理类也好，去操作任务。 发出的命令
- * 是添加到了一个命令队列中，一个一个被执行的。直接操作任务是耗时操作，需要放到线程中，而直接操作势必会出现 操作行为并发的情况，这样就会导致
- * TaskList 的 同步问题，和数据库同步的问题。
- *
- * 这里用了TaskManager 统一维护一个命令队列，保证了同一时刻，只会执行同一个命令（只会在一个线程中修改任务列表或数据库）。
+ *      传输核心服务，持有TaskManager 管理任务。
+ *      通过TranserConfig 配置
  * </p>
  */
 
