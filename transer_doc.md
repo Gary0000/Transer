@@ -4,24 +4,24 @@
 
 ````java
 
-//创建一个任务
-ITask task = new TaskBuilder()
-    .setName("test.zip") //设置任务名称
-    .setSourceUrl(URL)  //设置数据源
-    .setDestUrl(FILE_PATH) //设置目标路径
-    .build();
+    //创建一个任务
+    ITask task = new TaskBuilder()
+            .setName("test.zip") //设置任务名称
+            .setSourceUrl(URL)  //设置数据源
+            .setDestUrl(FILE_PATH) //设置目标路径
+            .build();
 
-ITaskHandler mHandler = new DefaultHttpDownloadHandler.Builder()
-    .setTask(task)
-    .addParam("path","test.zip")
-    .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
-    .setCallback(new DownloadListener())
-    .defaultThreadPool(3)
-    .setEnableCoverFile(true)
-    .build();
+    ITaskHandler mHandler = new DefaultHttpDownloadHandler.Builder()
+            .setTask(task)
+            .addParam("path","test.zip")
+            .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
+            .setCallback(new DownloadListener())
+            .defaultThreadPool(3)
+            .setEnableCoverFile(true)
+            .build();
 
-mHandler.start() 或者
-mHandler.stop()
+     mHandler.start() 或者
+	 mHandler.stop()
 ````
 
 - ##### 上传 (示例代码 SimpleUploadActivity)
@@ -226,3 +226,55 @@ mHandler.stop()
 	       //TODO update ui on any processtype
 	}
 ````
+
+### 自定义HandlerFactory,修改任务管理器中的UploadHandler 或者 DownloadHandler 的参数配置
+
+1. 继承自AbsHandlerFactory
+
+````java
+	public class MyUploadHandlerFactory extends AbsHandlerFactory {
+
+    @Override
+    protected ITaskHandler create(ITask task) {
+        String path = "Private/" + task.getName();
+        try {
+            path = URLEncoder.encode(path,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        if(path == null) {
+            return null;
+        }
+        return new MyUploadHandler.Builder()
+                .addHeader("path",path)
+                .addHeader("auto-rename","1")
+                .addHeader("access-id","cf9aa2d34b739a9d33e2f3472b696594")
+                .build();
+    }
+ }
+````
+
+2.在Application 中的 TranserService init 时，修改TranserConfig,添加一个Handler 的 Factory
+
+````java
+ TranserConfig config = new TranserConfig.Builder()
+                .setDownloadConcurrentThreadSize(3)
+                .setUploadConcurrentThreadSize(3)
+                .setSupportProcessorDynamicProxy(true)
+                .addHandlerFactory(TaskType.TYPE_HTTP_UPLOAD,new MyUploadHandlerFactory())
+                .build();
+ TranserService.init(this,config);
+````
+
+### 其他扩展
+
+- 默认的数据库储存使用的GreenDao,如果需要修改可以自定义ITaskProcessor，并且在TranserConfig 中设置
+
+- 框架设计在DefaultHttpUploadHandler 之上是无关传输协议的，是一个任务集中管理的框架，如果需要实现其他协议的任务管理，可以继承自BaseTaskHandler 实现它的抽象方法。
+
+- 提供有命令拦截器，可以在TranserConfig 中增加命令拦截器，用来给命令添加全局的参数或者作统一的处理。
+
+### 试验功能
+
+- 支持动态代理执行操作命令，具体事例参考 ProcessorDynamicProxyFactory 的使用。
