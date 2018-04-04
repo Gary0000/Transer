@@ -4,24 +4,24 @@
 
 ````java
 
-    //创建一个任务
-    ITask task = new TaskBuilder()
-            .setName("test.zip") //设置任务名称
-            .setSourceUrl(URL)  //设置数据源
-            .setDestUrl(FILE_PATH) //设置目标路径
-            .build();
+//创建一个任务
+ITask task = new TaskBuilder()
+    .setName("test.zip") //设置任务名称
+    .setSourceUrl(URL)  //设置数据源
+    .setDestUrl(FILE_PATH) //设置目标路径
+    .build();
 
-    ITaskHandler mHandler = new DefaultHttpDownloadHandler.Builder()
-            .setTask(task)
-            .addParam("path","test.zip")
-            .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
-            .setCallback(new DownloadListener())
-            .defaultThreadPool(3)
-            .setEnableCoverFile(true)
-            .build();
+ITaskHandler mHandler = new DefaultHttpDownloadHandler.Builder()
+    .setTask(task)
+    .addParam("path","test.zip")
+    .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
+    .setCallback(new DownloadListener())
+    .defaultThreadPool(3)
+    .setEnableCoverFile(true)
+    .build();
 
-     mHandler.start() 或者
-	 mHandler.stop()
+mHandler.start() 或者
+mHandler.stop()
 ````
 
 - ##### 上传 (示例代码 SimpleUploadActivity)
