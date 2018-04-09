@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
 /**
@@ -27,6 +28,7 @@ public class OkHttpProxy {
                 .connectTimeout(MAX_TIME_OUT, TimeUnit.MILLISECONDS)
                 .readTimeout(MAX_TIME_OUT,TimeUnit.MILLISECONDS)
                 .writeTimeout(MAX_TIME_OUT,TimeUnit.MILLISECONDS)
+                .addInterceptor(new LogInterceptor())
                 .sslSocketFactory(SsX509TrustManager.createSSLSocketFactory())
                 .hostnameVerifier(new HostnameVerifier() {
                     @Override
@@ -35,6 +37,7 @@ public class OkHttpProxy {
                     }
                 })
                 .build();
+
     }
 
     public static OkHttpClient getClient() {

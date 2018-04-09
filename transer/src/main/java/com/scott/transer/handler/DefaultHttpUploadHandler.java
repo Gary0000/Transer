@@ -93,7 +93,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     }
 
     @Override
-    protected byte[] readPice(Task task) throws IOException{
+    protected byte[] readPice(ITask task) throws IOException{
         byte[] datas = new byte[getPiceBuffSize()];
         mPiceRealSize = mFile.read(datas,0, getPiceBuffSize());
         return datas;
@@ -109,7 +109,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     }
 
     @Override
-    protected void writePice(byte[] datas, Task task) throws IOException{
+    protected void writePice(byte[] datas, ITask task) throws IOException{
 
         //服务端需要支持 Content-Range 的 header
         mRequestBody = new PiceRequestBody(datas);

@@ -111,10 +111,10 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     protected abstract boolean isSuccessful();
 
     //从数据源中读取一片
-    protected abstract byte[] readPice(Task task) throws Exception;
+    protected abstract byte[] readPice(ITask task) throws Exception;
 
     //写入一片到目标
-    protected abstract void writePice(byte[] datas,Task task) throws Exception;
+    protected abstract void writePice(byte[] datas,ITask task) throws Exception;
 
     //传输开始前
     protected abstract void prepare(ITask task) throws Exception;
@@ -156,7 +156,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mListenner.onFinished(mTask);
         }
 
-        release(); //释放资源
+        //release(); //释放资源
     }
 
     //限制下载速度
@@ -432,7 +432,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
 
         /***
-         * 设置任务，必须设置。 创建task {@link com.scott.transer.TaskBuilder}
+         * 设置任务，必须设置。 创建task {@link com.scott.transer.Task.Builder}
          * @param task
          * @return
          */

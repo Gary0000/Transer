@@ -75,6 +75,14 @@ public class MyUploadHandler extends DefaultHttpUploadHandler {
     }
 
     public static class Builder extends DefaultHttpUploadHandler.Builder {
+
+        private String arg;
+
+        public Builder setArg(String arg) {
+            this.arg = arg;
+            return this;
+        }
+
         @Override
         protected DefaultHttpUploadHandler buildTarget() {
             return new MyUploadHandler();

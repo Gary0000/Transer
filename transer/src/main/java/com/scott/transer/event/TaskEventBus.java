@@ -2,6 +2,7 @@ package com.scott.transer.event;
 
 import android.content.Context;
 
+import com.scott.annotionprocessor.ITaskEventDispatcher;
 import com.scott.annotionprocessor.ThreadMode;
 import com.scott.transer.TaskCmd;
 
@@ -33,7 +34,7 @@ public class TaskEventBus {
         }
     }
 
-    public  EventDispatcher getDispatcher() {
+    public ITaskEventDispatcher getDispatcher() {
         return mDispatcher;
     }
 

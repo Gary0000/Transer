@@ -66,7 +66,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     }
 
     @Override
-    protected byte[] readPice(Task task) throws IOException {
+    protected byte[] readPice(ITask task) throws IOException {
         if (mInputStream == null) {
             return null;
         }
@@ -76,7 +76,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     }
 
     @Override
-    protected void writePice(byte[] datas, Task task) throws IOException {
+    protected void writePice(byte[] datas, ITask task) throws IOException {
         mFile.write(datas, 0, getPiceRealSize());
     }
 

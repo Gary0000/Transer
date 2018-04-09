@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.scott.annotionprocessor.ITask;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
+import com.scott.example.example.MyUploadHandler;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.SimpleTaskHandlerListenner;
@@ -16,6 +17,8 @@ import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.utils.Debugger;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,9 +73,18 @@ public class SimpleUploadActivity extends BaseActivity {
                 .setDestUrl(Contacts.API.getUrl(Contacts.API.UPLOAD_URL))
                 .build();
 
-        mHandler = new DefaultHttpUploadHandler.Builder()
+        String path = "Private/" + task.getName();
+        try {
+            path = URLEncoder.encode(path,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        mHandler = new MyUploadHandler.Builder()
                 .setTask(task)
-                .addHeader("path","upload")
+                .addHeader("path",path)
+                .addHeader("auto-rename","1")
+                .addHeader("access-id","63880a1c95eb2d96faaf5d858230a359")
                 .setCallback(new UploadListenner())
                 .runOnNewThread()
                 .build();

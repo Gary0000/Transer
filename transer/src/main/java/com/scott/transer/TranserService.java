@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import com.scott.transer.dao.DaoHelper;
+import com.scott.transer.event.EventDispatcher;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskProcessCallback;
@@ -24,6 +25,8 @@ import com.scott.transer.handler.DefaultDownloadFactory;
 import com.scott.transer.handler.DefaultUploadFactory;
 import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
 import com.scott.transer.manager.interceptor.ICmdInterceptor;
+import com.shilec.xlogger.Config;
+import com.shilec.xlogger.XLogger;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -90,7 +93,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
         //使用ITaskProcessor 动态代理执行任务操作 将不会走这里。
         switch (action) {
             case ACTION_EXECUTE_CMD:
-                TaskCmd cmd = TaskEventBus.getDefault().getDispatcher().getTaskCmd();
+                TaskCmd cmd = ((EventDispatcher)TaskEventBus.getDefault().getDispatcher()).getTaskCmd();
                 if(cmd != null) {
                     mTaskManagerProxy.process(cmd);
                 }
@@ -102,6 +105,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
     @Override
     public void onCreate() {
         super.onCreate();
+        XLogger.init(new Config.Builder().enableDebug().build());
         TaskEventBus.init(getApplicationContext());
         DaoHelper.init(getApplicationContext());
         mContext = getApplicationContext();

@@ -105,7 +105,7 @@ public class Task implements ITask {
     @Override
     public String getSesstionId() {
         if(TextUtils.isEmpty(sesstionId)) {
-            sesstionId = NumberUtils.getRandomStr(8);
+            sesstionId = NumberUtils.getRandomStr(8,getTaskId().hashCode());
         }
         return sesstionId;
     }

@@ -35,7 +35,7 @@ public class MyUploadHandlerFactory extends AbsHandlerFactory {
         return new MyUploadHandler.Builder()
                 .addHeader("path",path)
                 .addHeader("auto-rename","1")
-                .addHeader("access-id","cf9aa2d34b739a9d33e2f3472b696594")
+                .addHeader("access-id","0312d44cc00cecfc34bd425a7d31e1e6")
                 .build();
     }
 }

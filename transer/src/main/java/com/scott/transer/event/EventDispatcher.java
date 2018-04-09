@@ -56,7 +56,7 @@ public class EventDispatcher implements ITaskEventDispatcher {
         mContext = context;
     }
 
-    public void dispatchCmd(TaskCmd cmd) {
+    void dispatchCmd(TaskCmd cmd) {
         synchronized (mCmdQueue) {
             mCmdQueue.add(cmd);
             Intent intent = new Intent(mContext, TranserService.class);
