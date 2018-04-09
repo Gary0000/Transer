@@ -1,243 +1,280 @@
-### 简单的下载或上传(不使用续传功能或者自己保存任务信息):
+## 简单的下载或上传(不使用续传功能或者自己保存任务信息):
 
-##### 下载 (示例代码 SmpleDownloadActivity)
+- ##### 下载 (示例代码 SmpleDownloadActivity)
 
+````java
 
-        //创建一个任务
-        ITask task = new TaskBuilder()
-                .setName("test.zip") //设置任务名称
-                .setDataSource(URL)  //设置数据源
-                .setDestSource(FILE_PATH) //设置目标路径
-                .build();
+    //创建一个任务
+    ITask task = new TaskBuilder()
+            .setName("test.zip") //设置任务名称
+            .setSourceUrl(URL)  //设置数据源
+            .setDestUrl(FILE_PATH) //设置目标路径
+            .build();
 
-        ITaskHandler mHandler = new DefaultHttpDownloadHandler.Builder()
-                .setTask(task)
-                .addParam("path","test.zip")
-                .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
-                .setCallback(new DownloadListener())
-                .defaultThreadPool(3)
-                .setEnableCoverFile(true)
-                .build();
+    ITaskHandler mHandler = new DefaultHttpDownloadHandler.Builder()
+            .setTask(task)
+            .addParam("path","test.zip")
+            .setSpeedLimited(BaseTaskHandler.SPEED_LISMT.SPEED_1MB)
+            .setCallback(new DownloadListener())
+            .defaultThreadPool(3)
+            .setEnableCoverFile(true)
+            .build();
 
      mHandler.start() 或者
 	 mHandler.stop()
+````
 
-###### 上传 (示例代码 SimpleUploadActivity)
+- ##### 上传 (示例代码 SimpleUploadActivity)
 
-    task = new TaskBuilder()
-                .setName("test.zip")
-                .setTaskId("1233444")
-                .setSessionId("123123123131")
-                .setDataSource(FILE_PATH)
-                .setDestSource(URL)
-                .build();
-    ITaskHandler mHandler = new DefaultHttpUploadHandler.Builder()
-                .setTask(task)
-                .addParam("path","test.zip")
-                .setCallback(new UploadListenner())
-                .defaultThreadPool(3)
-                .build();
+````java
+	task = new TaskBuilder()
+	            .setName("test.zip")
+	            .setSessionId("123123123131")
+	            .setSourceUrl(FILE_PATH)
+	            .setDestUrl(URL)
+	            .build();
+	ITaskHandler mHandler = new DefaultHttpUploadHandler.Builder()
+	            .setTask(task)
+	            .addParam("path","test.zip")
+	            .setCallback(new UploadListenner())
+	            .defaultThreadPool(3)
+	            .build();
+````
 
-###### 使用TaskEventBus代替ITaskHandlerCallback (示例代码 SimpleTaskEventBusActivity)
+
+- ##### 使用注解TaskSubscriber监听回调
 
 1. 初始化TaskEventBus
 
-        TaskEventBus.init(context); //在application 得 onCreate中
-
+````java
+    TaskEventBus.init(context); //在application 得 onCreate中
+````
 
 2. 创建TaskHandler
 
-        task = new TaskBuilder()
-                .setName("test.zip")
-                .setTaskId("1233444")
-                .setSessionId("123123123131")
-                .setDataSource(FILE_PATH)
-                .setDestSource(URL)
-                .build();
+````java
+    task = new TaskBuilder()
+            .setName("test.zip")
+            .setTaskId("1233444")
+            .setSessionId("123123123131")
+            .setSourceurl(FILE_PATH)
+            .setDestUrl(URL)
+            .build();
 
-        ITaskHandler mHandler = new DefaultHttpUploadHandler.Builder()
-                .setTask(task)
-                .addParam("path","test.zip")
-                //.setCallback(new UploadListenner())
-                .setEventDispatcher(TaskEventBus.getDefault().getDispatcher()) //设置EventDispatcher,
-                .defaultThreadPool(3)
-                .build();
-        setTitle(getString(R.string.simple_upload));
+    ITaskHandler mHandler = new DefaultHttpUploadHandler.Builder()
+            .setTask(task)
+            .addParam("path","test.zip")
+            .setEventDispatcher(TaskEventBus.getDefault().getDispatcher())
+            .defaultThreadPool(3)
+            .build();
+````
+> 注意:如果使用TaskSubscriber注解的方法来监听回调，该方法在使用任务管理时有任务变更也会受到通知，TaskScriber使用方法见下面 TaskEventBus 的使用
 
-        见下面 TaskEventBus 的使用
 
 ### 自定义ITaskHandler (示例代码 MyUploadHandler)
 
-- 默认的handler将不会验证服务端的返回值，继承DefaultDownloadHandler 或 DefaultUploadHandler 适配服务端返回值的验证
+> 默认的DefaultHttpUploadHandler 将不会验证服务端的返回值，如果需要校验服务器的返回值用来判断当前片是否上传成功，需要自定义HttpUploadHandler,继承自 DefaultHttpUploadHandler
 
-        public class MyUploadHandler extends DefaultHttpUploadHandler {
+1. 自定义HttpUploadHandler
 
-			@Override
-			public boolean isPiceSuccessful() {
-			    try{
-			        String response = getNowResponse();
-			        JSONObject jObj = new JSONObject(response);
-			        int code = jObj.optInt("code");
-			        if(code == 1 || isSuccessful()) {
-			            return true;
-			        }
-			    } catch (Exception e) {
-			        return false;
-			    }
-			    return false;
-			}
-			
-			@Override
-			public boolean isSuccessful() {
-			    try {
-			        String response = getNowResponse();
-			        JSONObject jsonObject = new JSONObject(response);
-			        int code = jsonObject.optInt("code");
-			        if(code == 0) {
-			            return true;
-			        }
-			    } catch (Exception e) {
-			        return false;
-			    }
-			    return false;
-			}
-        }
+````java
+    public class MyUploadHandler extends DefaultHttpUploadHandler {
 
-		mHandler = new MyUploadHandler.Builder()
-		                .setTask(task)
-		                .addParam("path","test.zip")
-		                .setCallback(new UploadListenner())
-		                .defaultThreadPool(3)
-		                .build();
-
-### 自定义Handler 的Builder,用于增加自定义的参数或配置（示例代码 DefaultDownloadHandler.Builder)
-
-		public static class Builder extends BaseTaskHandler.Builder<Builder,MyUploadHandler> {
-		
-		        private boolean isEnableCoverfile;
-		        private long mSpeedLimited;
-		
-		        public Builder setSpeedLimited(long limited) {
-		            mSpeedLimited = limited;
-		            return this;
+		@Override
+		public boolean isPiceSuccessful() {
+		    try{
+		        String response = getNowResponse();
+		        JSONObject jObj = new JSONObject(response);
+		        int code = jObj.optInt("code");
+		        if(code == 1 || isSuccessful()) {
+		            return true;
 		        }
-		
-		        public Builder setEnableCoverFile(boolean enable){
-		            isEnableCoverfile = enable;
-		            return this;
-		        }
-		
-		        @Override
-		        protected MyUploadHandler buildTarget() {
-		            MyUploadHandler handler = new MyUploadHandler();
-		            handler.isCoverOldFile = isEnableCoverfile;
-		            handler.mLimitSpeed = mSpeedLimited;
-		            return handler;
-		        }
+		    } catch (Exception e) {
+		        return false;
 		    }
+		    return false;
+		}
+		
+		@Override
+		public boolean isSuccessful() {
+		    try {
+		        String response = getNowResponse();
+		        JSONObject jsonObject = new JSONObject(response);
+		        int code = jsonObject.optInt("code");
+		        if(code == 0) {
+		            return true;
+		        }
+		    } catch (Exception e) {
+		        return false;
+		    }
+		    return false;
+		}
+    }
+````
 
 
-### 使用任务管理:
+2. 自定义Handler 的Builder,用于增加自定义的参数或配置（示例代码 DefaultDownloadHandler.Builder)
 
-1. 配置传输服务
+> 在自定义的MyUploadHandler 中 建一个静态的子类 Builder 继承自 DefaultHttpUploadHandler.Builder,可以增加自定义的参数
 
+````java
+	public static class Builder extends DefaultHttpUploadHandler.Builder {
+		
+		private String arg;
+    
+    	public Builder setArg(String arg) {
+        	this.arg = arg;
+        	return this;
+    	}
+
+    	@Override
+    	protected DefaultHttpUploadHandler buildTarget() {
+       		return new MyUploadHandler();
+    	}
+	}
+````
+
+### 使用任务管理器:
+
+> 使用任务管理器去管理任务，会让任务列表运行在一个后台服务的线程池中，不会和V层直接交互，V 层也不能直接修改传输任务的信息，只能通过TaskCmd将控制命令发送给后台服务，后台服务会讲命令加入到命令队列。之后会由任务管理器派发任务命令到执行器去执行命令。通过EventDispatcher 中间层 将任务变更的通知分发到V 层 TaskSubScriber 标注的方法，
+
+>下面文档将以上传文件为示例，下载文件操作相同。
+
+-  配置传输服务
+
+````java
          //在Application 的 onCreate 中(示例代码 BaseApplication)
 		 TranserConfig config = new TranserConfig.Builder()
 		                .setDownloadConcurrentThreadSize(3)
 		                .setUploadConcurrentThreadSize(3)
 		                .build();
 		 TranserService.init(this,config);
+		 TaskEventBus.init(this);
+````
 
-2. 添加单个任务 (示例代码 CreateTaskActivity)
+- 基本任务操作
 
-			使用TaskEventBus
-			ITask task = new TaskBuilder()
-		                .setTaskType(task_type)  //任务类型
-		                .setDataSource(source)   //任务数据源 (下在任务为要下载的服务文件链接，上传任务为要上传的本地文件路径)
-		                .setDestSource(dest)     //任务目标源 (下载任务为保存的本地路径，上传任务为服务器地址)
-		                .setName(NAME)           //任务名称
-		                .build();
-		
-		        ITaskCmd cmd = new TaskCmdBuilder()
-		                .setTaskType(task_type) //任务类型
-		                .setProcessType(ProcessType.TYPE_ADD_TASK) //操作类型(添加任务)
-		                .setTask(task) //任务信息
-		                .build();
-			TaskEventBus.getDefault().execute(cmd); //执行命令
+1. 添加单个任务 (示例代码 CreateTaskActivity)
 
-3. 开始任务 (示例代码 TaskListRecyclerAdapter)
+````java
+	ITask task = new TaskBuilder()
+                .setTaskType(TaskType.HTTP_UPLOAD)  
+                .setSourceUrl(source)   
+                .setDestUrl(dest)   
+                .setName(NAME)           
+                .build();
 
-		ITaskCmd cmd = new TaskCmdBuilder()
-		               .setTaskType(task_type) //任务类型
-		               .setProcessType(ProcessType.TYPE_START_TASK) //操作类型(修改任务状态)
-		               .setTask(task) //任务信息
-		               .build();
-		TaskEventBus.getDefault().execute(cmd); //执行命令
+        ITaskCmd cmd = new TaskCmdBuilder()
+                .setProcessType(ProcessType.TYPE_ADD_TASK)
+                .setTask(task)
+                .build();
+	TaskEventBus.getDefault().execute(cmd); 
+````
+
+2. 开始任务 (示例代码 TaskListRecyclerAdapter)
+
+````java
+	ITaskCmd cmd = new TaskCmdBuilder()
+	               .setProcessType(ProcessType.TYPE_START_TASK) 
+	               .setTask(task) 
+	               .build();
+	TaskEventBus.getDefault().execute(cmd); //执行命令
+````
 
 
 4. 结束/暂停 任务 (示例代码 TaskListRecyclerAdapter)
 
-		ITaskCmd cmd = new TaskCmdBuilder()
-		               .setTaskType(task_type) //任务类型
-		               .setProcessType(ProcessType.TYPE_STOP_TASK) //操作类型(修改任务状态)
-		               .setTask(task) //任务信息
-		               .build();
-		TaskEventBus.getDefault().execute(cmd); //执行命令
-		其他命令,详见ProcessType 中支持的 type 类型
+````java
+	ITaskCmd cmd = new TaskCmdBuilder()
+	               .setTaskType(task_type) 
+	               .setProcessType(ProcessType.TYPE_STOP_TASK)
+	               .build();
+	TaskEventBus.getDefault().execute(cmd);
+````
+> 其他任务操作类型请查看ProcessType中的类型
 
-5. 使用ITaskProcessor 动态代理 代替 TaskEventBus.getDefault().execute(cmd);
+- 接收任务变更通知 TaskEventBus 使用 ((示例代码 TaskFragment))
 
+> 在Activity,Fragement,Service,Dialog 等 onResume 或 onStart 中:
 
-		 //在Application onCreate 中
-		TranserConfig config = new TranserConfig.Builder()
-		        .setDownloadConcurrentThreadSize(3)
-		        .setUploadConcurrentThreadSize(3)
-		               .setSupportProcessorDynamicProxy(true) /支持Processor 动态代理 操作任务
-		               .build();
-		TranserService.init(this,config);
-		
-		 //添加一个任务
-		 ITask task = createTask();
-		ProcessorDynamicProxy
-		        .getInstance()
-		        .create()
-		               .addTask(task); //ITaskProcessor 中的方法
-		      
-		 //删除任务
-		 ProcessorDynamicProxy
-		        .getInstance()
-		        .create()
-		               .delete(taskId); //ITaskProcessor 中的方法
+````java
+	TaskEventBus.getDefault().regesit(this);
+````
 
+> 在 Activity,Fragement,Service,Dialog 等onPause , onStop 中使用 
 
-6. 接收任务变更通知 TaskEventBus 使用 ((示例代码 TaskFragment))
+````java
+	TaskEventBus.getDefault().unregesit(this);
+````
 
->在Activity,Fragement,Service,Dialog 等 onResume 或 onStart 中:
+1. 添加一个方法，参数为List<ITask> tasks,并且添加注解TaskSubscriber
 
-		TaskEventBus.getDefault().regesit(this);
+> 这样会接受所有任务类型，所有操作类型的通知
 
->在 onPause , onStop 中使用 
+````java
+	@TaskSubscriber
+	public void onTasksChanged(List<ITask> tasks) {
+	       //TODO update ui on any processtype
+	}
+````
 
-		TaskEventBus.getDefault().unregesit(this);
+2. 只接受指定任务类型，指定操作类型，并且指定在哪个线程中去接收通知
+	
+````java
+	@TaskSubscriber(taskType=TaskType.HTTP_UPLOAD,processType=ProcessType.ADD_TASK,threadMode=ThreadMode.MODE_MAIN)
+	public void onTasksChanged(List<ITask> tasks) {
+	       //TODO update ui on any processtype
+	}
+````
 
->添加一个方法，参数为List<ITask> tasks,并且添加注解TaskSubscriber
+### 自定义HandlerFactory,修改任务管理器中的UploadHandler 或者 DownloadHandler 的参数配置
 
-		@TaskSubscriber
-		public void onTasksChanged(List<ITask> tasks) {
-		       //TODO update ui on any processtype
-		}
+1. 继承自AbsHandlerFactory
 
-##### TaskScriber
-> 默认情况下TaskScriber 会接受所有任务变更的消息，也可以指定只接受某个操作的消息例如：
+````java
+	public class MyUploadHandlerFactory extends AbsHandlerFactory {
 
-		@TaskSubscriber(taskType = TYPE_DOWNLOAD, processType = TYPE_CHANGE_TASK)
-		public void onTasksChanged(List<ITask> tasks) {
-		       //TODO update ui in posting thread
-		}
->也可以指定消息接收的线程，默认为发送消息的线程，例如:
+    @Override
+    protected ITaskHandler create(ITask task) {
+        String path = "Private/" + task.getName();
+        try {
+            path = URLEncoder.encode(path,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
+        if(path == null) {
+            return null;
+        }
+        return new MyUploadHandler.Builder()
+                .addHeader("path",path)
+                .addHeader("auto-rename","1")
+                .addHeader("access-id","cf9aa2d34b739a9d33e2f3472b696594")
+                .build();
+    }
+ }
+````
 
-		@TaskSubscriber(taskType = TYPE_DOWNLOAD, processType = TYPE_CHANGE_TASK,threadMode = ThreadMode.MODE_MAIN)
-		public void onTasksChanged(List<ITask> tasks) {
-		       //TODO update ui in main thread
-		}
+2.在Application 中的 TranserService init 时，修改TranserConfig,添加一个Handler 的 Factory
+
+````java
+ TranserConfig config = new TranserConfig.Builder()
+                .setDownloadConcurrentThreadSize(3)
+                .setUploadConcurrentThreadSize(3)
+                .setSupportProcessorDynamicProxy(true)
+                .addHandlerFactory(TaskType.TYPE_HTTP_UPLOAD,new MyUploadHandlerFactory())
+                .build();
+ TranserService.init(this,config);
+````
+
+### 其他扩展
+
+- 默认的数据库储存使用的GreenDao,如果需要修改可以自定义ITaskProcessor，并且在TranserConfig 中设置
+
+- 框架设计在DefaultHttpUploadHandler 之上是无关传输协议的，是一个任务集中管理的框架，如果需要实现其他协议的任务管理，可以继承自BaseTaskHandler 实现它的抽象方法。
+
+- 提供有命令拦截器，可以在TranserConfig 中增加命令拦截器，用来给命令添加全局的参数或者作统一的处理。
+
+### 试验功能
+
+- 支持动态代理执行操作命令，具体事例参考 ProcessorDynamicProxyFactory 的使用。
