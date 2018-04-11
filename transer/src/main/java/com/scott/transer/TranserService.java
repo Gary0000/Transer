@@ -13,10 +13,9 @@ import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskProcessCallback;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.manager.ITaskInternalProcessor;
-import com.scott.transer.manager.InterceptCmdTaskManager;
+import com.scott.transer.manager.TaskManager;
 import com.scott.transer.manager.TaskProcessorProxy;
 import com.scott.transer.manager.TaskDbProcessor;
-import com.scott.transer.manager.DispatchCmdTaskManager;
 import com.scott.transer.manager.TaskManagerProxy;
 import com.scott.transer.manager.TaskProcessor;
 import com.scott.annotionprocessor.ITask;
@@ -24,7 +23,6 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.DefaultDownloadFactory;
 import com.scott.transer.handler.DefaultUploadFactory;
 import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
-import com.scott.transer.manager.interceptor.ICmdInterceptor;
 import com.shilec.xlogger.Config;
 import com.shilec.xlogger.XLogger;
 
@@ -135,14 +133,7 @@ public class TranserService extends Service implements ITaskProcessCallback{
         if(mConfig.mBuilder.mTaskManager != null) {
             mTaskManagerProxy.setManager(mConfig.mBuilder.mTaskManager);
         } else {
-            ITaskManager manager = null;
-            if(mConfig.mBuilder.interceptors != null &&
-                    !mConfig.mBuilder.interceptors.isEmpty()) {
-                manager = new InterceptCmdTaskManager(mConfig.mBuilder.interceptors);
-            } else {
-                manager = new InterceptCmdTaskManager();
-            }
-            mTaskManagerProxy.setManager(manager);
+            mTaskManagerProxy.setManager(new TaskManager());
         }
 
         //设置handler的工厂类

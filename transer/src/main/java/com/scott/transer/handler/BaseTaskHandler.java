@@ -156,7 +156,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mListenner.onFinished(mTask);
         }
 
-        //release(); //释放资源
+        release(); //释放资源
     }
 
     //限制下载速度

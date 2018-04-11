@@ -5,6 +5,7 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.transer.handler.ITaskHolder;
+import com.scott.transer.manager.interceptor.ICmdInterceptor;
 
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -47,5 +48,4 @@ public interface ITaskManager {
     void setManager(ITaskManager manager);
 
     ITaskManager getManager();
-
 }

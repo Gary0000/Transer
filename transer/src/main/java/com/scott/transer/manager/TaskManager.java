@@ -1,15 +1,12 @@
 package com.scott.transer.manager;
 
-import android.text.TextUtils;
-
 import com.scott.annotionprocessor.ITask;
-import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.ITaskHolder;
-import com.scott.transer.utils.Debugger;
+import com.scott.transer.manager.interceptor.ICmdInterceptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,26 +24,14 @@ import java.util.concurrent.ThreadPoolExecutor;
  * </p>
  */
 
-public class DispatchCmdTaskManager implements ITaskManager {
+public class TaskManager implements ITaskManager {
 
     private ITaskInternalProcessor mProcessorProxy;
     private ITaskProcessCallback mCallback;
     private Map<TaskType,ThreadPoolExecutor> mThreadPool = new HashMap<>();
     private Map<TaskType,ITaskHandlerFactory> mTaskHandlerCreators = new HashMap<>();
     private List<ITaskHolder> mTasks = new ArrayList<>(); //task list
-    private final String TAG = DispatchCmdTaskManager.class.getSimpleName();
-
-    private void throwArgException(ProcessType type,String... args) {
-        if(args == null || args.length == 0) {
-            return;
-        }
-
-        StringBuilder builder = new StringBuilder();
-        for(String arg : args) {
-            builder.append(arg + " ");
-        }
-        throw new IllegalArgumentException("current process type is " + type + "," + builder + "can not be a null value!");
-    }
+    private final String TAG = TaskManager.class.getSimpleName();
 
     @Override
     public void process(TaskCmd cmd) {
@@ -168,6 +153,4 @@ public class DispatchCmdTaskManager implements ITaskManager {
     public ITaskManager getManager() {
         return this;
     }
-
-
 }

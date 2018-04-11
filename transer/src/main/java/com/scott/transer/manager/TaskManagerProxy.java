@@ -10,6 +10,10 @@ import com.scott.transer.handler.ITaskHandlerCallback;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.ITaskHolder;
+import com.scott.transer.manager.interceptor.AutoRenameTaskInterceptor;
+import com.scott.transer.manager.interceptor.ChainImpl;
+import com.scott.transer.manager.interceptor.CheckParamInterceptor;
+import com.scott.transer.manager.interceptor.ICmdInterceptor;
 import com.scott.transer.utils.Debugger;
 
 import java.util.ArrayList;
@@ -36,9 +40,24 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     private ExecutorService mCmdThreadPool; //cmd thread pool
     private ITaskProcessCallback mProcessCallback;
     private final String TAG = TaskManagerProxy.class.getSimpleName();
+    private List<ICmdInterceptor> mInterceptors = new ArrayList<>();
+
+    public void addInterceptor(ICmdInterceptor interceptor) {
+        synchronized (mInterceptors) {
+            mInterceptors.add(interceptor);
+        }
+    }
 
     public TaskManagerProxy() {
         mCmdThreadPool = Executors.newSingleThreadExecutor();
+        mInterceptors.add(new CheckParamInterceptor());
+        mInterceptors.add(new AutoRenameTaskInterceptor(this));
+    }
+
+    private void interceptCmd(TaskCmd cmd) {
+        ICmdInterceptor.Chain chain = new ChainImpl(0,mInterceptors);
+        TaskCmd process = chain.process(cmd);
+        mManager.process(process);
     }
 
     @Override
@@ -60,12 +79,13 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
             @Override
             public void run() {
                 synchronized (mProcessor) {
-                    mManager.process(cmd);
+                    interceptCmd(cmd);
                 }
             }
         };
         mCmdThreadPool.execute(runnable);
     }
+
 
     @Override
     public void setTaskProcessor(ITaskInternalProcessor operation) {
@@ -111,7 +131,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     public void onFinished(String userId,TaskType taskType, ProcessType processType, List<ITask> tasks) {
         List<ITask> taskList = new ArrayList<>();
         for(ITaskHolder holder : mManager.getTasks()) {
-
+            //handler callback 的 task 不携带 userId
             if(userId != null) {
                 if(taskType == holder.getType() &&
                         TextUtils.equals(userId,holder.getTask().getUserId())) {
@@ -128,12 +148,6 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 //        ITask[] objects = (ITask[]) taskList.toArray();
 //        ITask[] objects1 = Arrays.copyOf(objects, objects.length);
 //        tasks = Arrays.asList(objects1);
-        if(TextUtils.isEmpty(userId)) {
-            throw new IllegalArgumentException("Do you forget the userId?");
-        }
-        if(taskType == null) {
-            throw new IllegalArgumentException("TaskCmd miss taskType param");
-        }
         mProcessCallback.onFinished(userId,taskType,processType,taskList);
     }
 
