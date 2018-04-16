@@ -33,6 +33,7 @@ public class MyUploadHandlerFactory extends AbsHandlerFactory {
             return null;
         }
         return new MyUploadHandler.Builder()
+                .disableAutoRetry()
                 .addHeader("path",path)
                 .addHeader("auto-rename","1")
                 .addHeader("access-id","0312d44cc00cecfc34bd425a7d31e1e6")

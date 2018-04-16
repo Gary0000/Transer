@@ -11,6 +11,7 @@ import com.scott.transer.Task;
 import com.scott.transer.TaskErrorCode;
 import com.scott.transer.TaskState;
 import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -39,7 +40,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     private Map<String, String> mHeaders;
     private ThreadPoolExecutor mTaskHandleThreadPool;
     private volatile Task mTask;
-    private HandleRunnable mHandleRunnable;
+    HandleRunnable mHandleRunnable;
     private final long  MAX_DELAY_TIME = 1000;
     private final String TAG = BaseTaskHandler.class.getSimpleName();
 
@@ -319,28 +320,75 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     }
 
     class HandleRunnable implements Runnable {
+        //最多重试次数
+        private int maxRetryTimes = 3;
+
+        //当前重试次数
+        private int nowRetryTimes = 0;
+
+        //每次重试等待间隔
+        private long waitTime = 3 * 1000;
 
         @Override
         public void run() {
+            Debugger.error(TAG," ===== START RUN =======");
+            initStateThread();
+            runTask();
+        }
+
+        //初始化状态监听线程
+        private void initStateThread() {
+            mStateThread = new Thread(mStateRunnable);
+            mStateThread.setName("speed_" + getTask().getName() + "_thread");
+            mStateThread.setDaemon(true);
+            mStateThread.start();
+        }
+
+        //错误
+        private void catchError(Exception e) {
+            Debugger.error(TAG,e.getMessage());
+            e.printStackTrace();
+            if(mTask.getState() != TaskState.STATE_STOP) {
+                mTask.setState(TaskState.STATE_ERROR);
+                mListenner.onError(TaskErrorCode.ERROR_CODE_EXCEPTION, mTask);
+            }
+            isExit = true;
+        }
+
+        //重试
+        private void retry() {
             try {
-                Debugger.error(TAG," ===== START RUN =======");
-                mStateThread = new Thread(mStateRunnable);
-                mStateThread.setName("speed_" + getTask().getName() + "_thread");
-                mStateThread.setDaemon(true);
-                mStateThread.start();
+                Thread.sleep(waitTime);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            mTask.setState(TaskState.STATE_READY);
+            XLogger.getDefault().e(TAG,"-----retry------" + nowRetryTimes);
+            runTask();
+        }
+
+        private void runTask() {
+            try {
                 checkParams();
                 handle(mTask);
             } catch (Exception e) {
-                Debugger.error(TAG,e.getMessage());
-                e.printStackTrace();
-                if(mTask.getState() != TaskState.STATE_STOP) {
-                    mTask.setState(TaskState.STATE_ERROR);
-                    mListenner.onError(TaskErrorCode.ERROR_CODE_EXCEPTION, mTask);
+                if(!isNeedRetry(e)) {
+                    catchError(e);
+                    return;
                 }
-                isExit = true;
+
+                if(++nowRetryTimes > maxRetryTimes) {
+                    catchError(e);
+                    return;
+                }
+                retry();
             }
         }
     }
+
+   protected boolean isNeedRetry(Exception e) {
+        return true;
+   }
 
     //当前实际完成的长度，这个数值是比较及时的，可以用来显示速度和进度的变化
     protected  long getCurrentCompleteLength() {
@@ -367,7 +415,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
     }
 
-    protected  abstract static class Builder<B extends Builder,T extends ITaskHandler> {
+    protected  abstract static class Builder<B extends Builder,T extends BaseTaskHandler> {
 
         private T mTarget;
         private Map<String,String> mHeaders;
@@ -378,6 +426,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         private int mCoreThreadSize;
         private ITaskEventDispatcher mDispatcher;
         private boolean isRunOnNewThread = false;
+        private int mMaxRetryTimes = 3;
+        private long mRetryWaitTime = 3 * 1000;
 
         public Builder() {
 
@@ -387,6 +437,38 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mTarget = target;
         }
 
+        //设置最多重试次数
+        public B setMaxRetryTimes(int retryTimes) {
+            if(retryTimes > 5 || retryTimes < 0) {
+                return (B)this;
+            }
+            mMaxRetryTimes = retryTimes;
+            return (B)this;
+        }
+
+        //设置重试间隔时间
+        public B setRetryWaitTime(long retryWaitTime) {
+            if(retryWaitTime < 100 || retryWaitTime > 10 * 1000) {
+                return (B)this;
+            }
+            mRetryWaitTime = retryWaitTime;
+            return (B)this;
+        }
+
+        //是否开启自动重试
+        public B disableAutoRetry() {
+            mMaxRetryTimes = 0;
+            return (B)this;
+        }
+
+        /**
+         * 可以设置一个EventDispatcher 用于分发回调事件，回调事件
+         * 的接受只需要标识{@link com.scott.annotionprocessor.TaskSubscriber}
+         *
+         * TaskEventBus.getDefault().getDispatcher()
+         * @param dispatcher {@link com.scott.transer.event.EventDispatcher}
+         * @return
+         */
         public B setEventDispatcher(ITaskEventDispatcher dispatcher) {
             mDispatcher = dispatcher;
             return (B)this;
@@ -405,7 +487,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         /***
          * http params,
          * 默认的上传 {@link DefaultHttpUploadHandler} method = post , mime-type 为 application/octet-stream,
-         * 所以只能将自定义的参数放到 header中
+         * 所以只能将自定义的参数放到 header中,该方法在上传任务时无效
          *
          * 默认的下载  {@link DefaultHttpDownloadHandler}method = GET ，所以会将该参数放置到url 之后。
          * @param params
@@ -503,6 +585,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mTarget.setTask(mTask);
             mTarget.setHeaders(mHeaders);
             mTarget.setParams(mParams);
+            mTarget.mHandleRunnable.maxRetryTimes = mMaxRetryTimes;
+            mTarget.mHandleRunnable.waitTime = mRetryWaitTime;
 
             if(mThreadPool == null && isRunOnNewThread) {
                 if(mCoreThreadSize <= 0) {
@@ -517,6 +601,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
         protected abstract T buildTarget();
 
+        /***
+         * 回调适配EventDispatcher
+         */
         private final static class EventDispacherAdapter implements ITaskHandlerCallback {
             private ITaskEventDispatcher mDispacher;
 

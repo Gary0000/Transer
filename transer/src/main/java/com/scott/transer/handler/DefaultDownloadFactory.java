@@ -22,8 +22,8 @@ public class DefaultDownloadFactory extends AbsHandlerFactory {
     @Override
     protected ITaskHandler create(ITask task) {
         return new DefaultHttpDownloadHandler.Builder()
+                .disableAutoRetry()
                 .addParam("path",task.getSourcePath())
-                .addParam("root",task.getSourceUrl())
                 .build();
     }
 }
