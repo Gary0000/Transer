@@ -23,6 +23,7 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.DefaultDownloadFactory;
 import com.scott.transer.handler.DefaultUploadFactory;
 import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
+import com.scott.transer.manager.interceptor.ICmdInterceptor;
 import com.shilec.xlogger.Config;
 import com.shilec.xlogger.XLogger;
 
@@ -108,6 +109,10 @@ public class TranserService extends Service implements ITaskProcessCallback{
         DaoHelper.init(getApplicationContext());
         mContext = getApplicationContext();
 
+        initTaskManager();
+    }
+
+    private void initTaskManager() {
         mTaskManagerProxy = new TaskManagerProxy();
         mTaskManagerProxy.setProcessCallback(this);
 
@@ -137,12 +142,18 @@ public class TranserService extends Service implements ITaskProcessCallback{
         }
 
         //设置handler的工厂类
-        if(mConfig.mBuilder.mHanlderCreators.isEmpty()) {
-            mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_DOWNLOAD, new DefaultDownloadFactory());
-            mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_UPLOAD, new DefaultUploadFactory());
-        } else {
+        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_DOWNLOAD, new DefaultDownloadFactory());
+        mTaskManagerProxy.addHandlerCreator(TaskType.TYPE_HTTP_UPLOAD, new DefaultUploadFactory());
+        if(!mConfig.mBuilder.mHanlderCreators.isEmpty()) {
             for(TaskType taskType : mConfig.mBuilder.mHanlderCreators.keySet()) {
                 mTaskManagerProxy.addHandlerCreator(taskType,mConfig.mBuilder.mHanlderCreators.get(taskType));
+            }
+        }
+
+        //增加命令拦截器
+        if(mConfig.mBuilder.interceptors != null) {
+            for(ICmdInterceptor interceptor : mConfig.mBuilder.interceptors) {
+                ((TaskManagerProxy) mTaskManagerProxy).addInterceptor(interceptor);
             }
         }
 

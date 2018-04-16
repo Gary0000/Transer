@@ -10,7 +10,7 @@ import com.scott.transer.handler.ITaskHandlerCallback;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.ITaskHolder;
-import com.scott.transer.manager.interceptor.AutoRenameTaskInterceptor;
+import com.scott.transer.manager.interceptor.ReNameDownloadFileInterceptor;
 import com.scott.transer.manager.interceptor.ChainImpl;
 import com.scott.transer.manager.interceptor.CheckParamInterceptor;
 import com.scott.transer.manager.interceptor.ICmdInterceptor;
@@ -51,7 +51,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
     public TaskManagerProxy() {
         mCmdThreadPool = Executors.newSingleThreadExecutor();
         mInterceptors.add(new CheckParamInterceptor());
-        mInterceptors.add(new AutoRenameTaskInterceptor(this));
+        mInterceptors.add(new ReNameDownloadFileInterceptor(this));
     }
 
     private void interceptCmd(TaskCmd cmd) {

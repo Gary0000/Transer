@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.net.URL;
+import java.net.URLEncoder;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;

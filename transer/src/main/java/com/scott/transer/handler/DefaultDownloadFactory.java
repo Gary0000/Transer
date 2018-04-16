@@ -22,7 +22,7 @@ public class DefaultDownloadFactory extends AbsHandlerFactory {
     @Override
     protected ITaskHandler create(ITask task) {
         return new DefaultHttpDownloadHandler.Builder()
-                .addParam("path",task.getName())
+                .addParam("path",task.getSourcePath())
                 .addParam("root",task.getSourceUrl())
                 .build();
     }

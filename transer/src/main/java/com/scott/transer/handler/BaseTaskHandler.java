@@ -12,6 +12,8 @@ import com.scott.transer.TaskErrorCode;
 import com.scott.transer.TaskState;
 import com.scott.transer.utils.Debugger;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -419,6 +421,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             if(mHeaders == null) {
                 mHeaders = new HashMap<>();
             }
+            try {
+                v = URLEncoder.encode(v,"utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             mHeaders.put(k,v);
             return (B)this;
         }
@@ -426,6 +433,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         public B addParam(String k,String v) {
             if(mParams == null) {
                 mParams = new HashMap<>();
+            }
+            try {
+                v = URLEncoder.encode(v,"utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
             mParams.put(k,v);
             return (B)this;
