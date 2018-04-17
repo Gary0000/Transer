@@ -13,6 +13,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class NumberUtils {
 
+    /**
+     * 获取一串长度为 length 的随机串，注意:Random 的随机种子
+     * 如果是相同的，则会产生相同的随机串。System.currentTimeMillis()
+     * 在循环中可能会是相同的值，所以循环调用getRandomStr方法可能产生相同的
+     * 随机串，hashCode 是一个在某时刻唯一的值，可以保证不会产生相同的序列
+     * @param length
+     * @param hashCode
+     * @return
+     */
     public static String getRandomStr(int length,long hashCode) {
         if(length <= 0) {
             length = 10;

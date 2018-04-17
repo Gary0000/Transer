@@ -1,11 +1,7 @@
 package com.scott.transer.handler;
 
-import android.text.TextUtils;
-
 import com.scott.annotionprocessor.ITask;
-import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
-import com.scott.transer.utils.FileUtils;
 import com.shilec.xlogger.XLogger;
 
 import java.io.ByteArrayInputStream;
@@ -155,7 +151,6 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
 
     @Override
     protected void release() {
-        super.release();
         try {
             mFile.close();
             mRequestBody = null;

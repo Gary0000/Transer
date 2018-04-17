@@ -212,6 +212,9 @@ public class TaskDbProcessor implements ITaskInternalProcessor {
         Task task = mTaskDao.queryBuilder()
                 .where(TaskDao.Properties.TaskId.eq(taskId))
                 .unique();
+        if(task == null) {
+            return;
+        }
         task.setState(TaskState.STATE_STOP);
         mTaskDao.update(task);
     }

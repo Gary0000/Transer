@@ -13,17 +13,16 @@ import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskProcessCallback;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.manager.ITaskInternalProcessor;
-import com.scott.transer.manager.TaskManager;
+//import com.scott.transer.manager.TaskManager;
 import com.scott.transer.manager.TaskProcessorProxy;
 import com.scott.transer.manager.TaskDbProcessor;
-import com.scott.transer.manager.TaskManagerProxy;
+import com.scott.transer.manager.TaskManager;
 import com.scott.transer.manager.TaskProcessor;
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.DefaultDownloadFactory;
 import com.scott.transer.handler.DefaultUploadFactory;
 import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
-import com.scott.transer.manager.interceptor.ICmdInterceptor;
 import com.shilec.xlogger.Config;
 import com.shilec.xlogger.XLogger;
 
@@ -113,8 +112,6 @@ public class TranserService extends Service implements ITaskProcessCallback{
     }
 
     private void initTaskManager() {
-        mTaskManagerProxy = new TaskManagerProxy();
-        mTaskManagerProxy.setProcessCallback(this);
 
         //内存中的任务列表处理器
         ITaskInternalProcessor memoryProcessor;
@@ -131,14 +128,18 @@ public class TranserService extends Service implements ITaskProcessCallback{
         } else {
             databaseProcessor = new TaskDbProcessor();
         }
+        //创建任务管理器
+        mTaskManagerProxy = new TaskManager(new TaskProcessorProxy(memoryProcessor,databaseProcessor),
+                mConfig.mBuilder.interceptors);
+        mTaskManagerProxy.setProcessCallback(this);
         //设置一个代理处理器
-        mTaskManagerProxy.setTaskProcessor(new TaskProcessorProxy(memoryProcessor,databaseProcessor));
+        //mTaskManagerProxy.setTaskProcessor();
 
         //设置manager
         if(mConfig.mBuilder.mTaskManager != null) {
-            mTaskManagerProxy.setManager(mConfig.mBuilder.mTaskManager);
+            ///mTaskManagerProxy.setManager(mConfig.mBuilder.mTaskManager);
         } else {
-            mTaskManagerProxy.setManager(new TaskManager());
+           // mTaskManagerProxy.setManager(new TaskManager());
         }
 
         //设置handler的工厂类
@@ -147,13 +148,6 @@ public class TranserService extends Service implements ITaskProcessCallback{
         if(!mConfig.mBuilder.mHanlderCreators.isEmpty()) {
             for(TaskType taskType : mConfig.mBuilder.mHanlderCreators.keySet()) {
                 mTaskManagerProxy.addHandlerCreator(taskType,mConfig.mBuilder.mHanlderCreators.get(taskType));
-            }
-        }
-
-        //增加命令拦截器
-        if(mConfig.mBuilder.interceptors != null) {
-            for(ICmdInterceptor interceptor : mConfig.mBuilder.interceptors) {
-                ((TaskManagerProxy) mTaskManagerProxy).addInterceptor(interceptor);
             }
         }
 

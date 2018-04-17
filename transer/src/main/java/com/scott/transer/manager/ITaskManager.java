@@ -5,7 +5,6 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.transer.handler.ITaskHolder;
-import com.scott.transer.manager.interceptor.ICmdInterceptor;
 
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -24,9 +23,6 @@ public interface ITaskManager {
     // 执行用户发来的命令
     void process(TaskCmd cmd);
 
-    //设置处理任务的处理器 例如:对任务的增删改查
-    void setTaskProcessor(ITaskInternalProcessor operation);
-
     //处理任务后的回调
     void setProcessCallback(ITaskProcessCallback callback);
 
@@ -44,8 +40,4 @@ public interface ITaskManager {
     //获取任务列表信息
     List<ITaskHolder> getTasks();
 
-    //责任链
-    void setManager(ITaskManager manager);
-
-    ITaskManager getManager();
 }

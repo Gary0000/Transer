@@ -11,7 +11,7 @@ import com.scott.transer.TaskCmd;
  * </p>
  */
 
-public interface ICmdInterceptor {
+public interface Interceptor {
     TaskCmd intercept(Chain chain,TaskCmd cmd);
 
     /**

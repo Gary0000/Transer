@@ -55,7 +55,6 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
     @Override
     protected void release() {
-        super.release();
         try {
             mFile.close();
             mInputStream.close();

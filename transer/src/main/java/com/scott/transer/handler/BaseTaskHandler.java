@@ -106,11 +106,24 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     }
 
 
-    //判断一片是否发送或接受成功
-    protected abstract boolean isPiceSuccessful();
+    /**
+     * 判断一片是否发送或接受成功,默认是true,子类重写该方法去
+     * 验证服务器返回是否当前片上传成功
+     * @return
+     */
+    protected boolean isPiceSuccessful() {
+        return true;
+    }
 
-    //判断任务是否成功
-    protected abstract boolean isSuccessful();
+    /**
+     * 判断任务是否成功,默认返回true
+     * 只有上传完最后一片才会调用该方法，子类可以重写该方法
+     * 去验证服务器最后一片返回内容
+     * @return
+     */
+    protected boolean isSuccessful() {
+        return true;
+    }
 
     //从数据源中读取一片
     protected abstract byte[] readPice(ITask task) throws Exception;
@@ -127,10 +140,12 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     //文件大小，下载为服务器的文件大小 。 上传为本地的文件大小
     protected  abstract long fileSize();
 
+    //释放资源
+    protected abstract void release();
 
     private void handle(ITask task) throws Exception {
 
-        //mTask.setState(TaskState.STATE_RUNNING);
+        mTask.setState(TaskState.STATE_RUNNING);
         mLastCompleteLength = task.getCompleteLength();
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
@@ -258,20 +273,13 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 ",completeLength = " + mTask.getCompleteLength() + ",startOffset = " + mTask.getStartOffset() + ",endOffset = " + mTask.getEndOffset());
         isExit = true;
         mTask.setState(TaskState.STATE_STOP);
-        //mTaskHandleThreadPool.remove(mHandleRunnable);
-//        Thread thread = Thread.currentThread();
-//        if(thread.getId() != Looper.getMainLooper().getThread().getId()) {
-//            thread.interrupt();
-//        }
 
+        //移除任务
         if(mTaskHandleThreadPool != null) {
             mTaskHandleThreadPool.remove(mHandleRunnable);
         }
         mListenner.onStop(mTask);
         release();
-    }
-
-    protected void release() {
     }
 
 
@@ -371,12 +379,21 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 checkParams();
                 handle(mTask);
             } catch (Exception e) {
+
+                //如果不需要重试
                 if(!isNeedRetry(e)) {
                     catchError(e);
                     return;
                 }
 
+                //超过重试次数不重试
                 if(++nowRetryTimes > maxRetryTimes) {
+                    catchError(e);
+                    return;
+                }
+
+                //手动停止导致的异常不重试
+                if(mTask.getState() == TaskState.STATE_STOP) {
                     catchError(e);
                     return;
                 }

@@ -9,6 +9,7 @@ import com.scott.transer.TranserConfig;
 import com.scott.transer.TranserService;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.handler.DefaultDownloadFactory;
+import com.scott.transer.manager.interceptor.LogInterceptor;
 import com.shilec.xlogger.Config;
 import com.shilec.xlogger.XLogger;
 
@@ -33,7 +34,7 @@ public class BaseApplication extends Application {
                 .setDownloadConcurrentThreadSize(3)
                 .setUploadConcurrentThreadSize(3)
                 .setSupportProcessorDynamicProxy(true)
-                .addHandlerFactory(TaskType.TYPE_HTTP_UPLOAD,new MyUploadHandlerFactory())
+                .addCmdInterceptor(new LogInterceptor())
                 .build();
         TranserService.init(this,config);
 

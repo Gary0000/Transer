@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.Task;
 import com.scott.transer.TaskState;
 import com.scott.transer.handler.ITaskHandler;
 import com.scott.transer.handler.ITaskHandlerFactory;
@@ -246,7 +247,7 @@ public class TaskProcessor implements ITaskInternalProcessor {
 
     private void startOrStop(ITaskHolder holder,boolean isStart) {
         ITaskHandlerHolder handlerHolder = (ITaskHandlerHolder) holder;
-        if(handlerHolder.getTaskHandler() == null) {
+        if(handlerHolder.getTaskHandler() == null && isStart) {
             ITaskHandlerFactory creator = mTaskManager.getTaskHandlerCreator(holder.getTask());
             ITaskHandler handler = creator.create(holder.getTask(),mTaskManager);
             handlerHolder.setTaskHandler(handler);
@@ -255,7 +256,14 @@ public class TaskProcessor implements ITaskInternalProcessor {
         if(isStart) {
             handlerHolder.getTaskHandler().start();
         } else {
-            handlerHolder.getTaskHandler().stop();
+            if(handlerHolder.getTaskHandler() != null) {
+                handlerHolder.getTaskHandler().stop();
+            } else {
+                if(handlerHolder.getTask().getState() == TaskState.STATE_RUNNING ||
+                        handlerHolder.getTask().getState() == TaskState.STATE_READY) {
+                    ((Task) handlerHolder.getTask()).setState(TaskState.STATE_STOP);
+                }
+            }
         }
     }
 

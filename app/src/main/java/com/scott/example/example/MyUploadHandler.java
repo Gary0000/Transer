@@ -2,8 +2,8 @@ package com.scott.example.example;
 
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.example.utils.FileUtils;
 import com.scott.transer.handler.DefaultHttpUploadHandler;
-import com.scott.transer.utils.FileUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -15,7 +15,7 @@ import com.shilec.xlogger.XLogger;
  * </p>
  */
 
-public class CheckParamInterceptor implements ICmdInterceptor{
+public class CheckParamInterceptor implements Interceptor {
     private final String TAG = CheckParamInterceptor.class.getSimpleName();
 
     @Override
@@ -25,7 +25,6 @@ public class CheckParamInterceptor implements ICmdInterceptor{
     }
 
     private void checkParams(TaskCmd cmd) {
-        XLogger.getDefault().e(TAG,"intercept cmd = " + cmd);
         if(TextUtils.isEmpty(cmd.getUserId())) {
             throw new IllegalArgumentException("missing userId param!");
         }

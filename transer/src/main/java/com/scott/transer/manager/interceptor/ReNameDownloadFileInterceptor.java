@@ -1,7 +1,6 @@
 package com.scott.transer.manager.interceptor;
 
 import android.text.TextUtils;
-import android.widget.TextView;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
@@ -22,7 +21,7 @@ import java.io.File;
  * </p>
  */
 
-public class ReNameDownloadFileInterceptor implements ICmdInterceptor {
+public class ReNameDownloadFileInterceptor implements Interceptor {
 
     private ITaskManager mTaskManager;
 

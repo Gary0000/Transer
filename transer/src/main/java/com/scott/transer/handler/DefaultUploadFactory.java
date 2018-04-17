@@ -20,6 +20,7 @@ public class DefaultUploadFactory extends AbsHandlerFactory {
     @Override
     protected ITaskHandler create(ITask task) {
         return new DefaultHttpUploadHandler.Builder()
+                .disableAutoRetry()
                 .addHeader("path",task.getDestPath() + "/")
                 .build();
     }

@@ -4,7 +4,7 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.transer.manager.ITaskManager;
 import com.scott.transer.manager.ITaskInternalProcessor;
-import com.scott.transer.manager.interceptor.ICmdInterceptor;
+import com.scott.transer.manager.interceptor.Interceptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,9 +48,9 @@ public class TranserConfig {
 
         boolean isSupportProcessorDynamicProxy;
 
-        List<ICmdInterceptor> interceptors;
+        List<Interceptor> interceptors;
 
-        public Builder addCmdInterceptor(ICmdInterceptor interceptor) {
+        public Builder addCmdInterceptor(Interceptor interceptor) {
             if(interceptors == null) {
                 interceptors = new ArrayList<>();
             }

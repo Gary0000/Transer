@@ -1,128 +1,112 @@
 package com.scott.transer.manager;
 
+import android.text.TextUtils;
+
+import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
+import com.scott.transer.handler.ITaskHandlerCallback;
 import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.handler.ITaskHolder;
-import com.scott.transer.manager.interceptor.ICmdInterceptor;
+import com.scott.transer.manager.interceptor.DispatchCmdInterceptor;
+import com.scott.transer.manager.interceptor.ReNameDownloadFileInterceptor;
+import com.scott.transer.manager.interceptor.ChainImpl;
+import com.scott.transer.manager.interceptor.CheckParamInterceptor;
+import com.scott.transer.manager.interceptor.Interceptor;
+import com.shilec.xlogger.XLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-
 
 /**
  * <p>Author:    shijiale</p>
- * <p>Date:      2017-12-13 16:13</p>
+ * <p>Date:      2017-12-14 14:42</p>
  * <p>Email:     shilec@126.com</p>
  * <p>Describe:
- *      分发命令的任务管理器
+ *      分层设计，最上层为代理对象。
+ *      下面一层为拦截器管理器
+ *      下面一层为命令分发管理器
  * </p>
  */
 
-public class TaskManager implements ITaskManager {
+public class TaskManager implements ITaskManager, ITaskHandlerCallback {
 
-    private ITaskInternalProcessor mProcessorProxy;
-    private ITaskProcessCallback mCallback;
+    private ITaskInternalProcessor mProcessor; //processor proxy
+    private ExecutorService mCmdThreadPool; //cmd thread pool
+    private ITaskProcessCallback mProcessCallback;
+    private final String TAG = TaskManager.class.getSimpleName();
+    private List<Interceptor> mInterceptors = new ArrayList<>();
     private Map<TaskType,ThreadPoolExecutor> mThreadPool = new HashMap<>();
     private Map<TaskType,ITaskHandlerFactory> mTaskHandlerCreators = new HashMap<>();
     private List<ITaskHolder> mTasks = new ArrayList<>(); //task list
-    private final String TAG = TaskManager.class.getSimpleName();
 
-    @Override
-    public void process(TaskCmd cmd) {
-
-        switch (cmd.getProceeType()) {
-            case TYPE_ADD_TASKS:
-                mProcessorProxy.addTasks(cmd.getTasks());
-                break;
-            case TYPE_ADD_TASK:
-                mProcessorProxy.addTask(cmd.getTask());
-                break;
-            case TYPE_DELETE_TASK:
-                mProcessorProxy.deleteTask(cmd.getTaskId());
-                break;
-            case TYPE_DELETE_TASKS_SOME:
-                mProcessorProxy.deleteTasks(cmd.getTaskIds());
-                break;
-            case TYPE_DELETE_TASKS_GROUP:
-                mProcessorProxy.deleteGroup(cmd.getGroupId(),cmd.getUserId());
-                break;
-            case TYPE_DELETE_TASKS_ALL:
-                mProcessorProxy.deleteAll(cmd.getTaskType(),cmd.getUserId());
-                break;
-            case TYPE_DELETE_TASKS_COMPLETED:
-                mProcessorProxy.deleteCompleted(cmd.getTaskType(),cmd.getUserId());
-                break;
-            case TYPE_DELETE_TASKS_STATE:
-                mProcessorProxy.delete(cmd.getTask().getState(),
-                        cmd.getTaskType(),cmd.getUserId());
-                break;
-            case TYPE_QUERY_TASK:
-                mProcessorProxy.getTask(cmd.getTaskId());
-                break;
-            case TYPE_QUERY_TASKS_SOME:
-                mProcessorProxy.getTasks(cmd.getTaskIds());
-                break;
-            case TYPE_QUERY_TASKS_ALL:
-                mProcessorProxy.getAllTasks(cmd.getTaskType(),cmd.getUserId());
-                break;
-            case TYPE_QUERY_TASKS_COMPLETED:
-                mProcessorProxy.getTasks(TaskState.STATE_FINISH,cmd.getTaskType(),cmd.getUserId());
-                break;
-            case TYPE_QUERY_TASKS_GROUP:
-                mProcessorProxy.getGroup(cmd.getGroupId(),cmd.getUserId());
-                break;
-            case TYPE_QUERY_TASKS_STATE:
-                mProcessorProxy.getTasks(cmd.getState(),cmd.getTaskType()
-                        ,cmd.getUserId());
-                break;
-            case TYPE_UPDATE_TASK:
-                mProcessorProxy.updateTask(cmd.getTask());
-                break;
-            case TYPE_UPDATE_TASK_WTIHOUT_SAVE:
-                mProcessorProxy.updateTaskWithoutSave(cmd.getTask());
-                break;
-            case TYPE_START_TASK:
-                mProcessorProxy.start(cmd.getTaskId());
-                break;
-            case TYPE_START_GROUP:
-                mProcessorProxy.startGroup(cmd.getGroupId(),cmd.getUserId());
-                break;
-            case TYPE_START_ALL:
-                mProcessorProxy.startAll(cmd.getTaskType(),cmd.getUserId());
-                break;
-            case TYPE_STOP_TASK:
-                mProcessorProxy.stop(cmd.getTaskId());
-                break;
-            case TYPE_STOP_GROUP:
-                mProcessorProxy.stop(cmd.getGroupId());
-                break;
-            case TYPE_STOP_ALL:
-                mProcessorProxy.stopAll(cmd.getTaskType(),cmd.getUserId());
-                break;
+    public TaskManager(ITaskInternalProcessor processor, List<Interceptor> interceptors) {
+        mCmdThreadPool = Executors.newSingleThreadExecutor();
+        mInterceptors.add(new CheckParamInterceptor());
+        mInterceptors.add(new ReNameDownloadFileInterceptor(this));
+        if(interceptors != null) {
+            mInterceptors.addAll(interceptors);
         }
-        mCallback.onFinished(cmd.getUserId(),cmd.getTaskType(),cmd.getProceeType(),null);
+        mInterceptors.add(new DispatchCmdInterceptor(processor));
+
+        mProcessor = processor;
+        mProcessor.setTaskManager(this);
+    }
+
+    private void interceptCmd(TaskCmd cmd) {
+        Interceptor.Chain chain = new ChainImpl(0,mInterceptors);
+        TaskCmd taskCmd = chain.process(cmd);
+        callExecuteCmdFinished(taskCmd);
+    }
+
+    private void callExecuteCmdFinished(TaskCmd cmd) {
+        List<ITask> taskList = new ArrayList<>();
+        for(ITaskHolder holder : getTasks()) {
+            //handler callback 的 task 不携带 userId
+            if(cmd.getUserId() != null) {
+                if(cmd.getTaskType() == holder.getType() &&
+                        TextUtils.equals(cmd.getUserId(),holder.getTask().getUserId())) {
+                    taskList.add(holder.getTask());
+                }
+            } else {
+                if(cmd.getTaskType() == holder.getType()) {
+                    taskList.add(holder.getTask());
+                }
+            }
+        }
+        mProcessCallback.onFinished(cmd.getUserId(),cmd.getTaskType(),cmd.getProceeType(),taskList);
     }
 
     @Override
-    public void setTaskProcessor(ITaskInternalProcessor operation) {
-        mProcessorProxy = operation;
+    public void process(final TaskCmd cmd) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                interceptCmd(cmd);
+            }
+        };
+        mCmdThreadPool.execute(runnable);
     }
 
     @Override
     public void setProcessCallback(ITaskProcessCallback callback) {
-        mCallback = callback;
+        mProcessCallback = callback;
     }
 
     @Override
     public void addThreadPool(TaskType taskType, ThreadPoolExecutor threadPool) {
-        mThreadPool.put(taskType,threadPool);
+        synchronized (mThreadPool) {
+            mThreadPool.put(taskType, threadPool);
+        }
     }
+
 
     @Override
     public ThreadPoolExecutor getTaskThreadPool(TaskType type) {
@@ -131,13 +115,18 @@ public class TaskManager implements ITaskManager {
 
     @Override
     public ITaskHandlerFactory getTaskHandlerCreator(ITask task) {
-        return mTaskHandlerCreators.get(task.getType());
+        ITaskHandlerFactory creator = mTaskHandlerCreators.get(task.getType());
+        creator.setTaskHandlerCallback(this);
+        return creator;
     }
 
     @Override
     public void addHandlerCreator(TaskType type, ITaskHandlerFactory handlerCreator) {
-        mTaskHandlerCreators.put(type,handlerCreator);
+        synchronized (mTaskHandlerCreators) {
+            mTaskHandlerCreators.put(type, handlerCreator);
+        }
     }
+
 
     @Override
     public List<ITaskHolder> getTasks() {
@@ -145,12 +134,75 @@ public class TaskManager implements ITaskManager {
     }
 
     @Override
-    public void setManager(ITaskManager manager) {
-
+    public void onReady(ITask task) {
+        TaskCmd cmd = new TaskCmd.Builder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .build();
+        process(cmd);
     }
 
     @Override
-    public ITaskManager getManager() {
-        return this;
+    public void onStart(ITask task) {
+        //XLogger.getDefault().e(TAG,"start = " + params);
+        TaskCmd cmd = new TaskCmd.Builder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .build();
+        process(cmd);
+    }
+
+    @Override
+    public void onStop(ITask task) {
+        //XLogger.getDefault().e(TAG,"stop = " + params);
+        TaskCmd cmd = new TaskCmd.Builder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .build();
+        process(cmd);
+    }
+
+    @Override
+    public void onError(int code, ITask task) {
+        //XLogger.getDefault().e(TAG,"error = " + params);
+        TaskCmd cmd = new TaskCmd.Builder()
+                .setTask(task)
+                .setState(TaskState.STATE_STOP)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .build();
+        process(cmd);
+    }
+
+    @Override
+    public void onSpeedChanged(long speed, ITask task) {
+        TaskCmd cmd = new TaskCmd.Builder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK_WTIHOUT_SAVE)
+                .setState(TaskState.STATE_RUNNING)
+                .build();
+        process(cmd);
+        XLogger.getDefault().e(TAG,"speed == " + task.getSpeed());
+    }
+
+    @Override
+    public void onPiceSuccessful(ITask task) {
+        XLogger.getDefault().e(TAG," PICE STATE = " + task.getState());
+        TaskCmd cmd = new TaskCmd.Builder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .setState(TaskState.STATE_RUNNING)
+                .build();
+        process(cmd);
+    }
+
+    @Override
+    public void onFinished(ITask task) {
+        //XLogger.getDefault().e(TAG,"finished = " + task);
+        TaskCmd cmd = new TaskCmd.Builder()
+                .setTask(task)
+                .setProcessType(ProcessType.TYPE_UPDATE_TASK)
+                .setState(TaskState.STATE_FINISH)
+                .build();
+        process(cmd);
     }
 }
