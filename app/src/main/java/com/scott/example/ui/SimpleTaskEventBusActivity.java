@@ -18,7 +18,7 @@ import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.handler.DefaultHttpUploadHandler;
 import com.scott.transer.handler.ITaskHandler;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.io.File;
 import java.util.List;
@@ -126,7 +126,7 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
         double progress = (double)task.getCompleteLength() / (double)task.getLength();
         progress = progress * 100f;
         progressLength.setProgress((int) progress);
-        Debugger.error(TAG,"========onFinished============");
+        XLogger.getDefault().e(TAG,"========onFinished============");
     }
 
     public void onSpeedChanged(final ITask params) {
@@ -137,11 +137,11 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
         progress = progress * 100f;
         progressLength.setProgress((int) progress);
         tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
-        Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(params.getSpeed()) + "/s");
+        XLogger.getDefault().e("OnlyDownloadActivity","speed = " + getFileSize(params.getSpeed()) + "/s");
     }
 
     public void onError(ITask params) {
-        Debugger.error("SimpleUploadActivity","error ...");
+        XLogger.getDefault().e("SimpleUploadActivity","error ...");
     }
 
     @OnClick(R.id.btn_stop)

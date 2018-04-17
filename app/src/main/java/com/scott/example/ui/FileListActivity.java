@@ -31,9 +31,6 @@ import com.scott.transer.Task;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.TranserService;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.manager.ITaskProcessor;
-import com.scott.transer.manager.dynamicproxy.ProcessorDynamicProxyFactory;
-import com.scott.transer.utils.Debugger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -155,9 +152,7 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
             if(isLoadMore) {
                 mAdapter.loadMoreFail();
             }
-            if(Debugger.isDebug()) {
-                e.printStackTrace();
-            }
+            e.printStackTrace();
         }
 
         @Override

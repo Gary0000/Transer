@@ -39,5 +39,5 @@ dependencies {
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
     implementation 'com.squareup.okhttp3:okhttp:3.3.1'
 
-    implementation 'com.github.shilec:XLoggerDemo:1.0'
+    api 'com.github.shilec:XLoggerDemo:1.1'
 }

@@ -15,7 +15,7 @@ import com.scott.example.utils.TaskUtils;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.util.Date;
 import java.util.List;
@@ -116,7 +116,7 @@ public class TaskListAdapter extends BaseAdapter {
 
         }
 
-        Debugger.error("TaskListAdapter","==== + state = " + task.getState() + ",lenth = " + task.getCompleteLength());
+        XLogger.getDefault().e("TaskListAdapter", "==== + state = " + task.getState() + ",lenth = " + task.getCompleteLength());
         return view;
     }
 

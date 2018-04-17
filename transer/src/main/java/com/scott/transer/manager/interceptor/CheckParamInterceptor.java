@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.transer.TaskCmd;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 /**
  * <p>Author:    shijiale</p>
@@ -25,7 +25,7 @@ public class CheckParamInterceptor implements ICmdInterceptor{
     }
 
     private void checkParams(TaskCmd cmd) {
-        Debugger.error(TAG,"intercept cmd = " + cmd);
+        XLogger.getDefault().e(TAG,"intercept cmd = " + cmd);
         if(TextUtils.isEmpty(cmd.getUserId())) {
             throw new IllegalArgumentException("missing userId param!");
         }

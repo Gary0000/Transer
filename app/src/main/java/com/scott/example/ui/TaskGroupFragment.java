@@ -33,7 +33,7 @@ import com.scott.transer.TaskCmd;
 import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
 import com.scott.transer.handler.ITaskHolder;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +130,7 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
 
         List<MultiItemEntity> items = convertItems(tasks);
 
-        Debugger.error(TAG, "thread ==== " + Thread.currentThread().getName());
+        XLogger.getDefault().e(TAG, "thread ==== " + Thread.currentThread().getName());
         mDatas.clear();
         mDatas.addAll(items);
         mAdapter.notifyDataSetChanged();

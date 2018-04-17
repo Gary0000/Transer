@@ -10,7 +10,6 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.Task;
 import com.scott.transer.TaskErrorCode;
 import com.scott.transer.TaskState;
-import com.scott.transer.utils.Debugger;
 import com.shilec.xlogger.XLogger;
 
 import java.io.UnsupportedEncodingException;
@@ -144,7 +143,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         //获取到的源数据大小设置到task
         mTask.setLength(fileSize());
         mListenner.onStart(mTask);
-        Debugger.error(TAG,"start ============= length = " + task.getLength() + "" +
+        XLogger.getDefault().e(TAG,"start ============= length = " + task.getLength() + "" +
                 ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
 
         _handle(task);
@@ -194,7 +193,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 long waitTime = 1000 - (endCalculateTime - mLastCaluteTime);
                 Thread.sleep(waitTime);
                 mLastCalculateLength = 0;
-                Debugger.error(TAG,"wait time = " + waitTime + ",size = " + getPiceBuffSize() + ",realSize = " + getPiceRealSize() );
+                XLogger.getDefault().e(TAG,"wait time = " + waitTime + ",size = " + getPiceBuffSize() + ",realSize = " + getPiceRealSize() );
             }
 
             if(isPiceSuccessful()) { //判断一片是否成功
@@ -212,9 +211,9 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 break;
             }
 
-            Debugger.info(TAG,"length = " + task.getLength() + "" +
+            XLogger.getDefault().i(TAG,"length = " + task.getLength() + "" +
                     ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
-            Debugger.error(TAG,"========= setState = " + mTask.getState());
+            XLogger.getDefault().e(TAG,"========= setState = " + mTask.getState());
         }
 
     }
@@ -226,7 +225,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             if(TaskState.STATE_READY == mTask.getState()
                     || mTask.getState() == TaskState.STATE_RUNNING) {
                 //throw new IllegalStateException("current handler already started ...");
-                Debugger.error(TAG,"current handler already started ...");
+                XLogger.getDefault().e(TAG,"current handler already started ...");
                 return;
             }
 
@@ -241,7 +240,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             mTask.setState(TaskState.STATE_READY);
             //mTask.setLength(fileSize());
             mListenner.onReady(mTask);
-            Debugger.error(TAG," ===== START =======");
+            XLogger.getDefault().e(TAG," ===== START =======");
         }
     }
 
@@ -255,7 +254,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             return;
         }
 
-        Debugger.error(TAG,"stop ============= length = " + mTask.getLength() + "" +
+        XLogger.getDefault().e(TAG,"stop ============= length = " + mTask.getLength() + "" +
                 ",completeLength = " + mTask.getCompleteLength() + ",startOffset = " + mTask.getStartOffset() + ",endOffset = " + mTask.getEndOffset());
         isExit = true;
         mTask.setState(TaskState.STATE_STOP);
@@ -331,7 +330,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
         @Override
         public void run() {
-            Debugger.error(TAG," ===== START RUN =======");
+            XLogger.getDefault().e(TAG," ===== START RUN =======");
             initStateThread();
             runTask();
         }
@@ -346,7 +345,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
         //错误
         private void catchError(Exception e) {
-            Debugger.error(TAG,e.getMessage());
+            XLogger.getDefault().e(TAG,e.getMessage());
             e.printStackTrace();
             if(mTask.getState() != TaskState.STATE_STOP) {
                 mTask.setState(TaskState.STATE_ERROR);
@@ -406,8 +405,8 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                     mTask.setSpeed((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)));
                     mListenner.onSpeedChanged((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)), mTask);
                     mLastCompleteLength = getCurrentCompleteLength();
-                    Debugger.error(TAG," ===== state = " + mTask.getState());
-                    //Debugger.error(TAG,"speed = " + task.getSpeed());
+                    XLogger.getDefault().e(TAG," ===== state = " + mTask.getState());
+                    //XLogger.getDefault().e(TAG,"speed = " + task.getSpeed());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

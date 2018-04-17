@@ -3,7 +3,7 @@ package com.scott.transer.handler;
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,7 +121,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
             mFile.seek(task.getStartOffset());
         }
 
-        Debugger.error(DefaultHttpDownloadHandler.class.getSimpleName(),
+        XLogger.getDefault().e(DefaultHttpDownloadHandler.class.getSimpleName(),
                 "=================== fileLength = " + mFile.length() + "," +
                         task.getStartOffset());
         Request.Builder builder = new Request.Builder()

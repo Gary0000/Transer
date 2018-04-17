@@ -10,7 +10,7 @@ import com.scott.transer.handler.ITaskHandlerFactory;
 import com.scott.transer.handler.ITaskHandlerHolder;
 import com.scott.transer.handler.ITaskHolder;
 import com.scott.transer.handler.TaskHandlerHolder;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -216,7 +216,7 @@ public class TaskProcessor implements ITaskInternalProcessor {
 
     @Override
     public void updateTask(ITask task) {
-        Debugger.error(TAG,"STATE === " + task.getState());
+        XLogger.getDefault().e(TAG,"STATE === " + task.getState());
         for(ITaskHolder holder : mTasks) {
             ITask task1 = holder.getTask();
             if(TextUtils.equals(task.getTaskId(),task1.getTaskId())) {

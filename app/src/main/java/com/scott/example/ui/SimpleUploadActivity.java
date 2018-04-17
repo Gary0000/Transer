@@ -12,9 +12,8 @@ import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.SimpleTaskHandlerListenner;
 import com.scott.transer.Task;
-import com.scott.transer.handler.DefaultHttpUploadHandler;
 import com.scott.transer.handler.ITaskHandler;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -121,13 +120,13 @@ public class SimpleUploadActivity extends BaseActivity {
                     progressLength.setProgress((int) progress);
                 }
             });
-            Debugger.error(TAG,"========onFinished============");
+            XLogger.getDefault().e(TAG,"========onFinished============");
         }
 
         @Override
         public void onStop(ITask params) {
             super.onStop(params);
-            Debugger.error("OnlyDownloadActivity","stop ==========");
+            XLogger.getDefault().e("OnlyDownloadActivity","stop ==========");
         }
 
 
@@ -146,13 +145,13 @@ public class SimpleUploadActivity extends BaseActivity {
                     tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
                 }
             });
-            Debugger.error("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
+            XLogger.getDefault().e("OnlyDownloadActivity","speed = " + getFileSize(speed) + "/s");
         }
 
         @Override
         public void onError(int code, ITask params) {
             super.onError(code, params);
-            Debugger.error("SimpleUploadActivity","error " + code);
+            XLogger.getDefault().e("SimpleUploadActivity","error " + code);
         }
     }
 

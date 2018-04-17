@@ -15,7 +15,7 @@ import com.scott.transer.SimpleTaskHandlerListenner;
 import com.scott.transer.Task;
 import com.scott.transer.handler.DefaultHttpDownloadHandler;
 import com.scott.transer.handler.ITaskHandler;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.io.File;
 
@@ -120,12 +120,12 @@ public class SimpleDownloadActivity extends BaseActivity {
         @Override
         public void onError(int code, ITask params) {
             super.onError(code, params);
-            Debugger.error(TAG,"error === " + params);
+            XLogger.getDefault().e(TAG,"error === " + params);
         }
 
         @Override
         public void onFinished(final ITask task) {
-            Debugger.error(TAG,"finished === " + task);
+            XLogger.getDefault().e(TAG,"finished === " + task);
             super.onFinished(task);
             final String newMd5 = TaskUtils.getFileMD5(new File(Contacts.LOCAL_STORAGE.getBaseSavePath() + File.separator + FILE_NAME));
             runOnUiThread(new Runnable() {
@@ -146,13 +146,13 @@ public class SimpleDownloadActivity extends BaseActivity {
         @Override
         public void onStop(ITask params) {
             super.onStop(params);
-            Debugger.error("OnlyDownloadActivity","stop ==========");
+            XLogger.getDefault().e("OnlyDownloadActivity","stop ==========");
         }
 
         @Override
         public void onSpeedChanged(long speed, final ITask params) {
             super.onSpeedChanged(speed, params);
-            Debugger.error("OnlyDownloadActivity","speed = " + TaskUtils.getFileSize(speed) + "/s");
+            XLogger.getDefault().e("OnlyDownloadActivity","speed = " + TaskUtils.getFileSize(speed) + "/s");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

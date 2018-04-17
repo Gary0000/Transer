@@ -5,8 +5,8 @@ import android.text.TextUtils;
 import com.scott.annotionprocessor.ITask;
 import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
-import com.scott.transer.utils.Debugger;
 import com.scott.transer.utils.FileUtils;
+import com.shilec.xlogger.XLogger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -86,7 +86,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
 //            }
 //        } catch (JSONException e) {
 //            e.printStackTrace();
-//            Debugger.error(TAG,e.getMessage());
+//            XLogger.getDefault().e(TAG,e.getMessage());
 //        }
 //        return false;
         return true;
@@ -133,16 +133,16 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         mCurrentCall = client.newCall(request);
 
         mResponse = null;
-        //Debugger.error(TAG,"wait response === ");
+        //XLogger.getDefault().e(TAG,"wait response === ");
         Response execute = mCurrentCall.execute();
-        //Debugger.error(TAG,"wait2 response === ");
+        //XLogger.getDefault().e(TAG,"wait2 response === ");
         if(!execute.isSuccessful()) {
-            Debugger.error(TAG,"error msg = " + execute.body().string());
+            XLogger.getDefault().e(TAG,"error msg = " + execute.body().string());
             throw new IllegalStateException(execute.message());
         }
         ResponseBody body = execute.body();
         mResponse = body.string();
-        Debugger.error(TAG,"response === " + mResponse);
+        XLogger.getDefault().e(TAG,"response === " + mResponse);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         @Override
         public long contentLength() throws IOException {
             //需要指定此次请求的内容长度，以从数据圆中实际读取的长度为准
-            Debugger.error(TAG,"offset = " + getTask().getStartOffset() + ", end = " + getTask().getEndOffset());
+            XLogger.getDefault().e(TAG,"offset = " + getTask().getStartOffset() + ", end = " + getTask().getEndOffset());
             return getPiceRealSize();
         }
 

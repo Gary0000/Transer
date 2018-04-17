@@ -21,7 +21,7 @@ import com.scott.example.adapter.TaskListRecyclerAdapter;
 import com.scott.example.utils.Contacts;
 import com.scott.transer.TaskCmd;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +110,7 @@ public class TaskFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         if (tasks == null) {
             return;
         }
-        Debugger.error(TAG,"thread ==== " + Thread.currentThread().getName());
+        XLogger.getDefault().e(TAG,"thread ==== " + Thread.currentThread().getName());
         mTasks.clear();
         mTasks.addAll(tasks);
         mAdapter.notifyDataSetChanged();

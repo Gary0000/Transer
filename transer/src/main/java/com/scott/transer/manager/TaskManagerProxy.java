@@ -14,7 +14,7 @@ import com.scott.transer.manager.interceptor.ReNameDownloadFileInterceptor;
 import com.scott.transer.manager.interceptor.ChainImpl;
 import com.scott.transer.manager.interceptor.CheckParamInterceptor;
 import com.scott.transer.manager.interceptor.ICmdInterceptor;
-import com.scott.transer.utils.Debugger;
+import com.shilec.xlogger.XLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -162,7 +162,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 
     @Override
     public void onStart(ITask task) {
-        //Debugger.error(TAG,"start = " + params);
+        //XLogger.getDefault().e(TAG,"start = " + params);
         TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
@@ -172,7 +172,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 
     @Override
     public void onStop(ITask task) {
-        //Debugger.error(TAG,"stop = " + params);
+        //XLogger.getDefault().e(TAG,"stop = " + params);
         TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
@@ -182,7 +182,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 
     @Override
     public void onError(int code, ITask task) {
-        //Debugger.error(TAG,"error = " + params);
+        //XLogger.getDefault().e(TAG,"error = " + params);
         TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setState(TaskState.STATE_STOP)
@@ -199,12 +199,12 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
                 .setState(TaskState.STATE_RUNNING)
                 .build();
         process(cmd);
-        Debugger.error(TAG,"speed == " + task.getSpeed());
+        XLogger.getDefault().e(TAG,"speed == " + task.getSpeed());
     }
 
     @Override
     public void onPiceSuccessful(ITask task) {
-        Debugger.error(TAG," PICE STATE = " + task.getState());
+        XLogger.getDefault().e(TAG," PICE STATE = " + task.getState());
         TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
@@ -215,7 +215,7 @@ public class TaskManagerProxy implements ITaskManager, ITaskProcessCallback,ITas
 
     @Override
     public void onFinished(ITask task) {
-        //Debugger.error(TAG,"finished = " + task);
+        //XLogger.getDefault().e(TAG,"finished = " + task);
         TaskCmd cmd = new TaskCmd.Builder()
                 .setTask(task)
                 .setProcessType(ProcessType.TYPE_UPDATE_TASK)
