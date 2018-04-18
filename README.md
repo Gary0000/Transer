@@ -1,12 +1,17 @@
 ## Transer
-是一个传输框架,目前支持：
+是一个大文件传输的任务管理框架，该框架的设计是无关传输协议的。
 
-- 支持 HTTP/HTTPS 断点续传下载
-- 支持 HTTP/HTTPS 大文件分片上传
-- 支持 类EventBus的task状态变更通知，支持三种线程的订阅模式
-- 支持 任务分组，分用户
-- 支持 传输速度限制(当前版本只支持下载限速)
-- 支持 自定义的Http传输，数据库保存
+状态 | 功能
+-------- | ---
+**支持**|**HTTP/HTTPS 断点续传下载**
+**支持**|**HTTP/HTTPS 大文件分片上传**
+**支持**|**类EventBus的task状态变更通知，支持三种线程的订阅模式**
+**支持**|**任务分组，分用户**
+**支持**|**传输速度限制(当前版本只支持下载限速)**
+**支持**|**自定义的Http传输，数据库保存**
+**支持**|**自动任务错误重试**
+**支持**|**任务重命名(下载任务)**
+待支持|**其他协议的传输**
 
 [![](https://jitpack.io/v/shilec/Transer.svg)](https://jitpack.io/#shilec/Transer)
 
@@ -50,15 +55,6 @@
 <a href="https://github.com/CymChad/BaseRecyclerViewAdapterHelper">BaseRecyclerViewAdapterHelper</a></br>
 <a href="https://github.com/greenrobot/greenDAO">GreenDao</a></br>
 <a href="https://github.com/square/okhttp">OkHttp</a></br>
-
-##### 功能更新日志:
-
-- 2018/1/2 添加下载限速，设置分片大小
-- 2018/1/21 简化传输器配置，修复部分bug
-- 2018/3/6 增加Processor动态代理操作任务
-- 2018/2/6 增加JitPack 依赖的支持
-- 2018/3/27 增加分组任务，分用户支持
-
 
 ##### 服务端测试Demo详见：
 
