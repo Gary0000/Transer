@@ -8,6 +8,8 @@
 - 支持 传输速度限制(当前版本只支持下载限速)
 - 支持 自定义的Http传输，数据库保存
 
+[![](https://jitpack.io/v/shilec/Transer.svg)](https://jitpack.io/#shilec/Transer)
+
 ## 集成方式
 1. 在project build.gradle 中加入
 
@@ -19,7 +21,7 @@
 
 2. 在app 的 build.gradle 中加入
 
-         compile 'com.github.shilec:Transer:1.0.1-d'
+         compile 'com.github.shilec:Transer:1.2-d'
 
 3. 在app 的AndroidManifest.xml中 申明 TranserService
 
