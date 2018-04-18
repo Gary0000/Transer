@@ -34,11 +34,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    //implementation project(':transer')
+    //compile project(':transer')
     //compile 'com.github.shilec:Transer:1.0.1-d'
     //compile 'com.github.shilec:Transer:1.2'
     //implementation 'com.github.shilec:Transer:1.2-a'
     //compile 'com.github.shilec:Transer:1.2-b'
+    //compile 'com.github.shilec:Transer:1.2-c'
+    compile 'com.github.shilec:Transer:1.2-d'
 
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:+'
@@ -51,6 +53,5 @@ dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation "com.android.support:design:26.1.0"
     api 'com.github.shilec:XLoggerDemo:1.1'
-    compile 'com.android.support:multidex:1.0.1'
 
 }
