@@ -1,6 +1,11 @@
 ## Transer
 是一个大文件传输的任务管理框架，该框架的设计是无关传输协议的。
 
+## 架构
+<img src="https://github.com/shilec/Transer/blob/master/imgs/transer_designpng.png"></img>
+
+## 功能
+
 状态 | 功能
 -------- | ---
 **支持**|**HTTP/HTTPS 断点续传下载**
