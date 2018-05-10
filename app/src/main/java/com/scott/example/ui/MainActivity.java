@@ -5,14 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.widget.PopupMenu;
-import android.widget.PopupWindow;
 
 import com.scott.annotionprocessor.TaskType;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
 import com.scott.example.utils.Contacts;
+import com.shilec.xlogger.XLogger;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 

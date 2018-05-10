@@ -1,6 +1,5 @@
 package com.scott.transer.handler;
 
-import android.os.Looper;
 import android.text.TextUtils;
 
 import com.scott.annotionprocessor.ITask;
@@ -326,7 +325,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         }
     }
 
-    class HandleRunnable implements Runnable {
+    class HandleRunnable implements Comparable<ITaskHolder>,ITaskHolder,Runnable {
         //最多重试次数
         private int maxRetryTimes = 3;
 
@@ -399,6 +398,30 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 }
                 retry();
             }
+        }
+
+        @Override
+        public int compareTo(ITaskHolder o) {
+            if(getType() != o.getType()) {
+                return 0;
+            }
+            //文件越小，越快执行
+            return (int) (o.getTask().getLength() - getTask().getLength());
+        }
+
+        @Override
+        public ITask getTask() {
+            return BaseTaskHandler.this.getTask();
+        }
+
+        @Override
+        public void setTask(ITask task) {
+
+        }
+
+        @Override
+        public TaskType getType() {
+            return BaseTaskHandler.this.getType();
         }
     }
 
