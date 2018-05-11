@@ -1,5 +1,7 @@
 package com.scott.transer;
 
+import com.shilec.xlogger.XLogger;
+
 import java.lang.reflect.Array;
 import java.util.AbstractQueue;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ import java.util.function.Consumer;
  * <P>Author: shijiale-PUBG</P>
  * <P>Date: 2018/5/10</P>
  * <P>Email: shilec@126.com</p>
- *  可以对元素进行排序的阻塞队列
+ *  T 实现了Comparable,队列中compare 最小的先出队列
  */
 public class SmallTaskFirstDequeueBlockingQueue<T extends Runnable> extends AbstractQueue<T> implements BlockingQueue<T>{
     private ArrayList<T> arr = new ArrayList<>();
@@ -63,15 +65,6 @@ public class SmallTaskFirstDequeueBlockingQueue<T extends Runnable> extends Abst
     protected void enqueue(T t) {
         arr.add(t);
         notEmpty.signal();
-//        Collections.sort(arr, new Comparator<T>() {
-//            @Override
-//            public int compare(T o1, T o2) {
-//                if(o1 instanceof Comparable && o2 instanceof Comparable) {
-//                    return ((Comparable) o1).compareTo(o2);
-//                }
-//                return 0;
-//            }
-//        });
     }
 
     @Override
@@ -107,9 +100,6 @@ public class SmallTaskFirstDequeueBlockingQueue<T extends Runnable> extends Abst
     }
 
     protected T dequeue() {
-        T t = arr.get(arr.size() - 1);
-        arr.remove(arr.size() - 1);
-
         T min = Collections.min(arr, new Comparator<T>() {
             @Override
             public int compare(T o1, T o2) {
@@ -119,8 +109,9 @@ public class SmallTaskFirstDequeueBlockingQueue<T extends Runnable> extends Abst
                 return 0;
             }
         });
+        XLogger.getDefault().e("---dequeue------" + min);
         arr.remove(min);
-        return t;
+        return min;
     }
 
     @Override

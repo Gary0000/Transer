@@ -28,6 +28,7 @@ import com.shilec.xlogger.XLogger;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -173,8 +174,16 @@ public class TranserService extends Service implements ITaskProcessCallback{
             if(mConfig.mBuilder.mUploadConcurrentThreadSize > 0) {
                 corePoolSize = mConfig.mBuilder.mUploadConcurrentThreadSize;
             }
+
+            BlockingQueue blockingQueue = null;
+            //是否支持小文件优先上传
+            if(mConfig.mBuilder.isSupportSmallFileFirstUpload) {
+                blockingQueue = new SmallTaskFirstDequeueBlockingQueue(10000);
+            } else {
+                blockingQueue = new ArrayBlockingQueue(10000);
+            }
             uploadThreadPool = new ThreadPoolExecutor(corePoolSize,corePoolSize,
-                    6000, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(10000));
+                    6000, TimeUnit.MILLISECONDS,blockingQueue);
         } else {
             uploadThreadPool = mConfig.mBuilder.mUploadThreadPool;
         }

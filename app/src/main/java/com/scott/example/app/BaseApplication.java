@@ -34,6 +34,7 @@ public class BaseApplication extends Application {
                 .setDownloadConcurrentThreadSize(3)
                 .setUploadConcurrentThreadSize(3)
                 .setSupportProcessorDynamicProxy(true)
+                .enableSmallFileFirstUpload()
                 //.addCmdInterceptor(new LogInterceptor())
                 .build();
         TranserService.init(this,config);

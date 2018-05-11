@@ -20,6 +20,7 @@ import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.ProcessType;
 import com.scott.annotionprocessor.TaskSubscriber;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
 import com.scott.example.adapter.FileInfoAdapter;
@@ -72,12 +73,12 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
         return false;
     }
 
-    @TaskSubscriber(processType = ProcessType.TYPE_ADD_TASKS,taskType = TaskType.TYPE_HTTP_UPLOAD)
+    @TaskSubscriber(processType = ProcessType.TYPE_ADD_TASKS,taskType = TaskType.TYPE_HTTP_UPLOAD,threadMode = ThreadMode.MODE_MAIN)
     public void onAddUploadTasks() {
         Toast.makeText(this,"添加任务成功!",Toast.LENGTH_SHORT).show();
     }
 
-    @TaskSubscriber(processType = ProcessType.TYPE_ADD_TASKS,taskType = TaskType.TYPE_HTTP_DOWNLOAD)
+    @TaskSubscriber(processType = ProcessType.TYPE_ADD_TASKS,taskType = TaskType.TYPE_HTTP_DOWNLOAD,threadMode = ThreadMode.MODE_MAIN)
     public void onAddDownloadTasks() {
         Toast.makeText(this,"添加任务成功!",Toast.LENGTH_SHORT).show();
     }

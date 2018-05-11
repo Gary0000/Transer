@@ -50,6 +50,13 @@ public class TranserConfig {
 
         List<Interceptor> interceptors;
 
+        boolean isSupportSmallFileFirstUpload = false;
+
+        public Builder enableSmallFileFirstUpload() {
+            isSupportSmallFileFirstUpload = true;
+            return this;
+        }
+
         public Builder addCmdInterceptor(Interceptor interceptor) {
             if(interceptors == null) {
                 interceptors = new ArrayList<>();

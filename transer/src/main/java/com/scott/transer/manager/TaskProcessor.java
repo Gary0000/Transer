@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.scott.annotionprocessor.ITask;
 import com.scott.annotionprocessor.TaskType;
+import com.scott.transer.SmallTaskFirstDequeueBlockingQueue;
 import com.scott.transer.Task;
 import com.scott.transer.TaskState;
 import com.scott.transer.handler.ITaskHandler;
@@ -13,7 +14,10 @@ import com.scott.transer.handler.ITaskHolder;
 import com.scott.transer.handler.TaskHandlerHolder;
 import com.shilec.xlogger.XLogger;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,6 +43,13 @@ public class TaskProcessor implements ITaskInternalProcessor {
     @Override
     public void addTask(ITask task) {
         ITaskHolder holder = new TaskHandlerHolder();
+        //如果是上传，并且支持小文件优先上传，则计算文件大小
+        if(task.getType() == TaskType.TYPE_HTTP_UPLOAD &&
+                mTaskManager.getTaskThreadPool(TaskType.TYPE_HTTP_UPLOAD)
+                        .getQueue() instanceof SmallTaskFirstDequeueBlockingQueue) {
+            File file = new File(task.getSourceUrl());
+            ((Task)task).setLength(file.length());
+        }
         holder.setTask(task);
         mTasks.add(holder);
     }
@@ -46,9 +57,7 @@ public class TaskProcessor implements ITaskInternalProcessor {
     @Override
     public void addTasks(List<ITask> tasks) {
         for(ITask task : tasks) {
-            ITaskHolder holder = new TaskHandlerHolder();
-            holder.setTask(task);
-            mTasks.add(holder);
+            addTask(task);
         }
     }
 
