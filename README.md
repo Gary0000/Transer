@@ -16,6 +16,8 @@
 **支持**|**自定义的Http传输，数据库保存**
 **支持**|**自动任务错误重试**
 **支持**|**任务重命名(下载任务)**
+**支持**|**小文件优先下载(dev 分支)**
+**支持**|**multi/form-part上传 (dev 分支)**
 待支持|**其他协议的传输**
 
 [![](https://jitpack.io/v/shilec/Transer.svg)](https://jitpack.io/#shilec/Transer)
@@ -45,6 +47,9 @@
                 .build();
 
         TranserService.init(this,config);
+        
+## dev 分支为最新代码，新功能只是做了简单测试，后续多次测试验证后会同步到master,提供最新release版本。
+### 如果需要最新功能，请直接依赖dev代码作为moudle，方便修改。
 
 ## 帮助文档
 [文档](https://github.com/shilec/Transer/blob/master/transer_doc.md)
