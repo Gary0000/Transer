@@ -258,7 +258,10 @@ public class TaskProcessor implements ITaskInternalProcessor {
         ITaskHandlerHolder handlerHolder = (ITaskHandlerHolder) holder;
         if(handlerHolder.getTaskHandler() == null && isStart) {
             ITaskHandlerFactory creator = mTaskManager.getTaskHandlerCreator(holder.getTask());
-            ITaskHandler handler = creator.create(holder.getTask(),mTaskManager);
+            //handler 中的Task 不使用 tasklist 中的task引用
+            //防止task不通过TaskProcessor 进行修改
+            Task task = new Task(holder.getTask());
+            ITaskHandler handler = creator.create(task,mTaskManager);
             handlerHolder.setTaskHandler(handler);
         }
 

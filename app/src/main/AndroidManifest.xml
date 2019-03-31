@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MainActivity"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,14 +25,23 @@
 
         <service android:name="com.scott.transer.TranserService" />
 
-        <activity android:name=".ui.SimpleDownloadActivity" />
-        <activity android:name=".ui.SimpleUploadActivity" />
-        <activity android:name=".ui.CreateTaskActivity" />
-        <activity android:name=".ui.SimpleTaskListActivity" />
+        <activity android:name=".ui.SimpleDownloadActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".ui.SimpleUploadActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".ui.CreateTaskActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".ui.SimpleTaskListActivity"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".BaseActivity" />
-        <activity android:name=".ui.FileListActivity" />
-        <activity android:name=".ui.SimpleTaskEventBusActivity" />
-        <activity android:name=".ui.TaskGroupActivity"></activity>
+        <activity android:name=".ui.FileListActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".ui.SimpleTaskEventBusActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".ui.TaskGroupActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".ui.SimpleFormPartFileUploadActivity"
+            android:configChanges="orientation|screenSize"/>
     </application>
 
 </manifest>

@@ -1,84 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     android:orientation="vertical"
+    android:padding="10dp"
     tools:context="com.scott.example.ui.MainActivity">
 
-    <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_simple_download"
-        android:text="@string/simple_download"
-        android:gravity="center"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        tools:context="com.scott.example.ui.MainActivity">
 
-    <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_simple_upload"
-        android:text="@string/simple_upload"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_simple_download"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/simple_download" />
 
-    <Button
-        android:visibility="gone"
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_create_task"
-        android:text="@string/create_task"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_simple_upload"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/simple_upload" />
 
-    <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_upload_tasks"
-        android:text="@string/upload_tasks_list"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_create_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/create_task"
+            android:visibility="gone" />
 
-    <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_download_tasks"
-        android:text="@string/download_tasks_list"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_upload_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/upload_tasks_list" />
 
-    <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_file_list"
-        android:text="@string/server_file_list"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_task_formpart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/task_upload_formpart" />
 
-    <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_local_file_list"
-        android:text="@string/local_file_list"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_download_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/download_tasks_list" />
 
-    <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_event_bus"
-        android:text="@string/task_event_bus"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_file_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/server_file_list" />
 
-    <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/btn_task_group"
-        android:text="@string/task_group_manage"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        <Button
+            android:id="@+id/btn_local_file_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/local_file_list" />
+
+        <Button
+            android:id="@+id/btn_event_bus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/task_event_bus" />
+
+        <Button
+            android:id="@+id/btn_task_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/task_group_manage" />
+    </LinearLayout>
+</ScrollView>

@@ -1,6 +1,7 @@
 package com.scott.transer.handler;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.Task;
 import com.scott.transer.http.OkHttpProxy;
 import com.shilec.xlogger.XLogger;
@@ -67,6 +68,11 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
     }
 
     @Override
+    public TaskType getType() {
+        return TaskType.TYPE_HTTP_DOWNLOAD;
+    }
+
+    @Override
     protected byte[] readPice(ITask task) throws IOException {
         if (mInputStream == null) {
             return null;
@@ -78,7 +84,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
     @Override
     protected void writePice(byte[] datas, ITask task) throws IOException {
-        mFile.write(datas, 0, getPiceRealSize());
+        mFile.write(datas, 0, (int) getPiceRealSize());
     }
 
     @Override
@@ -145,14 +151,17 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
 
     @Override
     public void stop() {
-        if(mCurrentCall != null) {
-            mCurrentCall.cancel();
-        }
-        super.stop();
+        // crash #12
+        try {
+            if (mCurrentCall != null) {
+                mCurrentCall.cancel();
+            }
+            super.stop();
+        } catch (Exception e) {}
     }
 
     @Override
-    protected int getPiceRealSize() {
+    protected long getPiceRealSize() {
         return mPiceSize;
     }
 
@@ -161,7 +170,7 @@ public class DefaultHttpDownloadHandler extends BaseTaskHandler {
         return mFileSize;
     }
 
-    private long getNetSize(String src) throws Exception {
+    protected long getNetSize(String src) throws Exception {
         Request request = new Request.Builder()
                 .url(src)
                 .head()

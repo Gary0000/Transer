@@ -4,13 +4,13 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.view.View;
 
 import com.scott.annotionprocessor.TaskType;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
 import com.scott.example.utils.Contacts;
-import com.shilec.xlogger.XLogger;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 
@@ -86,13 +86,14 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.btn_file_list)
     public void showServerFileList() {
         Intent intent = new Intent(this,FileListActivity.class);
+        intent.putExtra(FileListActivity.EXTRA_SELECT_TYPE,FileListActivity.SELECT_TYPE.TYPE_NET_NOT_RETURN);
         startActivity(intent);
     }
 
     @OnClick(R.id.btn_local_file_list)
     public void showLocalFileList() {
         Intent intent = new Intent(this,FileListActivity.class);
-        intent.putExtra(FileListActivity.EXTRA_IS_LOCAL,true);
+        intent.putExtra(FileListActivity.EXTRA_SELECT_TYPE,FileListActivity.SELECT_TYPE.TYPE_LOCAL_NOT_RETURN);
         startActivity(intent);
     }
 
@@ -110,5 +111,10 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.btn_task_group)
     public void taskGroupManage() {
         startActivity(new Intent(this,TaskGroupActivity.class));
+    }
+
+    @OnClick(R.id.btn_task_formpart)
+    public void taskUploadFormPart() {
+        startActivity(new Intent(this,SimpleFormPartFileUploadActivity.class));
     }
 }

@@ -64,6 +64,7 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
     public void onStart() {
         super.onStart();
         mTaskType = (TaskType) getArguments().get(EXTRA_TASK_TYPE);
+        TaskEventBus.getDefault().regesit(this);
     }
 
     @Nullable
@@ -87,9 +88,14 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        TaskEventBus.getDefault().unregesit(this);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        TaskEventBus.getDefault().regesit(this);
 
         TaskCmd cmd = new TaskCmd.Builder()
                 .setUserId(Contacts.USER_ID)
@@ -97,12 +103,6 @@ public class TaskGroupFragment extends BaseFragment implements SwipeRefreshLayou
                 .setProcessType(ProcessType.TYPE_QUERY_TASKS_ALL)
                 .build();
         TaskEventBus.getDefault().execute(cmd);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        TaskEventBus.getDefault().unregesit(this);
     }
 
     @TaskSubscriber(taskType = TaskType.TYPE_HTTP_DOWNLOAD, threadMode = ThreadMode.MODE_MAIN)

@@ -156,6 +156,18 @@ public class TaskGroupExpandAdapter extends QuickExpandableListAdapter<MultiItem
                 TaskEventBus.getDefault().execute(builder);
             }
         });
+
+        helper.itemView.findViewById(R.id.btn_clear_complete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TaskCmd builder = new TaskCmd.Builder()
+                        .setTaskType(task.getType())
+                        .setUserId(Contacts.USER_ID)
+                        .setProcessType(ProcessType.TYPE_DELETE_TASKS_COMPLETED)
+                        .build();
+                TaskEventBus.getDefault().execute(builder);
+            }
+        });
     }
 
     private void updateUIbyState(int state, BaseViewHolder helper, ITask task) {

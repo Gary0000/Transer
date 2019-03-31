@@ -1,10 +1,6 @@
 package com.scott.transer.handler;
 
 import com.scott.annotionprocessor.ITask;
-import com.scott.transer.manager.ITaskManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>Author:    shijiale</p>
@@ -19,9 +15,16 @@ public class DefaultUploadFactory extends AbsHandlerFactory {
 
     @Override
     protected ITaskHandler create(ITask task) {
-        return new DefaultHttpUploadHandler.Builder()
-                .disableAutoRetry()
-                .addHeader("path",task.getDestPath() + "/")
-                .build();
+
+        if(task.getLength() > BaseTaskHandler.SPEED_LIMIT_SIZE.SPEED_2MB) {
+            return new DefaultHttpUploadHandler.Builder()
+                    .disableAutoRetry()
+                    .addHeader("path", task.getDestPath() + "/")
+                    .build();
+        } else {
+            return new DefaultFormPartUploadHandler.Builder()
+                    .addParam("path",task.getDestPath() + "/")
+                    .build();
+        }
     }
 }

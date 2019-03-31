@@ -30,7 +30,6 @@ import com.scott.example.moudle.FileInfo;
 import com.scott.example.utils.Contacts;
 import com.scott.transer.Task;
 import com.scott.transer.TaskCmd;
-import com.scott.transer.TranserService;
 import com.scott.transer.event.TaskEventBus;
 
 import java.io.File;
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.Callable;
 
 import rx.Observable;
@@ -52,12 +52,27 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
     private FileInfoAdapter mAdapter;
     //private ListView mListView;
     private RecyclerView mListView;
-    private boolean isLocal;
-    public static String EXTRA_IS_LOCAL = "LOCAL_NET";
+    private SELECT_TYPE mSelectType;
+    public static String EXTRA_SELECT_TYPE = "LOCAL_NET";
     public static String EXTRA_ROOT_PATH = "PATH";
     private String mRootPath;
     private SwipeRefreshLayout mRefreshLayout;
     private boolean isLoadMore = false;
+    final static String BUNDLE_DATA_KEY = "data";
+    private Stack<String> mPathStack = new Stack<>();
+
+    public enum SELECT_TYPE {
+        TYPE_NET_NOT_RETURN(1),
+        TYPE_LOCAL_NOT_RETURN(2),
+        TYPE_NET(3),
+        TYPE_LOCAL(4);
+
+        int value = 0;
+
+        SELECT_TYPE(int value){
+            this.value = value;
+        }
+    }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -127,7 +142,7 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
 //                .create();
 //        processor.addTasks(tasks);
         TaskCmd cmd = new TaskCmd.Builder()
-                .setTaskType(isLocal ? TaskType.TYPE_HTTP_UPLOAD : TaskType.TYPE_HTTP_DOWNLOAD)
+                .setTaskType(mSelectType.value % 2 == 0 ? TaskType.TYPE_HTTP_UPLOAD : TaskType.TYPE_HTTP_DOWNLOAD)
                 .setTasks(tasks)
                 .setProcessType(ProcessType.TYPE_ADD_TASKS)
                 .setUserId(Contacts.USER_ID)
@@ -140,7 +155,7 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
         @Override
         public void onCompleted() {
             mRefreshLayout.setRefreshing(false);
-            if(!isLocal && false) {
+            if(mSelectType.value % 2 != 0 && false) {
                 mAdapter.setEnableLoadMore(true);
             }
             if(isLoadMore) {
@@ -165,6 +180,7 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
                 }
                 return;
             }
+            mDatas.clear();
             mDatas.addAll(fileInfos);
             mAdapter.notifyDataSetChanged();
         }
@@ -197,15 +213,18 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
 
-        isLocal = getIntent().getBooleanExtra(EXTRA_IS_LOCAL,false);
-        if(isLocal) {
+        mSelectType = (SELECT_TYPE) getIntent().getSerializableExtra(EXTRA_SELECT_TYPE);
+        if(mSelectType == null) {
+            return;
+        }
+        if(mSelectType.value % 2 == 0) {
             setTitle(getString(R.string.local_file_list));
         } else {
             setTitle(getString(R.string.server_file_list));
         }
 
         mRootPath = getIntent().getStringExtra(EXTRA_ROOT_PATH);
-        if(isLocal && TextUtils.isEmpty(mRootPath)) {
+        if(mSelectType.value % 2 == 0 && TextUtils.isEmpty(mRootPath)) {
             mRootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         } else if(TextUtils.isEmpty(mRootPath)){
             mRootPath = "";
@@ -215,8 +234,18 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
         initDatas();
     }
 
+    @Override
+    public void onBackPressed() {
+        if(mPathStack.empty()) {
+            super.onBackPressed();
+        } else {
+            mRootPath = mPathStack.pop();
+            initDatas();
+        }
+    }
+
     private void initDatas() {
-        if(isLocal) {
+        if(mSelectType.value % 2 == 0) {
             loadFromLocal();
         } else {
             loadFromNet();
@@ -327,6 +356,17 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
     }
 
     private void onSelectCompleted() {
+        if(mSelectType == SELECT_TYPE.TYPE_LOCAL ||
+                mSelectType == SELECT_TYPE.TYPE_NET) {
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(BUNDLE_DATA_KEY,mAdapter.getCheckedItems());
+            Intent intent = new Intent();
+            intent.putExtras(bundle);
+            setResult(0,intent);
+            finish();
+            return;
+        }
         getSubmitView().setOnCreateContextMenuListener(this);
         getSubmitView().showContextMenu();
     }
@@ -343,7 +383,7 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
         MenuItem download = menu.findItem(R.id.btn_download_tasks);
         download.setOnMenuItemClickListener(this);
 
-        if(isLocal) {
+        if(mSelectType.value % 2 == 0) {
             download.setEnabled(false);
         } else {
             upload.setEnabled(false);
@@ -354,10 +394,9 @@ public class FileListActivity extends BaseActivity implements BaseQuickAdapter.O
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
         FileInfo info = mDatas.get(position);
         if(info.type == FileInfo.FILE_TYPE.DIRECTORY) {
-            Intent intent = new Intent(this,FileListActivity.class);
-            intent.putExtra(EXTRA_ROOT_PATH,info.path);
-            intent.putExtra(EXTRA_IS_LOCAL,isLocal);
-            startActivity(intent);
+            mPathStack.push(mRootPath);
+            mRootPath = info.path;
+            initDatas();
         }
     }
 

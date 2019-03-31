@@ -47,6 +47,8 @@ public class TaskManager implements ITaskManager, ITaskHandlerCallback {
     private Map<TaskType,ITaskHandlerFactory> mTaskHandlerCreators = new HashMap<>();
     private List<ITaskHolder> mTasks = new ArrayList<>(); //task list
 
+    private Object mLock = new Object();
+
     public TaskManager(ITaskInternalProcessor processor, List<Interceptor> interceptors) {
         mCmdThreadPool = Executors.newSingleThreadExecutor();
         mInterceptors.add(new CheckParamInterceptor());
@@ -61,9 +63,11 @@ public class TaskManager implements ITaskManager, ITaskHandlerCallback {
     }
 
     private void interceptCmd(TaskCmd cmd) {
-        Interceptor.Chain chain = new ChainImpl(0,mInterceptors);
-        TaskCmd taskCmd = chain.process(cmd);
-        callExecuteCmdFinished(taskCmd);
+        synchronized (mLock) {
+            Interceptor.Chain chain = new ChainImpl(0, mInterceptors);
+            TaskCmd taskCmd = chain.process(cmd);
+            callExecuteCmdFinished(taskCmd);
+        }
     }
 
     private void callExecuteCmdFinished(TaskCmd cmd) {

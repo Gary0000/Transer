@@ -29,9 +29,14 @@ import java.util.List;
 
 public class FileInfoAdapter extends BaseQuickAdapter<FileInfo,BaseViewHolder>  {
 
-    private List<FileInfo> mSelectItems = new ArrayList<>();
+    private ArrayList<FileInfo> mSelectItems = new ArrayList<>();
     private boolean isSelectMode = false;
     private OnSelectChangeListenner mSelectListenner;
+    private boolean isSingleSelectMode = false;
+
+    public void setSelectSingleMode(boolean mode) {
+        isSingleSelectMode = mode;
+    }
 
     public void setOnSelectChangeListenner(OnSelectChangeListenner l) {
         mSelectListenner = l;
@@ -60,7 +65,7 @@ public class FileInfoAdapter extends BaseQuickAdapter<FileInfo,BaseViewHolder>  
         super(layoutResId, data);
     }
 
-    public List<FileInfo> getCheckedItems() {
+    public ArrayList<FileInfo> getCheckedItems() {
         return mSelectItems;
     }
 
@@ -75,6 +80,9 @@ public class FileInfoAdapter extends BaseQuickAdapter<FileInfo,BaseViewHolder>  
             @Override
             public void onClick(View v) {
                 if(((CheckBox)v).isChecked()) {
+                    if(mSelectItems.size() >= 1 && isSingleSelectMode) {
+                        return;
+                    }
                     mSelectItems.add(item);
                 } else {
                     mSelectItems.remove(item);

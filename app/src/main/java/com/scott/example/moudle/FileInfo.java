@@ -4,13 +4,15 @@ import android.text.TextUtils;
 
 import com.scott.example.adapter.IListData;
 
+import java.io.Serializable;
+
 /**
  * <P>Author: shijiale</P>
  * <P>Date: 2018/2/3</P>
  * <P>Email: shilec@126.com</p>
  */
 
-public class FileInfo implements IListData{
+public class FileInfo implements IListData,Serializable{
     public String name;
 
     public String path;

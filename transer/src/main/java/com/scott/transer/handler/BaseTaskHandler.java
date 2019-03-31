@@ -66,7 +66,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         long SPEED_2MB = 2 * 1024 * 1024;
         long SPEED_5MB = 5 * 1024 * 1024;
         long SPEED_10MB = 10 * 1024 * 1024;
-        long SPEED_UNLIMITED = -1;
+        long SPEED_UNLIMITED = Long.MAX_VALUE;
     }
 
     public BaseTaskHandler() {
@@ -134,17 +134,20 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     protected abstract void prepare(ITask task) throws Exception;
 
     //当前这片从数据源中实际读取的大小
-    protected abstract int getPiceRealSize();
+    protected abstract long getPiceRealSize();
 
     //文件大小，下载为服务器的文件大小 。 上传为本地的文件大小
-    protected  abstract long fileSize();
+    protected abstract long fileSize();
 
     //释放资源
-    protected abstract void release();
+    protected void release() {
+        //mHandleRunnable = null;
+        //mStateRunnable = null;
+    }
 
     private void handle(ITask task) throws Exception {
-
-        mTask.setState(TaskState.STATE_RUNNING);
+        Task internalTask = (Task) task;
+        internalTask.setState(TaskState.STATE_RUNNING);
         mLastCompleteLength = task.getCompleteLength();
         //开始任务前准备任务数据，初始化源数据流
         prepare(task);
@@ -155,7 +158,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             return;
         }
         //获取到的源数据大小设置到task
-        mTask.setLength(fileSize());
+        internalTask.setLength(fileSize());
         mListenner.onStart(mTask);
         XLogger.getDefault().e(TAG,"start ============= length = " + task.getLength() + "" +
                 ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
@@ -163,13 +166,13 @@ public abstract class BaseTaskHandler implements ITaskHandler {
         _handle(task);
 
         if(!isSuccessful()) { //判断整个任务是否成功
-            mTask.setState(TaskState.STATE_ERROR);
+            internalTask.setState(TaskState.STATE_ERROR);
             mListenner.onError(TaskErrorCode.ERROR_FINISH,mTask);
         } else {
-            mTask.setCompleteLength(mTask.getLength());
-            mTask.setCompleteTime(System.currentTimeMillis());
-            mTask.setState(TaskState.STATE_FINISH);
-            mListenner.onFinished(mTask);
+            internalTask.setCompleteLength(internalTask.getLength());
+            internalTask.setCompleteTime(System.currentTimeMillis());
+            internalTask.setState(TaskState.STATE_FINISH);
+            mListenner.onFinished(internalTask);
         }
 
         release(); //释放资源
@@ -182,16 +185,21 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     }
 
     private void _handle(ITask task) throws Exception{
+        final Task internalTask = (Task) task;
+        if (internalTask == null) {
+            throw new IllegalStateException("task == null");
+        }
+
         while (!isExit) {
 
             mLastCaluteTime = System.currentTimeMillis();
 
             byte[] datas = readPice((Task) task); // 从源中读取一片数据
-            int piceSize = getPiceRealSize(); //获取当前读取一片的实际大小
+            long piceSize = getPiceRealSize(); //获取当前读取一片的实际大小
 
             //如果读取到源数据的末尾
             if(piceSize == -1 || piceSize == 0) {
-                mTask.setCompleteLength(mTask.getLength());
+                internalTask.setCompleteLength(internalTask.getLength());
                 isExit = true;
                 break;
             }
@@ -211,23 +219,23 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             }
 
             if(isPiceSuccessful()) { //判断一片是否成功
-                mTask.setCompleteLength(mTask.getEndOffset());
-                mTask.setStartOffset(mTask.getEndOffset());
-                mTask.setState(TaskState.STATE_RUNNING);
+                internalTask.setCompleteLength(internalTask.getEndOffset());
+                internalTask.setStartOffset(internalTask.getEndOffset());
+                internalTask.setState(TaskState.STATE_RUNNING);
                 if(System.currentTimeMillis() - mLastPiceSuccessfulTime > MAX_DELAY_TIME) {
                     mLastPiceSuccessfulTime = System.currentTimeMillis();
-                    mListenner.onPiceSuccessful(mTask);
+                    mListenner.onPiceSuccessful(internalTask);
                 }
             } else {
-                mTask.setState(TaskState.STATE_ERROR);
-                mListenner.onError(TaskErrorCode.ERROR_PICE,mTask);
+                internalTask.setState(TaskState.STATE_ERROR);
+                mListenner.onError(TaskErrorCode.ERROR_PICE,internalTask);
                 isExit = true;
                 break;
             }
 
             XLogger.getDefault().i(TAG,"length = " + task.getLength() + "" +
                     ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
-            XLogger.getDefault().e(TAG,"========= setState = " + mTask.getState());
+            XLogger.getDefault().e(TAG,"========= setState = " + internalTask.getState());
         }
 
     }
@@ -235,9 +243,14 @@ public abstract class BaseTaskHandler implements ITaskHandler {
     @Override
     public void start() {
         synchronized (this) {
+            final Task task = mTask;
+            if (task == null) {
+                return;
+            }
+
             //如果任务已经开始或完成则不重复开始
-            if(TaskState.STATE_READY == mTask.getState()
-                    || mTask.getState() == TaskState.STATE_RUNNING) {
+            if(TaskState.STATE_READY == task.getState()
+                    || task.getState() == TaskState.STATE_RUNNING) {
                 //throw new IllegalStateException("current handler already started ...");
                 XLogger.getDefault().e(TAG,"current handler already started ...");
                 return;
@@ -251,7 +264,7 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                 mHandleRunnable.run();
             }
 
-            mTask.setState(TaskState.STATE_READY);
+            task.setState(TaskState.STATE_READY);
             //mTask.setLength(fileSize());
             mListenner.onReady(mTask);
             XLogger.getDefault().e(TAG," ===== START =======");
@@ -260,18 +273,22 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     @Override
     public void stop() {
-
-        //停止，完成,失败的任务不能停止
-        if(TaskState.STATE_STOP == mTask.getState() ||
-                TaskState.STATE_FINISH == mTask.getState() ||
-                TaskState.STATE_ERROR == mTask.getState()) {
+        final Task task = mTask;
+        if (task == null) {
             return;
         }
 
-        XLogger.getDefault().e(TAG,"stop ============= length = " + mTask.getLength() + "" +
-                ",completeLength = " + mTask.getCompleteLength() + ",startOffset = " + mTask.getStartOffset() + ",endOffset = " + mTask.getEndOffset());
+        //停止，完成,失败的任务不能停止
+        if(TaskState.STATE_STOP == task.getState() ||
+                TaskState.STATE_FINISH == task.getState() ||
+                TaskState.STATE_ERROR == task.getState()) {
+            return;
+        }
+
+        XLogger.getDefault().e(TAG,"stop ============= length = " + task.getLength() + "" +
+                ",completeLength = " + task.getCompleteLength() + ",startOffset = " + task.getStartOffset() + ",endOffset = " + task.getEndOffset());
         isExit = true;
-        mTask.setState(TaskState.STATE_STOP);
+        task.setState(TaskState.STATE_STOP);
 
         //移除任务
         if(mTaskHandleThreadPool != null) {
@@ -294,7 +311,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
     @Override
     public TaskType getType() {
-        return mTask.getType();
+        final Task task = mTask;
+        if (task == null) {
+            return TaskType.TYPE_HTTP_UPLOAD;
+        }
+        return task.getType();
     }
 
     private void checkParams() {
@@ -352,10 +373,15 @@ public abstract class BaseTaskHandler implements ITaskHandler {
 
         //错误
         private void catchError(Exception e) {
+            final Task task = mTask;
+            if (task == null) {
+                return;
+            }
+
             XLogger.getDefault().e(TAG,e.getMessage());
             e.printStackTrace();
-            if(mTask.getState() != TaskState.STATE_STOP) {
-                mTask.setState(TaskState.STATE_ERROR);
+            if(task.getState() != TaskState.STATE_STOP) {
+                task.setState(TaskState.STATE_ERROR);
                 mListenner.onError(TaskErrorCode.ERROR_CODE_EXCEPTION, mTask);
             }
             isExit = true;
@@ -368,7 +394,11 @@ public abstract class BaseTaskHandler implements ITaskHandler {
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
-            mTask.setState(TaskState.STATE_READY);
+
+            final Task task = mTask;
+            if (task != null) {
+                task.setState(TaskState.STATE_READY);
+            }
             XLogger.getDefault().e(TAG,"-----retry------" + nowRetryTimes);
             runTask();
         }
@@ -391,8 +421,12 @@ public abstract class BaseTaskHandler implements ITaskHandler {
                     return;
                 }
 
+                final Task task = mTask;
+                if (task == null) {
+                    return;
+                }
                 //手动停止导致的异常不重试
-                if(mTask.getState() == TaskState.STATE_STOP) {
+                if(task.getState() == TaskState.STATE_STOP) {
                     catchError(e);
                     return;
                 }
@@ -430,22 +464,30 @@ public abstract class BaseTaskHandler implements ITaskHandler {
    }
 
     //当前实际完成的长度，这个数值是比较及时的，可以用来显示速度和进度的变化
-    protected  long getCurrentCompleteLength() {
-        return mTask.getCompleteLength();
+    protected long getCurrentCompleteLength() {
+        final Task task = mTask;
+        if (task == null) {
+            return 0l;
+        }
+        return task.getCompleteLength();
     }
 
     class StateRunnable implements Runnable {
 
         @Override
         public void run() {
+            final Task task = mTask;
             while (!isExit) {
                 try {
                     Thread.sleep(MAX_DELAY_TIME);
                     if(getCurrentCompleteLength() == mLastCompleteLength) continue;
-                    mTask.setSpeed((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)));
+                    if (task == null) {
+                        break;
+                    }
+                    task.setSpeed((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)));
                     mListenner.onSpeedChanged((long) ((getCurrentCompleteLength() - mLastCompleteLength) / ( MAX_DELAY_TIME / 1000f)), mTask);
                     mLastCompleteLength = getCurrentCompleteLength();
-                    XLogger.getDefault().e(TAG," ===== state = " + mTask.getState());
+                    XLogger.getDefault().e(TAG," ===== state = " + task.getState());
                     //XLogger.getDefault().e(TAG,"speed = " + task.getSpeed());
                 } catch (Exception e) {
                     e.printStackTrace();

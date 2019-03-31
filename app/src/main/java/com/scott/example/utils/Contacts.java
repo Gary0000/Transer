@@ -1,6 +1,7 @@
 package com.scott.example.utils;
 
 import android.os.Environment;
+import android.text.TextUtils;
 
 import java.io.File;
 
@@ -25,9 +26,9 @@ public class Contacts {
     public static class API {
 
         //public static final String HOST_URL = "192.168.1.129";
-        public static final String HOST_URL = "192.168.1.107";
+        public static final String HOST_URL = "192.168.199.184";
 
-       public static final String HOST_PORT = "8080";
+       public static final String HOST_PORT = "8099";
         //public static final String HOST_PORT = "443";
 
         public static final String HOST_SCHEMA = "http";
@@ -36,9 +37,13 @@ public class Contacts {
         public static final String WEB_APP = "TranserServer/";
         //public static final String WEB_APP = "/api/v1/files/";
 
+        //public static final String WEB_APP = "WebDemo";
+
         public static final String DOWNLOAD_URL = "download";
 
         public static final String UPLOAD_URL = "upload";
+
+        public static final String UPLOAD_FORMPART = "upload_formpart";
 
         public static final String FILE_LIST_GET = "file_list_get";
 
@@ -53,7 +58,6 @@ public class Contacts {
 
         public static String getUrl(String url) {
             return getWebAppUrl() + url;
-            //return getBaseUrl() + "api/v1/files/upload";
         }
     }
 
@@ -63,10 +67,10 @@ public class Contacts {
 
         public static String getBaseSavePath() {
 
-            if(!Environment.isExternalStorageEmulated()) {
+            String root = Environment.getExternalStorageDirectory().getAbsolutePath();
+            if (TextUtils.isEmpty(root)) {
                 return null;
             }
-            String root = Environment.getExternalStorageDirectory().getAbsolutePath();
             root += File.separator + TRANSER_ROOT;
             File file = new File(root);
 

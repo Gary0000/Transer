@@ -22,7 +22,7 @@ public class MySaveResponseUploadHandler extends DefaultHttpUploadHandler {
             注意: isSuccessful 是在上传线程中调用的，所以在这
             里做耗时操作会阻塞传输线程。
 
-            如果过报错返回值，建议只有返回成功后再处理
+            如果过保存返回值，建议只有返回成功后再处理
          */
         if(isUploadSuccessful) {
             saveResponse(getNowResponse());

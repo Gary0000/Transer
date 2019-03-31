@@ -45,6 +45,38 @@ public class Task implements ITask {
     private TaskType type;
     private String userId;
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Task task = new Task();
+        task.dataSource = dataSource;
+        task.destSource = destSource;
+        task.sesstionId = sesstionId;
+        task.length = length;
+        task.startOffset = startOffset;
+        task.endOffset = endOffset;
+        task.taskId = taskId;
+        task.groupId = groupId;
+        task.groupName = groupName;
+        task.completeTime = completeTime;
+        task.completeLength = completeLength;
+        task.state = state;
+        task.name = name;
+        task.speed = speed;
+        task.destPath = destPath;
+        task.sourcePath = sourcePath;
+        task.type = type;
+        task.userId = userId;
+        return task;
+    }
+
+    public Task cloneTask() {
+        try {
+            return (Task) clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
 
     @Generated(hash = 572294146)
     public Task(String dataSource, String destSource, String sesstionId,
@@ -71,14 +103,32 @@ public class Task implements ITask {
         this.type = type;
         this.userId = userId;
     }
-
-
+    
+    public Task(ITask task) {
+        this.dataSource = task.getSourceUrl();
+        this.destSource = task.getDestUrl();
+        this.sesstionId = task.getSesstionId();
+        this.length = task.getLength();
+        this.startOffset = task.getStartOffset();
+        this.endOffset = task.getEndOffset();
+        this.taskId = task.getTaskId();
+        this.groupId = task.getGroupId();
+        this.groupName = task.getGroupName();
+        this.completeTime = task.getCompleteTime();
+        this.completeLength = task.getCompleteLength();
+        this.state = task.getState();
+        this.name = task.getName();
+        this.speed = task.getSpeed();
+        this.destPath = task.getDestPath();
+        this.sourcePath = task.getSourcePath();
+        this.type = task.getType();
+        this.userId = task.getUserId();
+    }
 
 
     @Generated(hash = 733837707)
     public Task() {
     }
-
 
 
 
@@ -363,7 +413,6 @@ public class Task implements ITask {
             task.type = type;
             return this;
         }
-
         
         public Builder setUserId(String userId) {
             task.userId = userId;

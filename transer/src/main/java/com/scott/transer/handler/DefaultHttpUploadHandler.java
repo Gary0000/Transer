@@ -1,6 +1,7 @@
 package com.scott.transer.handler;
 
 import com.scott.annotionprocessor.ITask;
+import com.scott.annotionprocessor.TaskType;
 import com.scott.transer.http.OkHttpProxy;
 import com.shilec.xlogger.XLogger;
 
@@ -89,6 +90,11 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     }
 
     @Override
+    public TaskType getType() {
+        return TaskType.TYPE_HTTP_UPLOAD;
+    }
+
+    @Override
     protected byte[] readPice(ITask task) throws IOException{
         byte[] datas = new byte[getPiceBuffSize()];
         mPiceRealSize = mFile.read(datas,0, getPiceBuffSize());
@@ -151,6 +157,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
 
     @Override
     protected void release() {
+        super.release();
         try {
             mFile.close();
             mRequestBody = null;
@@ -169,7 +176,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
     }
 
     @Override
-    protected int getPiceRealSize() {
+    protected long getPiceRealSize() {
         return mPiceRealSize;
     }
 
@@ -197,7 +204,7 @@ public class DefaultHttpUploadHandler extends BaseTaskHandler {
         private int mCurrentCompleteLength; //当前已经完成的长度，写入多少增加多少
 
         PiceRequestBody(byte[] datas) {
-            mSource = new ByteArrayInputStream(datas,0,getPiceRealSize());
+            mSource = new ByteArrayInputStream(datas,0, (int) getPiceRealSize());
         }
 
         @Override

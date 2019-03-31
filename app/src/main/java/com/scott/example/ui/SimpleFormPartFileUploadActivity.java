@@ -1,6 +1,7 @@
 package com.scott.example.ui;
 
-import android.os.Environment;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -11,25 +12,28 @@ import com.scott.annotionprocessor.TaskType;
 import com.scott.annotionprocessor.ThreadMode;
 import com.scott.example.BaseActivity;
 import com.scott.example.R;
+import com.scott.example.moudle.FileInfo;
 import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.Task;
 import com.scott.transer.TaskState;
 import com.scott.transer.event.TaskEventBus;
-import com.scott.transer.handler.DefaultHttpUploadHandler;
+import com.scott.transer.handler.BaseTaskHandler;
 import com.scott.transer.handler.ITaskHandler;
+import com.scott.transer.handler.DefaultFormPartUploadHandler;
 import com.shilec.xlogger.XLogger;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
 
 import static com.scott.example.utils.TaskUtils.getFileSize;
 
-public class SimpleTaskEventBusActivity extends BaseActivity {
+public class SimpleFormPartFileUploadActivity extends BaseActivity {
 
     @BindView(R.id.tv_name)
     TextView tvName;
@@ -56,11 +60,21 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
     TextView tvSpeed;
 
     private ITaskHandler mHandler;
-    private ITask task;
 
-    final String URL = Contacts.API.getUrl(Contacts.API.UPLOAD_URL);
-    final String FILE_PATH = Environment.getExternalStorageDirectory().toString() + File.separator + "test.zip";
     final String TAG = SimpleUploadActivity.class.getSimpleName();
+    FileInfo mFileInfo;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        ArrayList<FileInfo> fileInfos = (ArrayList<FileInfo>) data.getSerializableExtra(FileListActivity.BUNDLE_DATA_KEY);
+        if (fileInfos == null || fileInfos.isEmpty()) {
+            return;
+        }
+        mFileInfo = fileInfos.get(0);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,33 +82,26 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
         setContentView(R.layout.activity_only_download);
 
         ButterKnife.bind(this);
-
-        task = new Task.Builder()
-                .setTaskType(TaskType.TYPE_HTTP_UPLOAD)
-                .setName("test.zip")
-                .setSourceUrl(FILE_PATH)
-                .setDestUrl(URL)
-                .build();
-
-        mHandler = new DefaultHttpUploadHandler.Builder()
-                .setTask(task)
-                .addHeader("path","root/")
-                .setEventDispatcher(TaskEventBus.getDefault().getDispatcher()) //设置EventDispatcher,
+        mHandler = new DefaultFormPartUploadHandler.Builder()
+                .addHeader("session-id","123")
+                .addParam("name","shilec")
+                .addParam("path", "root")
+                .setFileMediaType(MediaType.parse("multi-formpart"))
+                .setEventDispatcher(TaskEventBus.getDefault().getDispatcher())
                 .runOnNewThread()
                 .build();
-        setTitle(getString(R.string.task_event_bus));
+        setTitle(getString(R.string.task_upload_formpart));
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        TaskEventBus.getDefault().regesit(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        TaskEventBus.getDefault().unregesit(this);
+    private ITask getTask(FileInfo fileInfo) {
+        ITask task = new Task.Builder()
+                .setName(fileInfo.name)
+                .setSourceUrl(fileInfo.path)
+                .setLength(fileInfo.length)
+                .setTaskType(TaskType.TYPE_HTTP_UPLOAD)
+                .setDestUrl(Contacts.API.getUrl(Contacts.API.UPLOAD_FORMPART))
+                .build();
+        return task;
     }
 
     @TaskSubscriber(taskType = TaskType.TYPE_HTTP_UPLOAD,threadMode = ThreadMode.MODE_MAIN)
@@ -134,7 +141,7 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
         double progress = (double)params.getCompleteLength() / (double)params.getLength();
         progress = progress * 100f;
         progressLength.setProgress((int) progress);
-        tvSpeed.setText(TaskUtils.getFileSize(task.getSpeed()));
+        tvSpeed.setText(TaskUtils.getFileSize(params.getSpeed()));
         XLogger.getDefault().e("OnlyDownloadActivity","speed = " + getFileSize(params.getSpeed()) + "/s");
     }
 
@@ -144,12 +151,43 @@ public class SimpleTaskEventBusActivity extends BaseActivity {
 
     @OnClick(R.id.btn_stop)
     public void stop() {
-        mHandler.stop();
+        if(mHandler != null) {
+            mHandler.stop();
+        }
     }
 
 
     @OnClick(R.id.btn_start)
     public void start() {
-        mHandler.start();
+
+        if(mFileInfo == null) {
+            Intent intent = new Intent(this,FileListActivity.class);
+            intent.putExtra(FileListActivity.EXTRA_SELECT_TYPE, FileListActivity.SELECT_TYPE.TYPE_LOCAL);
+            startActivityForResult(intent,1);
+        } else {
+            mHandler.setTask(getTask(mFileInfo));
+            mHandler.start();
+            mFileInfo = null;
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        TaskEventBus.getDefault().regesit(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        TaskEventBus.getDefault().unregesit(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mHandler != null) {
+            mHandler.stop();
+        }
     }
 }

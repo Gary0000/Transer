@@ -57,7 +57,7 @@ public class BaseActivity extends AppCompatActivity {
         findViewById(R.id.iv_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BaseActivity.super.onBackPressed();
+                BaseActivity.this.onBackPressed();
             }
         });
     }

@@ -12,7 +12,9 @@ import com.scott.example.utils.Contacts;
 import com.scott.example.utils.TaskUtils;
 import com.scott.transer.SimpleTaskHandlerListenner;
 import com.scott.transer.Task;
+import com.scott.transer.handler.DefaultHttpUploadHandler;
 import com.scott.transer.handler.ITaskHandler;
+import com.scott.transer.utils.ErrorCodeFormatUtil;
 import com.shilec.xlogger.XLogger;
 
 import java.io.File;
@@ -72,14 +74,9 @@ public class SimpleUploadActivity extends BaseActivity {
                 .setDestUrl(Contacts.API.getUrl(Contacts.API.UPLOAD_URL))
                 .build();
 
-        String path = "Private/" + task.getName();
-        try {
-            path = URLEncoder.encode(path,"utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String path = "Private/";
 
-        mHandler = new MyUploadHandler.Builder()
+        mHandler = new DefaultHttpUploadHandler.Builder()
                 .setTask(task)
                 .addHeader("path",path)
                 .addHeader("auto-rename","1")
@@ -151,7 +148,7 @@ public class SimpleUploadActivity extends BaseActivity {
         @Override
         public void onError(int code, ITask params) {
             super.onError(code, params);
-            XLogger.getDefault().e("SimpleUploadActivity","error " + code);
+            XLogger.getDefault().e("SimpleUploadActivity","error " + ErrorCodeFormatUtil.format(code));
         }
     }
 

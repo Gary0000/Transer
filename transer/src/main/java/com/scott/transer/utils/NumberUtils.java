@@ -1,5 +1,7 @@
 package com.scott.transer.utils;
 
+import android.os.Build;
+
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,7 +29,12 @@ public class NumberUtils {
             length = 10;
         }
 
-        Random random = new Random(System.currentTimeMillis() + hashCode);
+        Random random = null;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            random = ThreadLocalRandom.current();
+        } else {
+            random = new Random(System.currentTimeMillis() + hashCode);
+        }       
         StringBuffer sb = new StringBuffer();
         for(int i = 0; i < length; i++) {
             int i1 = random.nextInt(10000);
