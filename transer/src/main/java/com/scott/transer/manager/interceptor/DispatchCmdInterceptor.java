@@ -47,7 +47,7 @@ public class DispatchCmdInterceptor implements Interceptor {
                 mProcessorProxy.deleteAll(cmd.getTaskType(),cmd.getUserId());
                 break;
             case TYPE_DELETE_TASKS_COMPLETED:
-                mProcessorProxy.deleteCompleted(cmd.getTaskType(),cmd.getUserId());
+                mProcessorProxy.deleteCompleted(cmd.getTaskType(),cmd.getUserId(), cmd.getGroupId());
                 break;
             case TYPE_DELETE_TASKS_STATE:
                 mProcessorProxy.delete(cmd.getTask().getState(),

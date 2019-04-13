@@ -25,7 +25,7 @@ public interface ITaskProcessor {
 
     void deleteTasks(String[] taskIds);
 
-    void deleteCompleted(TaskType type,String userId);
+    void deleteCompleted(TaskType type,String userId, String groupId);
 
     void delete(int state,TaskType type,String userId);
 

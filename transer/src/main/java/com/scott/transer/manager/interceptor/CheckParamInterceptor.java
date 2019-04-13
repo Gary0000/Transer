@@ -62,6 +62,7 @@ public class CheckParamInterceptor implements Interceptor {
             case TYPE_QUERY_TASKS_GROUP:
             case TYPE_START_GROUP:
             case TYPE_STOP_GROUP:
+            case TYPE_DELETE_TASKS_COMPLETED:
                 if(cmd.getTask() == null && TextUtils.isEmpty(cmd.getGroupId())) {
                     throwIllegalException(ProcessType.TYPE_DELETE_TASKS_GROUP,"missing groupId!");
                 }

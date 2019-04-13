@@ -163,6 +163,7 @@ public class TaskGroupExpandAdapter extends QuickExpandableListAdapter<MultiItem
                 TaskCmd builder = new TaskCmd.Builder()
                         .setTaskType(task.getType())
                         .setUserId(Contacts.USER_ID)
+                        .setGroupId(task.getGroupId())
                         .setProcessType(ProcessType.TYPE_DELETE_TASKS_COMPLETED)
                         .build();
                 TaskEventBus.getDefault().execute(builder);

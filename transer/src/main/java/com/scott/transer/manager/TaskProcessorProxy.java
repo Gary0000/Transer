@@ -73,9 +73,9 @@ public class TaskProcessorProxy implements ITaskInternalProcessor {
     }
 
     @Override
-    public void deleteCompleted(TaskType type,String userId) {
-        mProcessor.deleteCompleted(type,userId);
-        mDbProcessor.deleteCompleted(type,userId);
+    public void deleteCompleted(TaskType type,String userId, String groupId) {
+        mProcessor.deleteCompleted(type,userId, groupId);
+        mDbProcessor.deleteCompleted(type,userId, groupId);
     }
 
     @Override

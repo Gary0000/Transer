@@ -117,12 +117,13 @@ public class TaskProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public void deleteCompleted(TaskType type,String userId) {
+    public void deleteCompleted(TaskType type,String userId, String groupId) {
         Iterator<ITaskHolder> iterator = mTasks.iterator();
         while (iterator.hasNext()) {
             ITaskHolder next = iterator.next();
             if(type == next.getType() && next.getTask().getState() == TaskState.STATE_FINISH &&
-                    TextUtils.equals(userId,next.getTask().getUserId())) {
+                    TextUtils.equals(userId,next.getTask().getUserId())
+                    && TextUtils.equals(groupId, next.getTask().getGroupId())) {
                 iterator.remove();
                 ITaskHandlerHolder h = (ITaskHandlerHolder) next;
                 if(h.getTaskHandler() != null) {

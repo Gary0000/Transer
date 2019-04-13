@@ -70,22 +70,25 @@ public class TaskDbProcessor implements ITaskInternalProcessor {
     }
 
     @Override
-    public void deleteCompleted(TaskType type,String userId) {
+    public void deleteCompleted(TaskType type,String userId, String groupId) {
+        TaskTypeConverter converter = new TaskTypeConverter();
         List<Task> tasks = mTaskDao
                 .queryBuilder()
+                .where(TaskDao.Properties.Type.eq(converter.convertToDatabaseValue(type)))
                 .where(TaskDao.Properties.State.eq(TaskState.STATE_FINISH))
-                .where(TaskDao.Properties.Type.eq(type))
                 .where(TaskDao.Properties.UserId.eq(userId))
+                .where(TaskDao.Properties.GroupId.eq(groupId))
                 .list();
         mTaskDao.deleteInTx(tasks);
     }
 
     @Override
     public void delete(int state,TaskType type,String userId) {
+        TaskTypeConverter converter = new TaskTypeConverter();
         List<Task> tasks = mTaskDao
                 .queryBuilder()
                 .where(TaskDao.Properties.State.eq(state))
-                .where(TaskDao.Properties.Type.eq(type))
+                .where(TaskDao.Properties.Type.eq(converter.convertToDatabaseValue(type)))
                 .where(TaskDao.Properties.UserId.eq(userId))
                 .list();
         mTaskDao.deleteInTx(tasks);
@@ -151,10 +154,11 @@ public class TaskDbProcessor implements ITaskInternalProcessor {
 
     @Override
     public List<ITask> getTasks(int state,TaskType type,String userId) {
+        TaskTypeConverter converter = new TaskTypeConverter();
         List<Task> tasks = mTaskDao
                 .queryBuilder()
                 .where(TaskDao.Properties.State.eq(state))
-                .where(TaskDao.Properties.Type.eq(type))
+                .where(TaskDao.Properties.Type.eq(converter.convertToDatabaseValue(type)))
                 .where(TaskDao.Properties.UserId.eq(userId))
                 .list();
         List<ITask> tasks1 = new ArrayList<>();
